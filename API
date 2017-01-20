@@ -20,3 +20,8 @@ https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<time
 https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> Edit message
 	Post
 	Body new message
+https://logins-v1.curseapp.net/login
+	Post
+	Username <username>
+	Password <password>
+	
