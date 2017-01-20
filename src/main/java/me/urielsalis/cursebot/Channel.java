@@ -1,8 +1,11 @@
 package me.urielsalis.cursebot;
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
 public class Channel {
     String groupTitle;
     String groupID;
-    public List<Message> messages = Collections.synchronizedList(new ArrayList<Message>());
+    public Queue<Message> messages = new CircularFifoQueue<Message>(100);
     public Channel(Object groupTitle, Object groupID) {
         this.groupID = (String) groupID;
         this.groupTitle = (String) groupTitle;

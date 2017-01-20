@@ -91,7 +91,7 @@ public class CurseApi {
             if (channel.messages.isEmpty()) {
                 json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.groupID + "?endTimestamp=0&pageSize=30&startTimestamp=0", getAuthToken()); //Assume we start in 0
             } else {
-                json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.groupID + "?endTimestamp=0&pageSize=30&startTimestamp=" + channel.messages.get(channel.messages.size() - 1).timestamp, getAuthToken()); //Get since last message to save some work to curse servers
+                json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.groupID + "?endTimestamp=0&pageSize=30&startTimestamp=" + channel.messages.peek().timestamp, getAuthToken()); //Get since last message to save some work to curse servers
             }
             JSONArray array = (JSONArray) new JSONParser().parse(json);
             for (Object obj : array) {

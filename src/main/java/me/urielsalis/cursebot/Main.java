@@ -54,7 +54,8 @@ public class Main {
                             case ".send":
                                 {
                                     String channel = args[1];
-                                    String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length));
+                                    String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length)).replaceAll("/n", "\n");
+                                    if(body.startsWith(".")) break;
                                     api.postMessage(api.resolveChannel(channel), body);
                                 }
                                 break;
