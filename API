@@ -1,0 +1,17 @@
+https://groups-v1.curseapp.net/groups/<groupid>?showDeletedChannels=false  Shows info from group
+	Needs AuthenticationToken
+
+https://conversations-v1.curseapp.net/conversations/<channelid>?endTimestamp=0&pageSize=30&startTimestamp=0 Shows messages from group
+	Needs AuthenticationToken
+https://conversations-v1.curseapp.net/conversations/<channelid>  Post new message
+	Uses AuthenticationToken
+	ClientID 3fc35821-57e2-46e7-b6d8-8549930f1171
+	MachineKey 99149aae-1588-45a8-a1fc-d7ee78d2101c
+	Body This is a test to see if I could send stuff from a POST request
+	AttachmentID 00000000-0000-0000-0000-000000000000
+	AttachmentRegionID 0
+https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> Delete message
+	Request: Delete
+	Needs AuthenticationToken
+https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> kick member
+	Request: Delete
