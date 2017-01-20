@@ -42,6 +42,7 @@ public class Main {
         api.addNewListener(new Listener() {
             @Override
             public void run(Message message) {
+                System.out.println(Util.timestampToDate(message.timestamp) + "  <"+message.senderName+"> "+message.body);
                 if(isUserAuthorized(message.senderName)) {
                     String[] args = message.body.split(" ");
                     if(args.length > 0) {
@@ -57,6 +58,17 @@ public class Main {
                                     String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length)).replaceAll("/n", "\n");
                                     if(body.startsWith(".")) break;
                                     api.postMessage(api.resolveChannel(channel), body);
+                                }
+                                break;
+                            case ".sender":
+                                {
+                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), "Hai "+message.senderName);
+                                }
+                                break;
+                            case ".resolve":
+                                {
+                                    String resolve = args[1];
+                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), api.resolveChannelUUID(resolve).groupTitle);
                                 }
                                 break;
                             case ".delete30":
@@ -86,6 +98,10 @@ public class Main {
                                         api.kickUser(api.resolveMember(username));
                                 }
                                 break;
+                            case ".help":
+                                {
+                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), ".quit Quits bot\n.send <channel> <message> Sends a message\n.sender Shows a message to the caller\n.resolver <uuid> resolver a UUID to channel name\n .delete30 <channel> <username> Deletes 30 last messages of user\n.kick <username> kicks a user from the server");
+                                }
                         }
                     }
                 }

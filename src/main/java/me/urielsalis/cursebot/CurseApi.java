@@ -5,13 +5,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -96,7 +91,7 @@ public class CurseApi {
             JSONArray array = (JSONArray) new JSONParser().parse(json);
             for (Object obj : array) {
                 JSONObject messageObject = (JSONObject) obj;
-                Message message = new Message(messageObject.get("SenderName"), messageObject.get("Body"), messageObject.get("Timestamp"), messageObject.get("ServerID"));
+                Message message = new Message(messageObject.get("SenderName"), messageObject.get("Body"), messageObject.get("Timestamp"), messageObject.get("ServerID"), channel.groupID);
                 if (!channel.messages.contains(message)) {
                     channel.messages.add(message);
                     updateListeners(message);
@@ -209,6 +204,14 @@ public class CurseApi {
         for(Member member: members) {
             if(Util.equals(member.senderName, username))
                 return member;
+        }
+        return null;
+    }
+
+    public Channel resolveChannelUUID(String uuid) {
+        for(Map.Entry<String, Channel> entry: channels.entrySet()) {
+            if(Util.equals(entry.getValue().groupID, uuid))
+                return entry.getValue();
         }
         return null;
     }

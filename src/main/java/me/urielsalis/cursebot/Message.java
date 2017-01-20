@@ -1,6 +1,7 @@
 package me.urielsalis.cursebot;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * CurseApi
@@ -12,11 +13,13 @@ public class Message {
     String body;
     long timestamp;
     String serverID;
-    public Message(Object senderName, Object body, Object timestamp, Object serverID) {
+    String channelUUID;
+    public Message(Object senderName, Object body, Object timestamp, Object serverID, Object channelUUID) {
         this.senderName = (String) senderName;
         this.body = (String) body;
         this.timestamp = (Long) timestamp;
         this.serverID = (String) serverID;
+        this.channelUUID = (String) channelUUID;
     }
 
     @Override
