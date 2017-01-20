@@ -25,4 +25,4 @@ https://logins-v1.curseapp.net/login login
 	Username <username>
 	Password <password>
 https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50 Get active members
-	
+https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid> Get info about member	
