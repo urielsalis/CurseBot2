@@ -3,8 +3,8 @@ package me.urielsalis.cursebot;
 import java.util.Calendar;
 
 /**
- * BattleCode 2017
- * Team: Mate
+ * CurseApi
+ * @Author: Urielsalis
  * License: GPL 3.0
  */
 public class Message {

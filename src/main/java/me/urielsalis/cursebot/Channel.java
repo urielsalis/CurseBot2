@@ -1,13 +1,13 @@
 package me.urielsalis.cursebot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
- * BattleCode 2017
- * Team: Mate
+ * CurseApi
+ * @Author: Urielsalis
  * License: GPL 3.0
  */
 public class Channel {
