@@ -20,8 +20,9 @@ https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<time
 https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> Edit message
 	Post
 	Body new message
-https://logins-v1.curseapp.net/login
+https://logins-v1.curseapp.net/login login
 	Post
 	Username <username>
 	Password <password>
+https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50 Get active members
 	
