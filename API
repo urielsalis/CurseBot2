@@ -15,3 +15,8 @@ https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<time
 	Needs AuthenticationToken
 https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> kick member
 	Request: Delete
+https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<timestamp>/like  GG
+	POST
+https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> Edit message
+	Post
+	Body new message
