@@ -81,7 +81,8 @@ public class Main {
                             case ".kick":
                                 {
                                     String username = args[1];
-                                    api.kickUser(api.resolveMember(username));
+                                    if(!isUserAuthorized(username))
+                                        api.kickUser(api.resolveMember(username));
                                 }
                                 break;
                         }
