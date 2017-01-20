@@ -21,7 +21,7 @@ import java.util.Scanner;
  * License: GPL 3.0
  */
 public class Main {
-    static String auth = "Dtv9CkNIK49Hzk7KGOZUsXaEkB0eE5sVEEscpXOd/MEabpEAXb94+fBATw+0YswFkyVBWYT3nthCSFYqJy8zf34YHHz6iqmgRULFO/z9wZh/PqRcT/6KQt3MDHexGOBOMLo7TSXei43c1lsqCZukyMCbSwaj6NTSIKNFAlsqjR8XtI4dzFZCaxL/A4od9TkT"; //groupuuid
+    static String auth = "authhere"; //groupuuid
     static String groupID = "72a413b0-f8ed-4851-8c61-c6b13097bbb8";
     static ArrayList<Channel> channels = new ArrayList<Channel>();
     public static void main(String[] args) throws Exception {
@@ -39,7 +39,7 @@ public class Main {
 
     private static void sendMessage(String channelName, String message) throws Exception {
         String channel = resolveChannel(channelName);
-        String parameters = "AttachmentID=00000000-0000-0000-0000-000000000000&Body="+message+"&AttachmentRegionID=0&MachineKey=99149aae-1588-45a8-a1fc-d7ee78d2101c&ClientID=3fc35821-57e2-46e7-b6d8-8549930f1171\n";
+        String parameters = "AttachmentID=00000000-0000-0000-0000-000000000000&Body="+message+"&AttachmentRegionID=0&MachineKey=machineid&ClientID=clientid";
         sendPost("https://conversations-v1.curseapp.net/conversations/"+channel, parameters);
     }
 
