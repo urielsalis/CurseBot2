@@ -17,21 +17,35 @@ import java.util.concurrent.TimeUnit;
  * License: GPL 3.0
  */
 public class CurseApi {
-    private String authToken;
-    private String groupID;
-    private String clientID;
-    private String machineKey;
+    private String authToken = "";
+    private String groupID = "";
+    private String clientID = "";
+    private String machineKey = "";
     private HashMap<String, Channel> channels = new HashMap<String, Channel>();
     private ArrayList<Member> members = new ArrayList<Member>();
     static boolean isDeleteInProgress = false;
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
 
-    public CurseApi(String groupID, String authToken, String clientID, String machineKey) {
+    public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
-        this.authToken = authToken;
         this.clientID = clientID;
         this.machineKey = machineKey;
+        login(username, password);
         getInfoFromGroup();
+    }
+
+    private void login(String username, String password) {
+       try {
+           String parameters = "Username=" + username + "&Password=" + password;
+           String json = Util.sendPost("https://logins-v1.curseapp.net/login", parameters, getAuthToken());
+           JSONObject object = (JSONObject) new JSONParser().parse(json);
+           if(((long)object.get("Status"))==1) {
+                JSONObject session = (JSONObject) object.get("Session");
+                authToken = (String) session.get("Token");
+           }
+       } catch (ParseException e) {
+           e.printStackTrace();
+       }
     }
 
 
@@ -121,7 +135,7 @@ public class CurseApi {
      * Posts message on supplied channel
      * @param channel channel where message is going to be posted
      * @param message message to post
-     * @return
+     * @return action suceeded
      */
     public boolean postMessage(Channel channel, String message) {
         if(channel==null) return false;
@@ -134,7 +148,7 @@ public class CurseApi {
     /**
      * Removes a user from the server
      * @param member member to be removed
-     * @return
+     * @return action succedeed
      */
     public boolean kickUser(Member member) {
         if(member==null) return false;
@@ -146,17 +160,46 @@ public class CurseApi {
 
     /**
      * Removes a message, then waits 1 second
-     * @param channel channel where the message is
      * @param message Message to be deleted
-     * @return
+     * @return action succedeed
      */
-    public boolean deleteMessage(Channel channel, Message message) {
-        if(channel==null) return false;
+    public boolean deleteMessage(Message message) {
         if(message==null) return false;
+        Channel channel = resolveChannelUUID(message.channelUUID);
+        if(channel==null) return false;
         isDeleteInProgress = true;
         String url = "https://conversations-v1.curseapp.net/conversations/"+channel.groupID+"/"+message.serverID+"-"+message.timestamp;
         Util.sendDelete(url, getAuthToken());
         isDeleteInProgress = false;
+        return true;
+    }
+
+    /**
+     * @param message message to edit
+     * @param body New body
+     * @return action suceeded
+     */
+    public boolean editMessage(Message message, String body) {
+        if(message==null) return false;
+        Channel channel = resolveChannelUUID(message.channelUUID);
+        if(channel==null) return false;
+        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.groupID+"/"+message.serverID+"-"+message.timestamp;
+        String parameters = "Body="+body;
+        Util.sendPost(url, parameters, getAuthToken());
+        return true;
+    }
+
+    /**
+     * @param message Message to like
+     * @return Action suceeded
+     */
+    public boolean likeMessage(Message message) {
+        if(message==null) return false;
+        Channel channel = resolveChannelUUID(message.channelUUID);
+        if(channel==null) return false;
+        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.groupID+"/"+message.serverID+"-"+message.timestamp+"/like";
+        String parameters = "";
+        Util.sendPost(url, parameters, getAuthToken());
         return true;
     }
 

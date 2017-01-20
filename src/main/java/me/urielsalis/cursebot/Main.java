@@ -18,7 +18,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
     private String groupID = "";
-    private String auth = "";
+    private String username = "";
+    private String password = "";
     private String clientID = "";
     private String machineKey = "";
     private String[] authorizedUsers;
@@ -30,7 +31,7 @@ public class Main {
     public Main() {
         loadPropierties();
 
-        final CurseApi api = new CurseApi(groupID, auth, clientID, machineKey);
+        final CurseApi api = new CurseApi(groupID, username, password, clientID, machineKey);
         api.startMessageLoop();
         //wait 5 seconds so all messages are flushed and only new ones shown
         try {
@@ -80,7 +81,48 @@ public class Main {
                                     for(Message message1: channel.messages) {
                                         if(counter > 30) break;
                                         if(Util.equals(username, message1.senderName)) {
-                                            api.deleteMessage(channel, message1);
+                                            api.deleteMessage(message1);
+                                            try {
+                                                TimeUnit.SECONDS.sleep(1);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            counter++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case ".like30":
+                                {
+                                    String channelName = args[1];
+                                    String username = args[2];
+                                    int counter = 0;
+                                    Channel channel = api.resolveChannel(channelName);
+                                    for(Message message1: channel.messages) {
+                                        if(counter > 30) break;
+                                        if(Util.equals(username, message1.senderName)) {
+                                            api.likeMessage(message1);
+                                            try {
+                                                TimeUnit.SECONDS.sleep(1);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            counter++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case ".edit30":
+                                {
+                                    String channelName = args[1];
+                                    String username = args[2];
+                                    String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
+                                    int counter = 0;
+                                    Channel channel = api.resolveChannel(channelName);
+                                    for(Message message1: channel.messages) {
+                                        if(counter > 30) break;
+                                        if(Util.equals(username, message1.senderName)) {
+                                            api.editMessage(message1, body);
                                             try {
                                                 TimeUnit.SECONDS.sleep(1);
                                             } catch (InterruptedException e) {
@@ -123,7 +165,8 @@ public class Main {
             if (inputStream != null) {
                 prop.load(inputStream);
                 groupID = prop.getProperty("groupID");
-                auth = prop.getProperty("auth");
+                username = prop.getProperty("username");
+                password = prop.getProperty("password");
                 clientID = prop.getProperty("clientID");
                 machineKey = prop.getProperty("machineKey");
                 authorizedUsers = prop.getProperty("authorizedUsers").split(",");
