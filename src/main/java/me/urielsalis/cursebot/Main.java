@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * License: GPL 3.0
  */
 public class Main {
-    static String auth = "Dtv9CkNIK49Hzk7KGOZUsXaEkB0eE5sVEEscpXOd/MEabpEAXb94+fBATw+0YswFkyVBWYT3nthCSFYqJy8zf34YHHz6iqmgRULFO/z9wZh/PqRcT/6KQt3MDHexGOBOMLo7TSXei43c1lsqCZukyMCbSwaj6NTSIKNFAlsqjR8XtI4dzFZCaxL/A4od9TkT"; //groupuuid
+    static String auth = "yourauth"; //groupuuid
     static String groupID = "72a413b0-f8ed-4851-8c61-c6b13097bbb8";
     static ArrayList<Channel> channels = new ArrayList<Channel>();
     static boolean isDeleteInProgress = false;
