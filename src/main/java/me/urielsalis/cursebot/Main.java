@@ -25,6 +25,7 @@ public class Main {
     private String[] authorizedUsers;
     private String[] swearWords;
     private ArrayList<String> authedLinkers = new ArrayList<>();
+    private HashMap<Long, Long> banned = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
         new Main();
@@ -46,6 +47,7 @@ public class Main {
             @Override
             public void run(Message message) {
                 System.out.println(Util.timestampToDate(message.timestamp) + "  <"+message.senderName+"> "+message.body);
+                updateBans(message.timestamp, api);
                 if(containsCurseWord(message.body)) {
                     api.deleteMessage(message);
                     api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
@@ -176,27 +178,55 @@ public class Main {
                                     api.postMessage(api.resolveChannelUUID(message.channelUUID), ".quit Quits bot\n.send <channel> <message> Sends a message\n.sender Shows a message to the caller\n.resolver <uuid> resolver a UUID to channel name\n .delete30 <channel> <username> Deletes 30 last messages of user\n.kick <username> kicks a user from the server");
                                 }
                                 break;
-                            case ".addLinker": {
+                            case ".addLinker":
                                 {
                                     String username = args[1];
                                     authedLinkers.add(username.toLowerCase().trim());
                                     api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now authed to post links");
                                 }
                                 break;
-                            }
-                            case ".rmLinker": {
+
+                            case ".rmLinker":
                                 {
                                     String username = args[1];
                                     authedLinkers.remove(username.toLowerCase().trim());
                                     api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now deauthed to post links");
                                 }
                                 break;
-                            }
+
+                            case ".ban":
+                                {
+
+                                    String username = args[1];
+                                    int minutes = Integer.parseInt(args[2]);
+                                    String reason = "";
+                                    if(args.length > 3)
+                                        reason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
+                                    Member member = api.resolveMember(username);
+                                    if(member!=null) {
+                                        api.banMember(member.senderID, reason);
+                                        banned.put(member.senderID, message.timestamp+(minutes*60));
+                                    }
+                                }
+                                break;
                         }
                     }
                 }
             }
         });
+    }
+
+    private void updateBans(long timestamp, CurseApi api) {
+        ArrayList<Long> toUnban = new ArrayList<>();
+        for(Map.Entry<Long, Long> entry: banned.entrySet()) {
+            if(entry.getValue() < timestamp) {
+                toUnban.add(entry.getKey());
+            }
+        }
+        for(long id: toUnban) {
+            banned.remove(id);
+            api.unBanMember(id);
+        }
     }
 
     private boolean isLinkAndNotAuthed(String body, String username) {

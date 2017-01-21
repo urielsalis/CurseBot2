@@ -146,8 +146,9 @@ public class CurseApi {
             Member todelete = null;
             for (Member member : members) {
                 if (member.senderID == senderID) {
-                    if (member.senderName.equals(senderName)) {
-                        found = true;
+                    found = true;
+                    if (!member.senderName.equals(senderName)) {
+                        found = false;
                         todelete = member;
                         //we will update member data
                     }
@@ -258,6 +259,25 @@ public class CurseApi {
         synchronized (listeners) {
             listeners.add(listener);
         }
+    }
+
+    /**
+     * Bans a member
+     * @param userID userid of member to ban
+     * @param reason reason
+     */
+    public void banMember(long userID, String reason) {
+        String url = "https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans";
+        String parameters = "UserID="+userID+"&Reason="+reason+"&MessageDeleteMode=0";
+        Util.sendPost(url, parameters, getAuthToken());
+    }
+
+    /**
+     * Unbans a member
+     * @param userID userid of member to unban
+     */
+    public void unBanMember(long userID) {
+        Util.sendDelete("https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans/"+userID, getAuthToken());
     }
 
 
