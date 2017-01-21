@@ -1,31 +1,66 @@
-https://groups-v1.curseapp.net/groups/<groupid>?showDeletedChannels=false  Shows info from group
-	Needs AuthenticationToken
+All the requests bellow require that your Authentication Token be in the header of the request, except for login, e.g:
+{"AuthenticationToken": "abfasdfbaoesyfbosafybeobfsdoubfoarejhbgweuabfwhdeubfgwefbugewubawiodfaouifd"}
+And those bellow as your payload:
+{"ClientID": "abcdefgh-abcd-abcd-1234-123456789012",
+"MachineKey": "abcdefgh-abcd-abcd-1234-123456789012",
+"AttachmentID": "00000000-0000-0000-0000-000000000000"
+"AttachmentRegionID": "0"}
+If the payload needs changes in one request, the extra info is described under the request 
 
-https://conversations-v1.curseapp.net/conversations/<channelid>?endTimestamp=0&pageSize=30&startTimestamp=0 Shows messages from group
-	Needs AuthenticationToken
-https://conversations-v1.curseapp.net/conversations/<channelid>  Post new message
-	Uses AuthenticationToken
-	ClientID 3fc35821-57e2-46e7-b6d8-8549930f1171
-	MachineKey 99149aae-1588-45a8-a1fc-d7ee78d2101c
-	Body This is a test to see if I could send stuff from a POST request
-	AttachmentID 00000000-0000-0000-0000-000000000000
-	AttachmentRegionID 0
-https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> Delete message
-	Request: Delete
-	Needs AuthenticationToken
-https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> kick member
-	Request: Delete
-https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<timestamp>/like  GG
-	POST
-https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> Edit message
-	Post
-	Body new message
-https://logins-v1.curseapp.net/login login
-	Post
-	Username <username>
-	Password <password>
-https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50 Get active members
-https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid> Get info about member	
-https://groups-v1.curseapp.net/groups/72a413b0-f8ed-4851-8c61-c6b13097bbb8/nickname
-	Request Method:POST
-	Nickname: "MyLittleApiCheck2"
+https://groups-v1.curseapp.net/groups/<groupid>?showDeletedChannels=false  
+	Details: Shows info from group
+	Request: GET
+	Returns: A lot of messages
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>?endTimestamp=0&pageSize=30&startTimestamp=0
+	Details: Shows messages from group
+	Request: GET
+	Returns: Messages between startTimestamp and endTimestamp, with the limit of messages of pageSize
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>  
+	Details: Posts new message to selected channelid
+	Request: POST
+	Addition to payload:
+	{"Body": "This is a test to see if I could send stuff from a POST request"}
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> 
+	Details: Deletes message from selected timestamp
+	Request: DELETE
+	
+https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> 
+	Details: Kicks member
+	Request: DELETE
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<timestamp>/like  
+	Details: GGs timestamped message
+	Request: POST
+	
+https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> 
+	Details: Edits timestamped message
+	Request: POST
+	Addition to payload:
+	{"Body": "new message"}
+	
+https://logins-v1.curseapp.net/login 
+	Details: Logins a Curse account
+	Request: POST
+	Addition to payload:
+	{"Username": "<username>"
+	"Password": "<password>"}
+	Returns: Authentication Token from the logged user
+	
+https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50
+	Details: Gets active or inactive (by changing actives to false) members
+	Request: GET
+	Returns: Active or inactive members of the group, with the limit of pageSize
+	
+https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid>
+	Details: Gets info about member	
+	Request: GET
+	Returns: All the info of the selected member
+	
+https://groups-v1.curseapp.net/groups/<groupID>/nickname
+	Details: Changes the nickname of the user
+	Request: POST
+	Addition to payload:
+	{"Nickname": "newNickname"}
