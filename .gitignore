@@ -2,3 +2,6 @@
 config.properties
 target/
 *.iml
+.settings/
+.classpath
+.project
