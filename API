@@ -84,7 +84,26 @@ https://groups-v1.curseapp.net/servers
 	"IsPublic": true}			//If the server should appear on search
 	Returns: Unknown
 
-https://groups-v1.curseapp.net/groups/139de14d-e428-4b57-b76a-61736f7cef98/leave
+https://groups-v1.curseapp.net/groups/<groupID>/leave
 	Details: Leaves the server
 	Request: POST
 	Returns: Unknown
+
+https://groups-v1.curseapp.net/servers/search
+	Details: Searches for a server
+	Addition to payload:
+	{"Query":"",				//The query to search
+	"PageNumber":1,				//The number of the page to list
+	"PageSize":25,				//The size of the pafe
+	"GroupTitle":null,			//Unknown
+	"OwnerUsername":null,			//The username of the owner of the server
+	"MinMemberCount":1,			//Lists servers with this number as the minimun numbers of players in
+	"MaxMemberCount":null,			//Lists servers with this number as the maximum numbers of players in
+	"Tags":null,				//Unknown
+	"Games":null,				//The games the server is specialized on
+	"IsPublic":true,			//If the server is open to public
+	"SortType":null,			//How the search should be sortted
+	"SortAscending":false,			//Sort from the server with lowest number of members
+	"IncludeInappropriateContent":false}	//( ͡° ͜ʖ ͡°)
+	Returns: Unknown		//GroupTitle, OwnerUsername, MaxMemberCount, Tags, Games, SortType and SortAscending
+					//can all be null
