@@ -23,6 +23,8 @@ public class Main {
     private String clientID = "";
     private String machineKey = "";
     private String[] authorizedUsers;
+    private String[] swearWords;
+    private ArrayList<String> authedLinkers = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         new Main();
@@ -44,6 +46,14 @@ public class Main {
             @Override
             public void run(Message message) {
                 System.out.println(Util.timestampToDate(message.timestamp) + "  <"+message.senderName+"> "+message.body);
+                if(containsCurseWord(message.body)) {
+                    api.deleteMessage(message);
+                    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
+                }
+                if(isLinkAndNotAuthed(message.body, message.senderName)) {
+                    api.deleteMessage(message);
+                    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
+                }
                 if(isUserAuthorized(message.senderName)) {
                     String[] args = message.body.split(" ");
                     if(args.length > 0) {
@@ -82,11 +92,32 @@ public class Main {
                                         if(counter > 30) break;
                                         if(Util.equals(username, message1.senderName)) {
                                             api.deleteMessage(message1);
-                                            try {
+                                            /*try {
                                                 TimeUnit.SECONDS.sleep(1);
                                             } catch (InterruptedException e) {
                                                 e.printStackTrace();
-                                            }
+                                            }*/
+                                            counter++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case ".delete":
+                                {
+                                    String channelName = args[1];
+                                    String username = args[2];
+                                    int count = Integer.parseInt(args[3]);
+                                    int counter = 0;
+                                    Channel channel = api.resolveChannel(channelName);
+                                    for(Message message1: channel.messages) {
+                                        if(counter > count) break;
+                                        if(Util.equals(username, message1.senderName)) {
+                                            api.deleteMessage(message1);
+                                            /*try {
+                                                TimeUnit.SECONDS.sleep(1);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }*/
                                             counter++;
                                         }
                                     }
@@ -144,11 +175,42 @@ public class Main {
                                 {
                                     api.postMessage(api.resolveChannelUUID(message.channelUUID), ".quit Quits bot\n.send <channel> <message> Sends a message\n.sender Shows a message to the caller\n.resolver <uuid> resolver a UUID to channel name\n .delete30 <channel> <username> Deletes 30 last messages of user\n.kick <username> kicks a user from the server");
                                 }
+                                break;
+                            case ".addLinker": {
+                                {
+                                    String username = args[1];
+                                    authedLinkers.add(username.toLowerCase().trim());
+                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now authed to post links");
+                                }
+                                break;
+                            }
+                            case ".rmLinker": {
+                                {
+                                    String username = args[1];
+                                    authedLinkers.remove(username.toLowerCase().trim());
+                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now deauthed to post links");
+                                }
+                                break;
+                            }
                         }
                     }
                 }
             }
         });
+    }
+
+    private boolean isLinkAndNotAuthed(String body, String username) {
+        if(body.contains("https") || body.contains(".com") || body.contains(".net") || body.contains("http") || body.contains(".org")) {
+            if(!authedLinkers.contains(username)) return true;
+        }
+        return false;
+    }
+
+    private boolean containsCurseWord(String body) {
+        for(String str: swearWords) {
+            if(body.contains(str)) return true;
+        }
+        return false;
     }
 
     private boolean isUserAuthorized(String senderName) {
@@ -170,6 +232,7 @@ public class Main {
                 clientID = prop.getProperty("clientID");
                 machineKey = prop.getProperty("machineKey");
                 authorizedUsers = prop.getProperty("authorizedUsers").split(",");
+                swearWords = prop.getProperty("swearWords").split(",");
                 inputStream.close();
             }
         } catch (IOException e) {

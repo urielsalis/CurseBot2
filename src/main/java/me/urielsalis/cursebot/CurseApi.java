@@ -42,6 +42,7 @@ public class CurseApi {
            if(((long)object.get("Status"))==1) {
                 JSONObject session = (JSONObject) object.get("Session");
                 authToken = (String) session.get("Token");
+                System.out.println(authToken);
            }
        } catch (ParseException e) {
            e.printStackTrace();
@@ -78,6 +79,28 @@ public class CurseApi {
                 String id = (String) channel.get("GroupID");
                 channels.put(title, new Channel(title, id));
             }
+            getMembers();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getMembers() {
+        try {
+            String json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "/members?actives=true&page=1&pageSize=50", getAuthToken());
+            JSONArray array = (JSONArray) new JSONParser().parse(json);
+            for(Object obj: array) {
+                JSONObject memberObj = (JSONObject) obj;
+                Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"));
+                members.add(member);
+            }
+            json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "/members?actives=false&page=1&pageSize=50", getAuthToken());
+            array = (JSONArray) new JSONParser().parse(json);
+            for(Object obj: array) {
+                JSONObject memberObj = (JSONObject) obj;
+                Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"));
+                members.add(member);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -109,10 +132,34 @@ public class CurseApi {
                 if (!channel.messages.contains(message)) {
                     channel.messages.add(message);
                     updateListeners(message);
-                    Member member = new Member(messageObject.get("SenderName"), messageObject.get("SenderID"));
-                    if (!members.contains(member))
-                        members.add(member);
+                    addMemberIfNotFound((String) messageObject.get("SenderName"), (long) messageObject.get("SenderID"));
                 }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addMemberIfNotFound(String senderName, long senderID) {
+        try {
+            boolean found = false;
+            Member todelete = null;
+            for (Member member : members) {
+                if (member.senderID == senderID) {
+                    if (member.senderName.equals(senderName)) {
+                        found = true;
+                        todelete = member;
+                        //we will update member data
+                    }
+                }
+            }
+            if (todelete != null)
+                members.remove(todelete);
+            if (!found) {
+                String json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "/members/" + senderID, getAuthToken());
+                JSONObject object = (JSONObject) new JSONParser().parse(json);
+                Member member = new Member(object.get("Nickname"), object.get("Username"), object.get("UserID"), object.get("BestRole"));
+                members.add(member);
             }
         } catch (ParseException e) {
             e.printStackTrace();
