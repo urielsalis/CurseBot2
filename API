@@ -21,7 +21,7 @@ https://conversations-v1.curseapp.net/conversations/<channelid>
 	Details: Posts new message to selected channelid
 	Request: POST
 	Addition to payload:
-	{"Body": "This is a test to see if I could send stuff from a POST request"}
+	{"Body": "This is a test to see if I could send stuff from a POST request"}	//Body of Message
 	
 https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> 
 	Details: Deletes message from selected timestamp
@@ -39,14 +39,14 @@ https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<time
 	Details: Edits timestamped message
 	Request: POST
 	Addition to payload:
-	{"Body": "new message"}
+	{"Body": "new message"}		//New message to replace older
 	
 https://logins-v1.curseapp.net/login 
 	Details: Logins a Curse account
 	Request: POST
 	Addition to payload:
-	{"Username": "<username>"
-	"Password": "<password>"}
+	{"Username": "<username>"	//Username
+	"Password": "<password>"}	//User password
 	Returns: Authentication Token from the logged user
 	
 https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50
@@ -63,4 +63,16 @@ https://groups-v1.curseapp.net/groups/<groupID>/nickname
 	Details: Changes the nickname of the user
 	Request: POST
 	Addition to payload:
-	{"Nickname": "newNickname"}
+	{"Nickname": "newNickname"}	//New user nickname
+	
+https://groups-v1.curseapp.net/servers
+	Details: Creates a server
+	Request: POST
+	Addition to payload:
+	{"Title": "GettingRequest",				//Server title
+	"TextChannelTitle": "Sala de Entrada",			//Name of the text channel
+	"VoiceChannelTitle": "Chat de Voz",			//Name of the voice channel
+	"OwnerRoleName": "Proprietário",			//Role name of the owner
+	"GuestRoleName": "Todos",				//Role name of everyone that joins
+	"ModeratorRoleName": "Moderadores",			//Role name of the moderators
+	"IsPublic": true}					//If the server should appear on search
