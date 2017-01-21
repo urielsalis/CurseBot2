@@ -29,3 +29,10 @@ https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid> Get info abou
 https://groups-v1.curseapp.net/groups/72a413b0-f8ed-4851-8c61-c6b13097bbb8/nickname
 	Request Method:POST
 	Nickname: "MyLittleApiCheck2"
+https://groups-na-v1.curseapp.net/servers/<group-id>/bans
+	Post
+	UserID
+	Reason
+	MessageDeleteMode 0
+https://groups-na-v1.curseapp.net/servers/<group-id>/bans/<user-id>
+	Delete
