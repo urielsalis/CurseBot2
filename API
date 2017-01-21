@@ -22,24 +22,29 @@ https://conversations-v1.curseapp.net/conversations/<channelid>
 	Request: POST
 	Addition to payload:
 	{"Body": "This is a test to see if I could send stuff from a POST request"}	//Body of Message
+	Returns: Unknown
 	
 https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> 
 	Details: Deletes message from selected timestamp
 	Request: DELETE
+	Returns: Unknown
 	
 https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> 
 	Details: Kicks member
 	Request: DELETE
+	Returns: Unknown
 	
 https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<timestamp>/like  
 	Details: GGs timestamped message
 	Request: POST
+	Returns: Unknown
 	
 https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> 
 	Details: Edits timestamped message
 	Request: POST
 	Addition to payload:
 	{"Body": "new message"}		//New message to replace older
+	Returns: Unknown
 	
 https://logins-v1.curseapp.net/login 
 	Details: Logins a Curse account
@@ -64,6 +69,7 @@ https://groups-v1.curseapp.net/groups/<groupID>/nickname
 	Request: POST
 	Addition to payload:
 	{"Nickname": "newNickname"}	//New user nickname
+	Returns: Unknown
 	
 https://groups-v1.curseapp.net/servers
 	Details: Creates a server
@@ -76,3 +82,9 @@ https://groups-v1.curseapp.net/servers
 	"GuestRoleName": "Todos",				//Role name of everyone that joins
 	"ModeratorRoleName": "Moderadores",			//Role name of the moderators
 	"IsPublic": true}					//If the server should appear on search
+	Returns: Unknown
+
+https://groups-v1.curseapp.net/groups/139de14d-e428-4b57-b76a-61736f7cef98/leave
+	Details: Leaves the server
+	Request: POST
+	Returns: Unknown
