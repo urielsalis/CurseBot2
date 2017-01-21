@@ -10,7 +10,9 @@ Requires: `Username`, `Password`
 
 Returns an authentication token
 
-All requests below require that you have a valid authentication token specified in the headers of the request
+---
+
+##All requests below require that you have a valid authentication token specified in the headers of the request
 
 `headers = { 'AuthenticationToken' : 'AUTHENTICATION_TOKEN_RECIEVED_FROM_LOGIN' }`
 
