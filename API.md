@@ -120,4 +120,4 @@ Note: All contents of the payload can be null
 
 Request: *POST*
 
-Requires: `Query`, `PageNumber`, `PageSize`, `GroupTitle`, `OwnerUsername, `MinMemberCount`, `MaxMemberCount`, `Tags`, `Games`, `IsPublic`, `SortType`, `SortAscending`, `IncludeInappropriateContent`
+Requires: `Query`, `PageNumber`, `PageSize`, `GroupTitle`, `OwnerUsername`, `MinMemberCount`, `MaxMemberCount`, `Tags`, `Games`, `IsPublic`, `SortType`, `SortAscending`, `IncludeInappropriateContent`
