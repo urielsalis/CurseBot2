@@ -20,8 +20,12 @@ https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<time
 https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> Edit message
 	Post
 	Body new message
-https://logins-v1.curseapp.net/login
+https://logins-v1.curseapp.net/login login
 	Post
 	Username <username>
 	Password <password>
-	
+https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50 Get active members
+https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid> Get info about member	
+https://groups-v1.curseapp.net/groups/72a413b0-f8ed-4851-8c61-c6b13097bbb8/nickname
+	Request Method:POST
+	Nickname: "MyLittleApiCheck2"
