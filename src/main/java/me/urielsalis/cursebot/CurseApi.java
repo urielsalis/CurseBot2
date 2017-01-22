@@ -1,10 +1,18 @@
 package me.urielsalis.cursebot;
 
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketException;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +33,84 @@ public class CurseApi {
     private ArrayList<Member> members = new ArrayList<Member>();
     static boolean isDeleteInProgress = false;
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
+    public WebSocket websocket;
+    private long userID;
+    private String sessionID;
 
     public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
         this.clientID = clientID;
         this.machineKey = machineKey;
         login(username, password);
+        getSessionID();
+        openWebSocket();
+        final Thread mainThread = Thread.currentThread();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                websocket.disconnect();
+            }
+        });
         getInfoFromGroup();
+    }
+
+    private void getSessionID() {
+        try {
+            String parameters = "MachineKey="+machineKey+"&Platform=6&DeviceID=null&PushKitToken=null";
+            String json = Util.sendPost("https://sessions-v1.curseapp.net/sessions", parameters, getAuthToken());
+            JSONObject object = (JSONObject) new JSONParser().parse(json);
+            sessionID = (String) object.get("SessionID");
+            JSONObject user = (JSONObject) object.get("User");
+            userID = (long) user.get("UserID");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void openWebSocket() {
+        final long SIGNAL_ID = -476754606;
+        final long MESSAGE_ID = -635182161;
+        final long RESPONSELOGIN1_ID = -815187584;
+        final long RESPONSELOGIN2_ID = 937250613;
+        try {
+            websocket = new WebSocketFactory()
+                    .createSocket("wss://notifications-na-v1.curseapp.net/")
+                    .addListener(new WebSocketAdapter() {
+                        @Override
+                        public void onTextMessage(WebSocket ws, String s) {
+                            try {
+                                JSONObject obj = (JSONObject) new JSONParser().parse(s);
+                                long TypeID = (long) obj.get("TypeID");
+                                if (TypeID==SIGNAL_ID) {
+                                    //We received a signal, good. Might want to check this for a while
+                                } else if(TypeID==MESSAGE_ID) {
+                                    JSONObject body = (JSONObject) obj.get("Body");
+                                    clientID = (String) body.get("ClientID");
+                                    Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), body.get("ConversationID"));
+                                    Channel channel = resolveChannelUUID(message.channelUUID);
+                                    if(!channel.messages.contains(message)) {
+                                        channel.messages.add(message);
+                                        updateListeners(message);
+                                    }
+                                } else if(TypeID==RESPONSELOGIN1_ID) {
+                                    if(((int)obj.get("Status"))!=1) {
+                                        System.err.println("Non 1 status on websocket");
+                                    }
+                                } else if(TypeID==RESPONSELOGIN2_ID) {
+                                    //More data about the user, we ignore it for now
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    })
+                    .connect();
+            System.out.println(websocket.isOpen());
+            System.out.println("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
+            websocket.sendText("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
+        } catch ( WebSocketException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void login(String username, String password) {
@@ -43,6 +122,10 @@ public class CurseApi {
                 JSONObject session = (JSONObject) object.get("Session");
                 authToken = (String) session.get("Token");
                 System.out.println(authToken);
+                userID = (long) session.get("UserID");
+           } else {
+               System.err.println("Wrong Password");
+               System.exit(1);
            }
        } catch (ParseException e) {
            e.printStackTrace();
@@ -58,7 +141,7 @@ public class CurseApi {
             public void run() {
                 try {
                     while(true) {
-                        updateMessages(); //Run update cycle
+                        websocket.sendText("{\"TypeID\":-476754606,\"Body\":{\"Signal\":true}}");
                         TimeUnit.SECONDS.sleep(1); //Sleep 1 second
                     }
                 } catch (InterruptedException e) {
