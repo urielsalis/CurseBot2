@@ -241,8 +241,8 @@ public class Main {
     }
 
     private boolean isLinkAndNotAuthed(String body, String username) {
-        if(body.contains("https") || body.contains(".com") || body.contains(".net") || body.contains("http") || body.contains(".org")) {
-            if(!authedLinkers.contains(username)) return true;
+        if(body.contains("https") || body.contains(".com") || body.contains(".net") || body.contains("http") || body.contains(".org") || body.contains(".ly")) {
+            if(!authedLinkers.contains(username.toLowerCase().trim())) return true;
         }
         return false;
     }
