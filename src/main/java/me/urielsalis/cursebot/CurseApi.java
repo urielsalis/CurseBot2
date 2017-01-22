@@ -72,6 +72,7 @@ public class CurseApi {
         final long MESSAGE_ID = -635182161;
         final long RESPONSELOGIN1_ID = -815187584;
         final long RESPONSELOGIN2_ID = 937250613;
+        final long USERCHANGE_ID = 149631008;
         try {
             websocket = new WebSocketFactory()
                     .createSocket("wss://notifications-na-v1.curseapp.net/")
@@ -84,13 +85,21 @@ public class CurseApi {
                                 if (TypeID==SIGNAL_ID) {
                                     //We received a signal, good. Might want to check this for a while
                                 } else if(TypeID==MESSAGE_ID) {
+                                    //check if its private message
                                     JSONObject body = (JSONObject) obj.get("Body");
                                     clientID = (String) body.get("ClientID");
-                                    Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), body.get("ConversationID"));
-                                    Channel channel = resolveChannelUUID(message.channelUUID);
-                                    if(!channel.messages.contains(message)) {
-                                        channel.messages.add(message);
+                                    long conversationType = (long) body.get("ConversationType");
+                                    boolean isPM = conversationType==3;
+                                    String channelUUID = (String) body.get("ConversationID");
+                                    Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
+                                    if(isPM) {
                                         updateListeners(message);
+                                    } else {
+                                        Channel channel = resolveChannelUUID(channelUUID);
+                                        if (!channel.messages.contains(message)) {
+                                            channel.messages.add(message);
+                                            updateListeners(message);
+                                        }
                                     }
                                 } else if(TypeID==RESPONSELOGIN1_ID) {
                                     if(((int)obj.get("Status"))!=1) {
@@ -98,6 +107,31 @@ public class CurseApi {
                                     }
                                 } else if(TypeID==RESPONSELOGIN2_ID) {
                                     //More data about the user, we ignore it for now
+                                } else if(TypeID==USERCHANGE_ID) {
+                                    JSONObject body = (JSONObject) obj.get("Body");
+                                    long changeType = (long)body.get("ChangeType");
+                                    if(changeType==2) {
+                                        //user joined
+                                        JSONArray members2 = (JSONArray) body.get("Members");
+                                        for(Object object: members2) {
+                                            JSONObject member = (JSONObject) object;
+                                            Object nickname = member.get("Nickname");
+                                            Object username = member.get("Username");
+                                            Object userIDMember = member.get("UserID");
+                                            Object bestRole = member.get("BestRole");
+                                            Member m = new Member(nickname, username, userIDMember, bestRole);
+                                            if(members.contains(m)) {
+                                                //user was already here
+                                                postMessage(resolveChannel("lobby"), "Welcome back @" +m.senderID+":"+m.senderName);
+                                            } else {
+                                                //new user, TODO
+                                                postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName);
+                                                members.add(m);
+                                            }
+                                            System.out.println(m.senderName + " joined!");
+                                        }
+                                        System.out.println();
+                                    }
                                 }
                             } catch (ParseException e) {
                                 e.printStackTrace();

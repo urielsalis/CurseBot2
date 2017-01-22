@@ -27,14 +27,12 @@ public class Member {
 
         Member member = (Member) o;
 
-        if (senderID != member.senderID) return false;
-        return senderName != null ? senderName.equals(member.senderName) : member.senderName == null;
+        return senderID == member.senderID;
     }
 
     @Override
     public int hashCode() {
-        int result = senderName != null ? senderName.hashCode() : 0;
-        result = 31 * result + (int) (senderID ^ (senderID >>> 32));
+        int result = (int) (senderID ^ (senderID >>> 32));
         return result;
     }
 }

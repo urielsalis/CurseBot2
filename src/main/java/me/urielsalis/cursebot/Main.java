@@ -46,7 +46,11 @@ public class Main {
         api.addNewListener(new Listener() {
             @Override
             public void run(Message message) {
-                System.out.println(Util.timestampToDate(message.timestamp) + "  <"+message.senderName+"> "+message.body);
+                if(message.isPM) {
+                    System.out.println(Util.timestampToDate(message.timestamp) + "  [" + message.senderName + "] " + message.body);
+                } else {
+                    System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
+                }
                 updateBans(message.timestamp, api);
                 if(containsCurseWord(message.body)) {
                     api.deleteMessage(message);
