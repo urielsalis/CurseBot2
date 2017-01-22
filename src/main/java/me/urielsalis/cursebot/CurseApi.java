@@ -434,6 +434,12 @@ public class CurseApi {
         }
         return null;
     }
+    
+    
+    //- temp
+    public Member resolveRole(String roleName) {
+    	return null;
+    }
 
     public Channel resolveChannelUUID(String uuid) {
         for(Map.Entry<String, Channel> entry: channels.entrySet()) {

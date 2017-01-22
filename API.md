@@ -114,6 +114,20 @@ https://groups-v1.curseapp.net/groups/ `<groupID>` /leave
 
 Request: *POST*
 
+**Ban a user**
+
+https://groups-na-v1.curseapp.net/servers/ `<group-id>` /bans
+
+Request: *POST*
+
+Requires: `UserID`, `Reason`, `MessageDeleteMode` (default==0)
+
+**Unban a user**
+
+https://groups-na-v1.curseapp.net/servers/ `<group-id>` /bans/ `<user-id>`
+
+Request: *DELETE*
+
 **Curse search**
 
 https://groups-v1.curseapp.net/servers/search
@@ -123,3 +137,30 @@ Note: All contents of the payload can be null
 Request: *POST*
 
 Requires: `Query`, `PageNumber`, `PageSize`, `GroupTitle`, `OwnerUsername`, `MinMemberCount`, `MaxMemberCount`, `Tags`, `Games`, `IsPublic`, `SortType`, `SortAscending`, `IncludeInappropriateContent`
+
+## Web sockets for notifications
+
+Open a websocket to `wss://notifications-na-v1.curseapp.net/`
+
+Send the first payload to authenticate, then send the second payload as a keepalive every so often (less then every half a second)
+    Send {"TypeID":-2101997347,"Body":{"CipherAlgorithm":0,"CipherStrength":0,"ClientVersion":"7.0.138","PublicKey":null,"MachineKey":"<machinekey>","UserID":<userid>,"SessionID":"<sessionid>","Status":1}}
+    Send {"TypeID":-476754606,"Body":{"Signal":true}}
+
+You should be recieving this: [Full version](http://pastebin.com/RBxH2FUY)
+    {
+        "TypeID":-635182161,
+        "Body":{
+            "ClientID":"<clientID>",
+            "ServerID":"<serverid>",
+            "ConversationID":"<channelid>",
+            "ContactID":"204922e8-7c2b-4b81-a4aa-8a1a3d4c4fb0",
+            "ConversationType":1,
+            "RootConversationID":"72a413b0-f8ed-4851-8c61-c6b13097bbb8",
+            "Timestamp":<timestamp>,
+            "SenderID":<senderid>,
+            "SenderName":"<sendername>",
+            "SenderPermissions":-1,
+            "SenderRoles":[<roles>],
+            "SenderVanityRole":<role>
+        }
+    }

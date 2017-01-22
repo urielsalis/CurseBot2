@@ -32,7 +32,7 @@ public class Main {
     }
 
     public Main() {
-        loadPropierties();
+        loadProperties();
 
         final CurseApi api = new CurseApi(groupID, username, password, clientID, machineKey);
         api.startMessageLoop();
@@ -188,7 +188,15 @@ public class Main {
                             
                             case ".help":
                             {
-                                api.postMessage(api.resolveChannelUUID(message.channelUUID), ".quit Quits bot\n.send <channel> <message> Sends a message\n.sender Shows a message to the caller\n.resolver <uuid> resolver a UUID to channel name\n .delete30 <channel> <username> Deletes 30 last messages of user\n.kick <username> kicks a user from the server");
+                            	String helpMsg = " ```[filler: dont delete this. Line 1 starts after filler]"
+										   + "\n.quit Quits bot" 
+										   + "\n.send <channel> <message> Sends a message" 
+										   + "\n.sender Shows a message to the caller" 
+										   + "\n.resolver <uuid> resolver a UUID to channel name" 
+										   + "\n .delete30 <channel> <username> Deletes 30 last messages of user" 
+										   + "\n.kick <username> kicks a user from the server\n ``` ";
+                            	
+                                api.postMessage(api.resolveChannelUUID(message.channelUUID), helpMsg);
                             }
                             break;
                             
@@ -264,7 +272,7 @@ public class Main {
         return false;
     }
 
-    private void loadPropierties() {
+    private void loadProperties() {
         try {
             Properties prop = new Properties();
             InputStream inputStream = new FileInputStream("config.properties");
