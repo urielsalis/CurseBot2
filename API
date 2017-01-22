@@ -36,3 +36,20 @@ https://groups-na-v1.curseapp.net/servers/<group-id>/bans
 	MessageDeleteMode 0
 https://groups-na-v1.curseapp.net/servers/<group-id>/bans/<user-id>
 	Delete
+	
+More websocket stuff:
+
+Join: 
+	ID: 149631008
+	Body/ChangeType: 2
+	Body/Members: Array with member that joined
+Leave:
+	ID: 149631008
+	Body/ChangeType: 3
+	Body/Members: Array with member that joined
+	
+	
+PMs
+	ID: -635182161 (Same as messages)
+	ConversationType=3 (1 in messages)
+	
