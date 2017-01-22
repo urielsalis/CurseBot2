@@ -2,9 +2,12 @@ package me.urielsalis.cursebot;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -60,7 +63,7 @@ public class Util {
             int responseCode = con.getResponseCode();
 
             BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
+                    new InputStreamReader(con.getInputStream(), "UTF-8"));
             String inputLine;
             StringBuffer response = new StringBuffer();
 
@@ -90,13 +93,15 @@ public class Util {
             con.setRequestProperty("AuthenticationToken", auth);
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            wr.writeBytes(parameters);
-            wr.flush();
-            wr.close();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
+            //writer.writeBytes(parameters);
+            writer.write(parameters);
+            writer.flush();
+            writer.close();
             int responseCode = con.getResponseCode();
 
             BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
+                    new InputStreamReader(con.getInputStream(), "UTF-8"));
             String inputLine;
             StringBuffer response = new StringBuffer();
 
@@ -133,5 +138,11 @@ public class Util {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
         sdf.setTimeZone(TimeZone.getTimeZone("GMT-3")); // give a timezone reference for formating (see comment at the bottom
         return sdf.format(date);
+    }
+    
+    public static boolean containsUTF8(CharSequence s, String cont) throws UnsupportedEncodingException
+    {
+    	String test = new String(cont.getBytes("UTF-8"), "UTF-8");
+    	return test.toString().indexOf(new String(s.toString().getBytes("UTF-8"), "UTF-8")) > 1;
     }
 }

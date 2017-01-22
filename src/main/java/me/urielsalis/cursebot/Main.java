@@ -52,10 +52,19 @@ public class Main {
                     System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
                 }
                 updateBans(message.timestamp, api);
-                if(containsCurseWord(message.body)) {
-                    api.deleteMessage(message);
-                    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
-                }
+                
+                try 
+                {
+					if(containsCurseWord(message.body)) {
+					    api.deleteMessage(message);
+					    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
+					}
+					//else
+						//api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", you arent swearing properly");
+				} 
+                catch (UnsupportedEncodingException e1) 
+                {e1.printStackTrace();}
+                
                 if(isLinkAndNotAuthed(message.body, message.senderName)) {
                     api.deleteMessage(message);
                     api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
@@ -232,6 +241,19 @@ public class Main {
                                 }
                             }
                             break;
+                            
+                            case "shrug":
+                            {
+                            	String shrug = "nut shrug";
+								try {
+									shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
+								} catch (UnsupportedEncodingException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), shrug);
+                            }
+                            break;
                         }
                     }
                 }
@@ -259,9 +281,20 @@ public class Main {
         return false;
     }
 
-    private boolean containsCurseWord(String body) {
-        for(String str: swearWords) {
-            if(body.contains(str)) return true;
+    //- WIP: working on UTF-8 checking
+    //- Broken/ dont mess w/
+    private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
+        String message = new String(body.getBytes("UTF-8"), "UTF-8");
+    	System.out.println(message);
+
+    	for(String str: swearWords) {
+            if(message.contains(new String(str.getBytes("UTF-8"), "UTF-8"))) {
+            	System.out.println("test");
+            	return true;
+            }
+            else
+            	System.out.println("test2");
+        	
         }
         return false;
     }
@@ -285,7 +318,13 @@ public class Main {
                 clientID = prop.getProperty("clientID");
                 machineKey = prop.getProperty("machineKey");
                 authorizedUsers = prop.getProperty("authorizedUsers").split(",");
-                swearWords = prop.getProperty("swearWords").split(",");
+                
+                String[] swears = prop.getProperty("swearWords").split(",");
+                swearWords = new String[swears.length];
+                
+                for(int i = 0; i < swears.length; i++)
+                	swearWords[i] = new String(swears[i].getBytes(), "UTF-8");
+                
                 inputStream.close();
             }
         } catch (IOException e) {
