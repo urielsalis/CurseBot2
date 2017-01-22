@@ -108,9 +108,23 @@ Requires: `Title`, `TextChannelTitle`, `VoiceChannelTitle`, `OwnerRoleName`, `Gu
 
 **Leave a Curse server**
 
-https://groups-v1.curseapp.net/groups/<groupID>/leave
+https://groups-v1.curseapp.net/groups/ `<groupID>` /leave
 
 Request: *POST*
+
+**Ban a user**
+
+https://groups-na-v1.curseapp.net/servers/ `<group-id>` /bans
+
+Request: *POST*
+
+Requires: `UserID`, `Reason`, `MessageDeleteMode` (default==0)
+
+**Unban a user**
+
+https://groups-na-v1.curseapp.net/servers/ `<group-id>` /bans/ `<user-id>`
+
+Request: *DELETE*
 
 **Curse search**
 
