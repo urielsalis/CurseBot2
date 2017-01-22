@@ -1,34 +1,112 @@
-https://groups-v1.curseapp.net/groups/<groupid>?showDeletedChannels=false  Shows info from group
-	Needs AuthenticationToken
+All the requests bellow require that your Authentication Token be in the header of the request, except for login, e.g:
+{"AuthenticationToken": "abfasdfbaoesyfbosafybeobfsdoubfoarejhbgweuabfwhdeubfgwefbugewubawiodfaouifd"}
+And those bellow as your payload:
+{"ClientID": "abcdefgh-abcd-abcd-1234-123456789012",
+"MachineKey": "abcdefgh-abcd-abcd-1234-123456789012",
+"AttachmentID": "00000000-0000-0000-0000-000000000000"
+"AttachmentRegionID": "0"}
+If the payload needs changes in one request, the extra info is described under the request 
+https://groups-v1.curseapp.net/groups/<groupid>?showDeletedChannels=false  
+	Details: Shows info from group
+	Request: GET
+	Returns: A lot of messages
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>?endTimestamp=0&pageSize=30&startTimestamp=0
+	Details: Shows messages from group
+	Request: GET
+	Returns: Messages between startTimestamp and endTimestamp, with the limit of messages of pageSize
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>  
+	Details: Posts new message to selected channelid
+	Request: POST
+	Addition to payload:
+	{"Body": "This is a test to see if I could send stuff from a POST request"}	//Body of Message
+	Returns: Unknown
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> 
+	Details: Deletes message from selected timestamp
+	Request: DELETE
+	Returns: Unknown
+	
+https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> 
+	Details: Kicks member
+	Request: DELETE
+	Returns: Unknown
+	
+https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<timestamp>/like  
+	Details: GGs timestamped message
+	Request: POST
+	Returns: Unknown
+	
+https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> 
+	Details: Edits timestamped message
+	Request: POST
+	Addition to payload:
+	{"Body": "new message"}		//New message to replace older
+	Returns: Unknown
+	
+https://logins-v1.curseapp.net/login 
+	Details: Logins a Curse account
+	Request: POST
+	Addition to payload:
+	{"Username": "<username>"	//Username
+	"Password": "<password>"}	//User password
+	Returns: Authentication Token from the logged user
+	
+https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50
+	Details: Gets active or inactive (by changing actives to false) members
+	Request: GET
+	Returns: Active or inactive members of the group, with the limit of pageSize
+	
+https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid>
+	Details: Gets info about member	
+	Request: GET
+	Returns: All the info of the selected member
+	
+https://groups-v1.curseapp.net/groups/<groupID>/nickname
+	Details: Changes the nickname of the user
+	Request: POST
+	Addition to payload:
+	{"Nickname": "newNickname"}	//New user nickname
+	Returns: Unknown
+	
+https://groups-v1.curseapp.net/servers
+	Details: Creates a server
+	Request: POST
+	Addition to payload:
+	{"Title": " ",				//Server title
+	"TextChannelTitle": " ",		//Name of the text channel
+	"VoiceChannelTitle": " ",		//Name of the voice channel
+	"OwnerRoleName": " ",			//Role name of the owner
+	"GuestRoleName": " ",			//Role name of everyone that joins
+	"ModeratorRoleName": " ",		//Role name of the moderators
+	"IsPublic": true}			//If the server should appear on search
+	Returns: Unknown
 
-https://conversations-v1.curseapp.net/conversations/<channelid>?endTimestamp=0&pageSize=30&startTimestamp=0 Shows messages from group
-	Needs AuthenticationToken
-https://conversations-v1.curseapp.net/conversations/<channelid>  Post new message
-	Uses AuthenticationToken
-	ClientID 3fc35821-57e2-46e7-b6d8-8549930f1171
-	MachineKey 99149aae-1588-45a8-a1fc-d7ee78d2101c
-	Body This is a test to see if I could send stuff from a POST request
-	AttachmentID 00000000-0000-0000-0000-000000000000
-	AttachmentRegionID 0
-https://conversations-v1.curseapp.net/conversations/<channelid>/<serverid>-<timestamp> Delete message
-	Request: Delete
-	Needs AuthenticationToken
-https://groups-v1.curseapp.net/groups/<groupid>/members/<memberid> kick member
-	Request: Delete
-https://conversations-v1.curseapp.net/conversations/<channelid>/<serverId>-<timestamp>/like  GG
-	POST
-https://conversations-v1.curseapp.net/conversations/<channelID>/<serverId>-<timestamp> Edit message
-	Post
-	Body new message
-https://logins-v1.curseapp.net/login login
-	Post
-	Username <username>
-	Password <password>
-https://groups-v1.curseapp.net/groups/<channelid>/members?actives=true&page=1&pageSize=50 Get active members
-https://groups-v1.curseapp.net/groups/<groupID>/members/<memberid> Get info about member	
-https://groups-v1.curseapp.net/groups/72a413b0-f8ed-4851-8c61-c6b13097bbb8/nickname
-	Request Method:POST
-	Nickname: "MyLittleApiCheck2"
+https://groups-v1.curseapp.net/groups/<groupID>/leave
+	Details: Leaves the server
+	Request: POST
+	Returns: Unknown
+
+https://groups-v1.curseapp.net/servers/search
+	Details: Searches for a server
+	Addition to payload:
+	{"Query":"",				//The query to search
+	"PageNumber":1,				//The number of the page to list
+	"PageSize":25,				//The size of the pafe
+	"GroupTitle":null,			//Unknown
+	"OwnerUsername":null,			//The username of the owner of the server
+	"MinMemberCount":1,			//Lists servers with this number as the minimun numbers of players in
+	"MaxMemberCount":null,			//Lists servers with this number as the maximum numbers of players in
+	"Tags":null,				//Unknown
+	"Games":null,				//The games the server is specialized on
+	"IsPublic":true,			//If the server is open to public
+	"SortType":null,			//How the search should be sortted
+	"SortAscending":false,			//Sort from the server with lowest number of members
+	"IncludeInappropriateContent":false}	//( ͡° ͜ʖ ͡°)
+	Returns: Unknown		//GroupTitle, OwnerUsername, MaxMemberCount, Tags, Games, SortType and SortAscending
+					//can all be null
+          
 https://groups-na-v1.curseapp.net/servers/<group-id>/bans
 	Post
 	UserID
@@ -48,7 +126,7 @@ Leave:
 	Body/ChangeType: 3
 	Body/Members: Array with member that joined
 	
-	
+  
 PMs
 	ID: -635182161 (Same as messages)
 	ConversationType=3 (1 in messages)
