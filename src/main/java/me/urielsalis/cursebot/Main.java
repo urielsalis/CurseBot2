@@ -32,7 +32,7 @@ public class Main {
     }
 
     public Main() {
-        loadPropierties();
+        loadProperties();
 
         final CurseApi api = new CurseApi(groupID, username, password, clientID, machineKey);
         api.startMessageLoop();
@@ -260,7 +260,7 @@ public class Main {
         return false;
     }
 
-    private void loadPropierties() {
+    private void loadProperties() {
         try {
             Properties prop = new Properties();
             InputStream inputStream = new FileInputStream("config.properties");
