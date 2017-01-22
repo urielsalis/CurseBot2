@@ -14,12 +14,18 @@ public class Message {
     long timestamp;
     String serverID;
     String channelUUID;
+    public boolean isPM;
     public Message(Object senderName, Object body, Object timestamp, Object serverID, Object channelUUID) {
+        this(senderName, body, timestamp, serverID, channelUUID, false);
+    }
+
+    public Message(Object senderName, Object body, Object timestamp, Object serverID, Object conversationID, boolean isPM) {
         this.senderName = (String) senderName;
         this.body = (String) body;
         this.timestamp = (Long) timestamp;
         this.serverID = (String) serverID;
         this.channelUUID = (String) channelUUID;
+        this.isPM = isPM;
     }
 
     @Override

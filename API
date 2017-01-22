@@ -6,7 +6,6 @@ And those bellow as your payload:
 "AttachmentID": "00000000-0000-0000-0000-000000000000"
 "AttachmentRegionID": "0"}
 If the payload needs changes in one request, the extra info is described under the request 
-
 https://groups-v1.curseapp.net/groups/<groupid>?showDeletedChannels=false  
 	Details: Shows info from group
 	Request: GET
@@ -107,3 +106,28 @@ https://groups-v1.curseapp.net/servers/search
 	"IncludeInappropriateContent":false}	//( ͡° ͜ʖ ͡°)
 	Returns: Unknown		//GroupTitle, OwnerUsername, MaxMemberCount, Tags, Games, SortType and SortAscending
 					//can all be null
+          
+https://groups-na-v1.curseapp.net/servers/<group-id>/bans
+	Post
+	UserID
+	Reason
+	MessageDeleteMode 0
+https://groups-na-v1.curseapp.net/servers/<group-id>/bans/<user-id>
+	Delete
+	
+More websocket stuff:
+
+Join: 
+	ID: 149631008
+	Body/ChangeType: 2
+	Body/Members: Array with member that joined
+Leave:
+	ID: 149631008
+	Body/ChangeType: 3
+	Body/Members: Array with member that joined
+	
+  
+PMs
+	ID: -635182161 (Same as messages)
+	ConversationType=3 (1 in messages)
+	
