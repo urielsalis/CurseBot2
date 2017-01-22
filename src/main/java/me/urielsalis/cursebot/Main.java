@@ -61,154 +61,165 @@ public class Main {
                     if(args.length > 0) {
                         switch (args[0]) {
                             case ".quit":
-                                {
-                                    System.exit(0);
-                                }
-                                break;
+                            {
+                                System.exit(0);
+                            }
+                            break;
+                            
                             case ".send":
-                                {
-                                    String channel = args[1];
-                                    String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length)).replaceAll("/n", "\n");
-                                    if(body.startsWith(".")) break;
-                                    api.postMessage(api.resolveChannel(channel), body);
-                                }
-                                break;
+                            {
+                                String channel = args[1];
+                                String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length)).replaceAll("/n", "\n");
+                                if(body.startsWith(".")) break;
+                                api.postMessage(api.resolveChannel(channel), body);
+                            }
+                            break;
+                            
                             case ".sender":
-                                {
-                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), "Hai "+message.senderName);
-                                }
-                                break;
+                            {
+                                api.postMessage(api.resolveChannelUUID(message.channelUUID), "Hai "+message.senderName);
+                            }
+                            break;
+                            
                             case ".resolve":
-                                {
-                                    String resolve = args[1];
-                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), api.resolveChannelUUID(resolve).groupTitle);
-                                }
-                                break;
+                            {
+                                String resolve = args[1];
+                                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.resolveChannelUUID(resolve).groupTitle);
+                            }
+                            break;
+                            
                             case ".delete30":
-                                {
-                                    String channelName = args[1];
-                                    String username = args[2];
-                                    int counter = 0;
-                                    Channel channel = api.resolveChannel(channelName);
-                                    for(Message message1: channel.messages) {
-                                        if(counter > 30) break;
-                                        if(Util.equals(username, message1.senderName)) {
-                                            api.deleteMessage(message1);
-                                            /*try {
-                                                TimeUnit.SECONDS.sleep(1);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }*/
-                                            counter++;
-                                        }
+                            {
+                                String channelName = args[1];
+                                String username = args[2];
+                                int counter = 0;
+                                Channel channel = api.resolveChannel(channelName);
+                                for(Message message1: channel.messages) {
+                                    if(counter > 30) break;
+                                    if(Util.equals(username, message1.senderName)) {
+                                        api.deleteMessage(message1);
+                                        /*try {
+                                            TimeUnit.SECONDS.sleep(1);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }*/
+                                        counter++;
                                     }
                                 }
-                                break;
+                            }
+                            break;
+                            
                             case ".delete":
-                                {
-                                    String channelName = args[1];
-                                    String username = args[2];
-                                    int count = Integer.parseInt(args[3]);
-                                    int counter = 0;
-                                    Channel channel = api.resolveChannel(channelName);
-                                    for(Message message1: channel.messages) {
-                                        if(counter > count) break;
-                                        if(Util.equals(username, message1.senderName)) {
-                                            api.deleteMessage(message1);
-                                            /*try {
-                                                TimeUnit.SECONDS.sleep(1);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }*/
-                                            counter++;
-                                        }
+                            {
+                                String channelName = args[1];
+                                String username = args[2];
+                                int count = Integer.parseInt(args[3]);
+                                int counter = 0;
+                                Channel channel = api.resolveChannel(channelName);
+                                for(Message message1: channel.messages) {
+                                    if(counter > count) break;
+                                    if(Util.equals(username, message1.senderName)) {
+                                        api.deleteMessage(message1);
+                                        /*try {
+                                            TimeUnit.SECONDS.sleep(1);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }*/
+                                        counter++;
                                     }
                                 }
-                                break;
+                            }
+                            break;
+                            
                             case ".like30":
-                                {
-                                    String channelName = args[1];
-                                    String username = args[2];
-                                    int counter = 0;
-                                    Channel channel = api.resolveChannel(channelName);
-                                    for(Message message1: channel.messages) {
-                                        if(counter > 30) break;
-                                        if(Util.equals(username, message1.senderName)) {
-                                            api.likeMessage(message1);
-                                            try {
-                                                TimeUnit.SECONDS.sleep(1);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            counter++;
+                            {
+                                String channelName = args[1];
+                                String username = args[2];
+                                int counter = 0;
+                                Channel channel = api.resolveChannel(channelName);
+                                for(Message message1: channel.messages) {
+                                    if(counter > 30) break;
+                                    if(Util.equals(username, message1.senderName)) {
+                                        api.likeMessage(message1);
+                                        try {
+                                            TimeUnit.SECONDS.sleep(1);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
                                         }
+                                        counter++;
                                     }
                                 }
-                                break;
+                            }
+                            break;
+                            
                             case ".edit30":
-                                {
-                                    String channelName = args[1];
-                                    String username = args[2];
-                                    String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
-                                    int counter = 0;
-                                    Channel channel = api.resolveChannel(channelName);
-                                    for(Message message1: channel.messages) {
-                                        if(counter > 30) break;
-                                        if(Util.equals(username, message1.senderName)) {
-                                            api.editMessage(message1, body);
-                                            try {
-                                                TimeUnit.SECONDS.sleep(1);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            counter++;
+                            {
+                                String channelName = args[1];
+                                String username = args[2];
+                                String body = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
+                                int counter = 0;
+                                Channel channel = api.resolveChannel(channelName);
+                                for(Message message1: channel.messages) {
+                                    if(counter > 30) break;
+                                    if(Util.equals(username, message1.senderName)) {
+                                        api.editMessage(message1, body);
+                                        try {
+                                            TimeUnit.SECONDS.sleep(1);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
                                         }
+                                        counter++;
                                     }
                                 }
-                                break;
+                            }
+                            break;
+                            
                             case ".kick":
-                                {
-                                    String username = args[1];
-                                    if(!isUserAuthorized(username))
-                                        api.kickUser(api.resolveMember(username));
-                                }
-                                break;
+                            {
+                                String username = args[1];
+                                if(!isUserAuthorized(username))
+                                    api.kickUser(api.resolveMember(username));
+                            }
+                            break;
+                            
                             case ".help":
-                                {
-                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), ".quit Quits bot\n.send <channel> <message> Sends a message\n.sender Shows a message to the caller\n.resolver <uuid> resolver a UUID to channel name\n .delete30 <channel> <username> Deletes 30 last messages of user\n.kick <username> kicks a user from the server");
-                                }
-                                break;
+                            {
+                                api.postMessage(api.resolveChannelUUID(message.channelUUID), ".quit Quits bot\n.send <channel> <message> Sends a message\n.sender Shows a message to the caller\n.resolver <uuid> resolver a UUID to channel name\n .delete30 <channel> <username> Deletes 30 last messages of user\n.kick <username> kicks a user from the server");
+                            }
+                            break;
+                            
                             case ".addLinker":
-                                {
-                                    String username = args[1];
-                                    authedLinkers.add(username.toLowerCase().trim());
-                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now authed to post links");
-                                }
-                                break;
+                            {
+                                String username = args[1];
+                                authedLinkers.add(username.toLowerCase().trim());
+                                api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now authed to post links");
+                            }
+                            break;
 
                             case ".rmLinker":
-                                {
-                                    String username = args[1];
-                                    authedLinkers.remove(username.toLowerCase().trim());
-                                    api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now deauthed to post links");
-                                }
-                                break;
+                            {
+                                String username = args[1];
+                                authedLinkers.remove(username.toLowerCase().trim());
+                                api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now deauthed to post links");
+                            }
+                            break;
 
                             case ".ban":
-                                {
+                            {
 
-                                    String username = args[1];
-                                    int minutes = Integer.parseInt(args[2]);
-                                    String reason = "";
-                                    if(args.length > 3)
-                                        reason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
-                                    Member member = api.resolveMember(username);
-                                    if(member!=null) {
-                                        api.banMember(member.senderID, reason);
-                                        banned.put(member.senderID, message.timestamp+(minutes*60));
-                                    }
+                                String username = args[1];
+                                int minutes = Integer.parseInt(args[2]);
+                                String reason = "";
+                                
+                                if(args.length > 3)
+                                    reason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
+                                Member member = api.resolveMember(username);
+                                if(member!=null) {
+                                    api.banMember(member.senderID, reason);
+                                    banned.put(member.senderID, message.timestamp+(minutes*60));
                                 }
-                                break;
+                            }
+                            break;
                         }
                     }
                 }
