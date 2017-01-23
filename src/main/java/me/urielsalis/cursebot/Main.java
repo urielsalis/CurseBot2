@@ -289,12 +289,8 @@ public class Main {
 
     	for(String str: swearWords) {
             if(message.contains(new String(str.getBytes("UTF-8"), "UTF-8"))) {
-            	System.out.println("test");
             	return true;
             }
-            else
-            	System.out.println("test2");
-        	
         }
         return false;
     }
