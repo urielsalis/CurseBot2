@@ -299,7 +299,7 @@ public class Main {
         for(String str : swearWords)
         	if(message.contains(str))
         		return true;
-        
+ 
         return false;
         //if(m.containsString(message))
         	//return true;
