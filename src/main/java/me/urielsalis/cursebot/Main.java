@@ -285,8 +285,6 @@ public class Main {
     //- Broken/ dont mess w/
     private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
         String message = new String(body.getBytes("UTF-8"), "UTF-8");
-    	System.out.println(message);
-
     	for(String str: swearWords) {
             if(message.contains(new String(str.getBytes("UTF-8"), "UTF-8"))) {
             	return true;
