@@ -3,6 +3,7 @@ package me.urielsalis.cursebot;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.junit.internal.matchers.StringContains;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -46,6 +47,12 @@ public class Main {
         api.addNewListener(new Listener() {
             @Override
             public void run(Message message) {
+            	try {
+					message.body = new String(message.body.getBytes("UTF-8"), "UTF-8");
+				} catch (UnsupportedEncodingException e2) {
+					e2.printStackTrace();
+				}
+            	
                 if(message.isPM) {
                     System.out.println(Util.timestampToDate(message.timestamp) + "  [" + message.senderName + "] " + message.body);
                 } else {
@@ -75,6 +82,7 @@ public class Main {
                         switch (args[0]) {
                             case ".quit":
                             {
+                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "Chat bot closed by user!");
                                 System.exit(0);
                             }
                             break;
@@ -285,18 +293,22 @@ public class Main {
     //- Broken/ dont mess w/
     private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
         String message = new String(body.getBytes("UTF-8"), "UTF-8");
-    	System.out.println(message);
-
-    	for(String str: swearWords) {
-            if(message.contains(new String(str.getBytes("UTF-8"), "UTF-8"))) {
-            	System.out.println("test");
-            	return true;
-            }
-            else
-            	System.out.println("test2");
-        	
-        }
+        
+        StringContains m = new StringContains(body);
+        
+        for(String str : swearWords)
+        	if(message.contains(str))
+        		return true;
+        
         return false;
+        //if(m.containsString(message))
+        	//return true;
+        
+        //System.out.print(new String("сука".getBytes("UTF-8"), "UTF-8"));
+        //for(String str : swearWords)
+        	//System.out.println(new String(str.getBytes("UTF-8"), "UTF-8"));
+        //for(int i = 0; i < swearWords.length; i++)
+        	//System.out.println(new String(swearWords[i].getBytes("UTF-8"), "UTF-8"));
     }
 
     private boolean isUserAuthorized(String senderName) {
@@ -319,11 +331,13 @@ public class Main {
                 machineKey = prop.getProperty("machineKey");
                 authorizedUsers = prop.getProperty("authorizedUsers").split(",");
                 
-                String[] swears = prop.getProperty("swearWords").split(",");
+                
+                loadProfanities();
+                /*String[] swears = prop.getProperty("swearWords").split(",");
                 swearWords = new String[swears.length];
                 
                 for(int i = 0; i < swears.length; i++)
-                	swearWords[i] = new String(swears[i].getBytes(), "UTF-8");
+                	swearWords[i] = new String(swears[i].getBytes("UTF-8"), "UTF-8");*/
                 
                 inputStream.close();
             }
@@ -331,5 +345,18 @@ public class Main {
             e.printStackTrace();
         }
     }
-
+    
+    private void loadProfanities() throws IOException
+    {
+    	BufferedReader in = new BufferedReader(
+    		new InputStreamReader(
+    				new FileInputStream("profanities.txt"), "UTF-8"));
+    	
+    	String temp = "";
+    	String prof = "";
+    	while((temp = in.readLine()) != null)
+    		prof += temp;
+    	
+    	swearWords = prof.split(",");
+    }
 }
