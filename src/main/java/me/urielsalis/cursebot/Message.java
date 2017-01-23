@@ -24,7 +24,7 @@ public class Message {
         this.body = (String) body;
         this.timestamp = (Long) timestamp;
         this.serverID = (String) serverID;
-        this.channelUUID = (String) channelUUID;
+        this.channelUUID = (String) conversationID;
         this.isPM = isPM;
     }
 
