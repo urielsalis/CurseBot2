@@ -1,4 +1,5 @@
 [ fuck,
 shit,
 сука,
-bitch ]
+bitch,
+mofo ]

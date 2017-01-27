@@ -63,7 +63,7 @@ public class Main {
                 try 
                 {
 					if(containsCurseWord(message.body)) {
-					    //api.deleteMessage(message);
+					    api.deleteMessage(message);
 					    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
 					}
 					//else
