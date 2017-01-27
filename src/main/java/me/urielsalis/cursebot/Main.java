@@ -62,12 +62,10 @@ public class Main {
                 
                 try 
                 {
-					if(containsCurseWord(message.body)) {
+					if(containsCurseWord(message.body) && !(isUserAuthorized(message.senderName))) {
 					    api.deleteMessage(message);
 					    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
 					}
-					//else
-						//api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", you arent swearing properly");
 				} 
                 catch (UnsupportedEncodingException e1) 
                 {e1.printStackTrace();}
@@ -235,31 +233,40 @@ public class Main {
                             	catch (IOException e) 
                             	{e.printStackTrace();}
 
+                            	boolean addProfanity = true;
                             	try
                             	{
-                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
+                            		for(String s : swearWords)
+                            			if(s.equalsIgnoreCase(args[1]))
+                            				addProfanity = false;
                             		
-                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
-                            		
-                            		String[] swears = profanities.split(",+");
-                            		for(String s : swears)
+                            		if(addProfanity)
                             		{
-                            			if(!(s.contains("]")))
-                            				out.write(s + ",\n");
-                            			else
-                            				out.write(s);
+	                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
+	                            		
+	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
+	                            		
+	                            		String[] swears = profanities.split(",+");
+	                            		for(String s : swears)
+	                            		{
+	                            			if(!(s.contains("]")))
+	                            				out.write(s + ",\n");
+	                            			else
+	                            				out.write(s);
+	                            		}
+	                            		
+	                            		out.flush();
+	                            		out.close();
+	                            		
+	                            		api.postMessage(api.resolveChannelUUID(message.channelUUID), "\nReloading profanity list!");
+	                                	loadProfanities(getProfanities());
+	                                	api.postMessage(api.resolveChannelUUID(message.channelUUID), "[Success]\nprofanity list reloaded!\n\t- Added profanity to filter!");
                             		}
-                            		
-                            		out.flush();
-                            		out.close();
+                            		else
+                            			api.postMessage(api.resolveChannelUUID(message.channelUUID), "[Failed]\n\t- The profanity you are trying to add is already in the filter!");
                             	} catch(IOException e)
                             	{e.printStackTrace();}
                             	
-                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "reloading profanity list!");
-                            	try {loadProfanities(getProfanities());} 
-                            	catch (IOException e) 
-                            	{e.printStackTrace();}
-                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "profanity list reloaded!\nSuccessfully added profanity to filter!");
                             }
                             break;
 
