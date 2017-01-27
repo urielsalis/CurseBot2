@@ -240,7 +240,6 @@ public class Main {
                             		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
                             		
                             		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
-                            		System.out.println("TESS: " + profanities);
                             		
                             		String[] swears = profanities.split(",+");
                             		for(String s : swears)
@@ -359,11 +358,6 @@ public class Main {
                 authorizedUsers = prop.getProperty("authorizedUsers").split(",");
                 
                 loadProfanities(getProfanities());
-                
-                for(String s : swearWords)
-                {
-                	System.out.println(s + " " + swearWords.length);
-                }
                 
                 inputStream.close();
             }
