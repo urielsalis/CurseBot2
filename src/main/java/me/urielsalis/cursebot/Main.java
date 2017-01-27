@@ -63,7 +63,7 @@ public class Main {
                 try 
                 {
 					if(containsCurseWord(message.body)) {
-					    api.deleteMessage(message);
+					    //api.deleteMessage(message);
 					    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
 					}
 					//else
@@ -210,7 +210,7 @@ public class Main {
 										   + "\n.send <channel> <message> Sends a message" 
 										   + "\n.sender Shows a message to the caller" 
 										   + "\n.resolver <uuid> resolver a UUID to channel name" 
-										   + "\n .delete30 <channel> <username> Deletes 30 last messages of user" 
+										   + "\n.delete30 <channel> <username> Deletes 30 last messages of user" 
 										   + "\n.kick <username> kicks a user from the server\n ``` ";
                             	
                                 api.postMessage(api.resolveChannelUUID(message.channelUUID), helpMsg);
@@ -222,6 +222,45 @@ public class Main {
                                 String username = args[1];
                                 authedLinkers.add(username.toLowerCase().trim());
                                 api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now authed to post links");
+                            }
+                            break;
+                            
+                            case ".addProfanity":
+                            {
+                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "adding profanity!");
+
+                            	String profanities = "";
+                            	
+                            	try {profanities = getProfanities();} 
+                            	catch (IOException e) 
+                            	{e.printStackTrace();}
+
+                            	try
+                            	{
+                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
+                            		
+                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
+                            		System.out.println("TESS: " + profanities);
+                            		
+                            		String[] swears = profanities.split(",+");
+                            		for(String s : swears)
+                            		{
+                            			if(!(s.contains("]")))
+                            				out.write(s + ",\n");
+                            			else
+                            				out.write(s);
+                            		}
+                            		
+                            		out.flush();
+                            		out.close();
+                            	} catch(IOException e)
+                            	{e.printStackTrace();}
+                            	
+                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "reloading profanity list!");
+                            	try {loadProfanities(getProfanities());} 
+                            	catch (IOException e) 
+                            	{e.printStackTrace();}
+                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "profanity list reloaded!\nSuccessfully added profanity to filter!");
                             }
                             break;
 
@@ -289,26 +328,14 @@ public class Main {
         return false;
     }
 
-    //- WIP: working on UTF-8 checking
-    //- Broken/ dont mess w/
     private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
-        String message = new String(body.getBytes("UTF-8"), "UTF-8");
-        
-        StringContains m = new StringContains(body);
+        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" ", "");
         
         for(String str : swearWords)
         	if(message.contains(str))
         		return true;
  
         return false;
-        //if(m.containsString(message))
-        	//return true;
-        
-        //System.out.print(new String("сука".getBytes("UTF-8"), "UTF-8"));
-        //for(String str : swearWords)
-        	//System.out.println(new String(str.getBytes("UTF-8"), "UTF-8"));
-        //for(int i = 0; i < swearWords.length; i++)
-        	//System.out.println(new String(swearWords[i].getBytes("UTF-8"), "UTF-8"));
     }
 
     private boolean isUserAuthorized(String senderName) {
@@ -331,13 +358,12 @@ public class Main {
                 machineKey = prop.getProperty("machineKey");
                 authorizedUsers = prop.getProperty("authorizedUsers").split(",");
                 
+                loadProfanities(getProfanities());
                 
-                loadProfanities();
-                /*String[] swears = prop.getProperty("swearWords").split(",");
-                swearWords = new String[swears.length];
-                
-                for(int i = 0; i < swears.length; i++)
-                	swearWords[i] = new String(swears[i].getBytes("UTF-8"), "UTF-8");*/
+                for(String s : swearWords)
+                {
+                	System.out.println(s + " " + swearWords.length);
+                }
                 
                 inputStream.close();
             }
@@ -346,17 +372,56 @@ public class Main {
         }
     }
     
-    private void loadProfanities() throws IOException
+    private String getProfanities() throws IOException
     {
-    	BufferedReader in = new BufferedReader(
-    		new InputStreamReader(
-    				new FileInputStream("profanities.txt"), "UTF-8"));
-    	
-    	String temp = "";
+    	Scanner in = resetScanner("profanities.txt");
     	String prof = "";
-    	while((temp = in.readLine()) != null)
-    		prof += temp;
+    	String[] swears;
     	
-    	swearWords = prof.split(",");
+    	if(!(in.hasNextLine()))
+    		prof = "[ fuck,";
+    	else
+    	{
+    		while(in.hasNextLine())
+    		{
+    			prof += in.nextLine() + ",";
+    		}
+    	}
+    	
+    	prof = prof.substring(0, prof.length() - 1);
+    	if(!(prof.endsWith("]")))
+    		prof += " ]";
+    	
+    	try
+    	{
+    		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
+    		
+    		swears = prof.split(",+");
+    		for(String s : swears)
+    		{
+    			if(!(s.contains("]")))
+    				out.write(s + ",\n");
+    			else
+    				out.write(s);
+    		}
+    		
+    		out.flush();
+    		out.close();
+    	} catch(IOException e)
+    	{e.printStackTrace(); System.out.println("T5");}
+    	
+    	in.close();
+    	
+    	return prof;
+    }
+    
+    private void loadProfanities(String profanities)
+    {
+    	swearWords = profanities.replaceAll("(\\[ )|( \\])", "").split(",+");
+    }
+    
+    private Scanner resetScanner(String file) throws FileNotFoundException
+    {
+    	return new Scanner(new FileInputStream(file), "UTF-8");
     }
 }
