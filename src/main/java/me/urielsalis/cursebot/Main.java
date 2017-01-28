@@ -1,6 +1,7 @@
 package me.urielsalis.cursebot;
 
 import me.urielsalis.cursebot.api.*;
+import me.urielsalis.cursebot.extensions.ExtensionHandler;
 
 import java.io.*;
 import java.util.*;
@@ -36,6 +37,9 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        ExtensionHandler handler = new ExtensionHandler();
+        handler.init();
 
         api.addNewListener(new Listener() {
             @Override
