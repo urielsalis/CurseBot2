@@ -202,7 +202,7 @@ public class Main {
                             break;
                             
                             case ".help":
-                            {
+                            {	
                             	int index = 1;
                             	
                             	System.out.println("Test: " + args.length);
@@ -236,7 +236,7 @@ public class Main {
 											    	 	 //- New Page: Page 2
 											    	 	 "\n*.addProfanity <word|phrase>* ",
 											   		 	 "\n - Adds a word or phrase to the profanity filter.", 
-											   		 	 "\nWARNING: Please try and keep it to one word only" };
+											   		 	 "\nWARNING: If you are adding a phrase, dont add spaces" };
 								
                             	int maxPages = ((commandList.length/2) - 5);
                             	
@@ -292,12 +292,13 @@ public class Main {
                             		{
 	                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
 	                            		
+	                            		/*
 	                            		String addProf = "";
 	                            		for(int i = 1; i < args.length; i++)
 	                            			addProf += args[i] + "_";
-	                            		addProf = addProf.substring(0, addProf.length() - 1);
+	                            		addProf = addProf.substring(0, addProf.length() - 1);*/
 	                            		
-	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + addProf + " ]");
+	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
 	                            		
 	                            		String[] swears = profanities.split(",+");
 	                            		for(String s : swears)
@@ -388,10 +389,10 @@ public class Main {
     }
 
     private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
-        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "_");
+        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "");
         
         for(String str : swearWords)
-        	if(message.contains(str))
+        	if(message.toLowerCase().contains(str.toLowerCase()))
         		return true;
  
         return false;
