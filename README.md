@@ -12,5 +12,6 @@
 
 ## Quick links
 
-* [API Reference](https://github.com/urielsalis/CurseBot2/wiki/API-Reference)
+* [Chat API Reference](https://github.com/urielsalis/CurseBot2/wiki/Chat-API-Reference)
+* [Websockets Notifications](https://github.com/urielsalis/CurseBot2/wiki/Web-Sockets)
 * [config.properties](https://github.com/urielsalis/CurseBot2/wiki/config.properties)
