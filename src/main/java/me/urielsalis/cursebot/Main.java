@@ -345,7 +345,7 @@ public class Main {
                             
                             case "shrug":
                             {
-                            	String shrug = "nut shrug";
+                            	String shrug = "not shrug";
 								try {
 									shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
 								} catch (UnsupportedEncodingException e) {
