@@ -20,7 +20,6 @@ public class Main {
     private String clientID = "";
     private String machineKey = "";
     private ArrayList<String> authedLinkers = new ArrayList<>();
-    private HashMap<Long, Long> banned = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
         new Main();
@@ -52,9 +51,6 @@ public class Main {
                 } else {
                     System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
                 }
-                updateBans(message.timestamp, api);
-                
-
                 
                 if(isLinkAndNotAuthed(message.body, message.senderName)) {
                     api.deleteMessage(message);
@@ -64,12 +60,7 @@ public class Main {
                     String[] args = message.body.split(" ");
                     if(args.length > 0) {
                         switch (args[0]) {
-                            case ".quit":
-                            {
-                            	api.postMessage(api.resolveChannel("bot-log"), "Shut down command executed! sender: " + message.senderName);
-                                System.exit(0);
-                            }
-                            break;
+
                             
                             case ".send":
                             {
@@ -113,29 +104,7 @@ public class Main {
                                 }
                             }
                             break;
-                            
-                            case ".delete":
-                            {
-                                String channelName = args[1];
-                                String username = args[2];
-                                int count = Integer.parseInt(args[3]);
-                                int counter = 0;
-                                Channel channel = api.resolveChannel(channelName);
-                                for(Message message1 : channel.messages) {
-                                    if(counter > count) break;
-                                    if(Util.equals(username, message1.senderName)) {
-                                        api.deleteMessage(message1);
-                                        /*try {
-                                            TimeUnit.SECONDS.sleep(1);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }*/
-                                        counter++;
-                                    }
-                                }
-                            }
-                            break;
-                            
+
                             case ".like30":
                             {
                                 String channelName = args[1];
@@ -176,14 +145,6 @@ public class Main {
                                         counter++;
                                     }
                                 }
-                            }
-                            break;
-                            
-                            case ".kick":
-                            {
-                                String username = args[1];
-                                if(!Util.isUserAuthorized(username))
-                                    api.kickUser(api.resolveMember(username));
                             }
                             break;
                             
@@ -265,22 +226,7 @@ public class Main {
                             }
                             break;
 
-                            case ".ban":
-                            {
 
-                                String username = args[1];
-                                int minutes = Integer.parseInt(args[2]);
-                                String reason = "";
-                                
-                                if(args.length > 3)
-                                    reason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 3, args.length)).replaceAll("/n", "\n");
-                                Member member = api.resolveMember(username);
-                                if(member!=null) {
-                                    api.banMember(member.senderID, reason);
-                                    banned.put(member.senderID, message.timestamp+(minutes*60));
-                                }
-                            }
-                            break;
                             
                             case "shrug":
                             {
@@ -313,18 +259,6 @@ public class Main {
         });
     }
 
-    private void updateBans(long timestamp, CurseApi api) {
-        ArrayList<Long> toUnban = new ArrayList<>();
-        for(Map.Entry<Long, Long> entry: banned.entrySet()) {
-            if(entry.getValue() < timestamp) {
-                toUnban.add(entry.getKey());
-            }
-        }
-        for(long id: toUnban) {
-            banned.remove(id);
-            api.unBanMember(id);
-        }
-    }
 
     private boolean isLinkAndNotAuthed(String body, String username) {
         if(body.contains("https") || body.contains(".com") || body.contains(".net") || body.contains("http") || body.contains(".org") || body.contains(".ly")) {
