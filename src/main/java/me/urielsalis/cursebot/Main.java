@@ -203,15 +203,63 @@ public class Main {
                             
                             case ".help":
                             {
-                            	String helpMsg = " ```[filler: dont delete this. Line 1 starts after filler]"
-										   + "\n.quit Quits bot" 
-										   + "\n.send <channel> <message> Sends a message" 
-										   + "\n.sender Shows a message to the caller" 
-										   + "\n.resolver <uuid> resolver a UUID to channel name" 
-										   + "\n.delete30 <channel> <username> Deletes 30 last messages of user" 
-										   + "\n.kick <username> kicks a user from the server\n ``` ";
+                            	int index = 1;
                             	
-                                api.postMessage(api.resolveChannelUUID(message.channelUUID), helpMsg);
+                            	System.out.println("Test: " + args.length);
+                            	if(args.length == 2)
+                            	{
+                            		try
+                            		{index = Integer.parseInt(args[1]);}
+                            		catch(NumberFormatException e)
+                            		{index = args.length + 5;}
+                            	}
+                            	
+                            	String helpMsg = "";	 //- Page 1
+                            	String[] commandList = { "\n*.quit* ",
+											    	 	 "\n - Shuts all bots down",
+											    	 	 
+											    	 	 "\n*.send <channel> <message>* ",
+											    	 	 "\n - Sends a message to a specified channel",
+											    	 	 
+											    	 	 "\n*.sender* ",
+											    	 	 "\n - Displays the sender of this command",
+											    	 	 
+											    	 	 "\n*.resolver <uuid>* ",
+											    	 	 "\n - Resolves a UUID to channel name",
+											    	 	 
+											    	 	 "\n*.delete30 <channel> <username>* ",
+											    	 	 "\n - Deletes 30 last messages of user",
+											    	 	 
+											    	 	 "\n*.kick <username>* ",
+											    	 	 "\n - Kicks a specified user from the server",
+											    	 	 
+											    	 	 //- New Page: Page 2
+											    	 	 "\n*.addProfanity <word|phrase>* ",
+											   		 	 "\n - Adds a word or phrase to the profanity filter.", 
+											   		 	 "\nWARNING: Please try and keep it to one word only" };
+								
+                            	int maxPages = ((commandList.length/2) - 5);
+                            	
+                            	String header = "~*[HELP: Commands page (" + index + " / " + maxPages + ")]*~:\n-*I===============================I*-";
+
+                            	if(!(index > maxPages))
+                            	{
+                            		helpMsg += header;
+                            		for(int i = (((index * 11) - 11)); i <= (index * 11); i++)
+                            		{
+                            			if(index > 1 && i == (((index * 11) - 11)))
+                            				i++;
+                            			
+                            			if(i == commandList.length)
+                            				break;
+                            			else
+                            				helpMsg += commandList[i];
+                            		}
+                            			
+                            		api.postMessage(api.resolveChannelUUID(message.channelUUID), helpMsg);
+                            	}
+                            	else
+                            		api.postMessage(api.resolveChannelUUID(message.channelUUID), "The requested page does not exist!");
                             }
                             break;
                             
@@ -244,7 +292,12 @@ public class Main {
                             		{
 	                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
 	                            		
-	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
+	                            		String addProf = "";
+	                            		for(int i = 1; i < args.length; i++)
+	                            			addProf += args[i] + "_";
+	                            		addProf = addProf.substring(0, addProf.length() - 1);
+	                            		
+	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + addProf + " ]");
 	                            		
 	                            		String[] swears = profanities.split(",+");
 	                            		for(String s : swears)
@@ -335,7 +388,7 @@ public class Main {
     }
 
     private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
-        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" ", "");
+        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "_");
         
         for(String str : swearWords)
         	if(message.contains(str))
