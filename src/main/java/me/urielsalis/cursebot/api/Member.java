@@ -6,10 +6,10 @@ package me.urielsalis.cursebot.api;
  * License: GPL 3.0
  */
 public class Member {
-    String senderName;
-    String username;
-    long senderID;
-    long bestRole;
+    public String senderName;
+    public String username;
+    public long senderID;
+    public long bestRole;
 
     public Member(Object nickname, Object username, Object userID, Object bestRole) {
         this.senderName = (String) nickname;

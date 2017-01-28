@@ -13,7 +13,7 @@ public class Main {
     public void init(ExtensionApi api) {
         //do init here
         //api can be used to register events or listen to them
-        
+
     }
 
     //other methods can be here

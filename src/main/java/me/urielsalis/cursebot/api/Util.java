@@ -21,6 +21,9 @@ import java.util.TimeZone;
  * License: GPL 3.0
  */
 public class Util {
+	
+	//public static final String logbot = "ce2ccadd-38c4-4bc7-8317-8aa294b1ea43";
+	
     public static String sendGet(String url, String auth) {
         try {
             URL obj = new URL(url);

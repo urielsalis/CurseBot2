@@ -11,8 +11,8 @@ import java.util.Queue;
  * License: GPL 3.0
  */
 public class Channel {
-    String groupTitle;
-    String groupID;
+    public String groupTitle;
+    public String groupID;
     public Queue<Message> messages = new CircularFifoQueue<Message>(100);
     public Channel(Object groupTitle, Object groupID) {
         this.groupID = (String) groupID;

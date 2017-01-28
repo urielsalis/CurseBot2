@@ -8,11 +8,11 @@ import java.util.Calendar;
  * License: GPL 3.0
  */
 public class Message {
-    String senderName;
-    String body;
-    long timestamp;
-    String serverID;
-    String channelUUID;
+    public String senderName;
+    public String body;
+    public long timestamp;
+    public String serverID;
+    public String channelUUID;
     public boolean isPM;
     public Message(Object senderName, Object body, Object timestamp, Object serverID, Object channelUUID) {
         this(senderName, body, timestamp, serverID, channelUUID, false);
