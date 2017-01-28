@@ -64,7 +64,7 @@ public class Main {
                 {
 					if(containsCurseWord(message.body) && !(isUserAuthorized(message.senderName))) {
 					    api.deleteMessage(message);
-					    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
+					    api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
 					}
 				} 
                 catch (UnsupportedEncodingException e1) 
@@ -80,7 +80,7 @@ public class Main {
                         switch (args[0]) {
                             case ".quit":
                             {
-                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "Chat bot closed by user!");
+                            	api.postMessage(api.resolveChannel("bot-log"), "Shut down command executed! sender: " + message.senderName);
                                 System.exit(0);
                             }
                             break;
@@ -135,7 +135,7 @@ public class Main {
                                 int count = Integer.parseInt(args[3]);
                                 int counter = 0;
                                 Channel channel = api.resolveChannel(channelName);
-                                for(Message message1: channel.messages) {
+                                for(Message message1 : channel.messages) {
                                     if(counter > count) break;
                                     if(Util.equals(username, message1.senderName)) {
                                         api.deleteMessage(message1);
@@ -273,7 +273,7 @@ public class Main {
                             
                             case ".addProfanity":
                             {
-                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "adding profanity!");
+                            	api.postMessage(api.resolveChannel("bot-log"), "adding profanity!");
 
                             	String profanities = "";
                             	
@@ -312,12 +312,11 @@ public class Main {
 	                            		out.flush();
 	                            		out.close();
 	                            		
-	                            		api.postMessage(api.resolveChannelUUID(message.channelUUID), "\nReloading profanity list!");
 	                                	loadProfanities(getProfanities());
-	                                	api.postMessage(api.resolveChannelUUID(message.channelUUID), "[Success]\nprofanity list reloaded!\n\t- Added profanity to filter!");
+	                                	api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Added *'" + args[1] + "'* to filter!\n- Added by " + api.mention(message.senderName));
                             		}
                             		else
-                            			api.postMessage(api.resolveChannelUUID(message.channelUUID), "[Failed]\n\t- The profanity you are trying to add is already in the filter!");
+                            			api.postMessage(api.resolveChannel("bot-log"), "[Failed]\n- *'" + args[1] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(message.senderName));
                             	} catch(IOException e)
                             	{e.printStackTrace();}
                             	

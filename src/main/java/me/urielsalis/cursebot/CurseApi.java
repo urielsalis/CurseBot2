@@ -52,7 +52,7 @@ public class CurseApi {
         });
         getInfoFromGroup();
     }
-
+    
     private void getSessionID() {
         try {
             String parameters = "MachineKey="+machineKey+"&Platform=6&DeviceID=null&PushKitToken=null";
@@ -396,9 +396,27 @@ public class CurseApi {
     public void unBanMember(long userID) {
         Util.sendDelete("https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans/"+userID, getAuthToken());
     }
+    
+    /**
+     * Returns a string to mention a member in a chat message (pinging a member)
+     * @return
+     */
+    public String mention(String memberName)
+    {
+    	Member member = resolveMember(memberName);
+    	return "@" + member.senderID + ":" + member.username;
+    }
 
-
-
+    /**
+     * Returns a string to mention a member in a chat message (pinging a member)
+     * with a custom mention message
+     * @return
+     */
+    public String mention(String memberName, String message)
+    {
+    	Member member = resolveMember(memberName);
+    	return "@" + member.senderID + ":" + message;
+    }
 
 
     //getters and setters
