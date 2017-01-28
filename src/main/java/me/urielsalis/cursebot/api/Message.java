@@ -1,7 +1,6 @@
-package me.urielsalis.cursebot;
+package me.urielsalis.cursebot.api;
 
 import java.util.Calendar;
-import java.util.Objects;
 
 /**
  * CurseApi

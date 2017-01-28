@@ -1,4 +1,4 @@
-package me.urielsalis.cursebot;
+package me.urielsalis.cursebot.api;
 
 /**
  * CurseApi

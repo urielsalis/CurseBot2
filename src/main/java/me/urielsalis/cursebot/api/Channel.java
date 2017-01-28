@@ -1,10 +1,7 @@
-package me.urielsalis.cursebot;
+package me.urielsalis.cursebot.api;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Queue;
 
 

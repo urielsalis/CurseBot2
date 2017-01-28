@@ -1,12 +1,8 @@
 package me.urielsalis.cursebot;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import me.urielsalis.cursebot.api.*;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -254,6 +250,18 @@ public class Main {
                             	api.postMessage(api.resolveChannelUUID(message.channelUUID), shrug);
                             }
                             break;
+
+                            case ".banLeft":
+                            {
+                                int userID = Integer.parseInt(args[1]);
+                                api.banMember(userID, "Reasons");
+                            }
+                            break;
+                            case ".unbanLeft":
+                            {
+                                int userID = Integer.parseInt(args[1]);
+                                api.unBanMember(userID);
+                            }
                         }
                     }
                 }
