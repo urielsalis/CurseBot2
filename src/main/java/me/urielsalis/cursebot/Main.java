@@ -63,7 +63,7 @@ public class Main {
                 {
 					if(containsCurseWord(message.body) && !(isUserAuthorized(message.senderName))) {
 					    api.deleteMessage(message);
-					    api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please dont swear");
+					    api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
 					}
 				} 
                 catch (UnsupportedEncodingException e1) 
@@ -79,7 +79,7 @@ public class Main {
                         switch (args[0]) {
                             case ".quit":
                             {
-                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "Chat bot closed by user!");
+                            	api.postMessage(api.resolveChannel("bot-log"), "Shut down command executed! sender: " + message.senderName);
                                 System.exit(0);
                             }
                             break;
@@ -134,7 +134,7 @@ public class Main {
                                 int count = Integer.parseInt(args[3]);
                                 int counter = 0;
                                 Channel channel = api.resolveChannel(channelName);
-                                for(Message message1: channel.messages) {
+                                for(Message message1 : channel.messages) {
                                     if(counter > count) break;
                                     if(Util.equals(username, message1.senderName)) {
                                         api.deleteMessage(message1);
@@ -201,7 +201,7 @@ public class Main {
                             break;
                             
                             case ".help":
-                            {
+                            {	
                             	int index = 1;
                             	
                             	System.out.println("Test: " + args.length);
@@ -234,9 +234,9 @@ public class Main {
 
 											    	 	 //- New Page: Page 2
 											    	 	 "\n*.addProfanity <word|phrase>* ",
-											   		 	 "\n - Adds a word or phrase to the profanity filter.",
-											   		 	 "\nWARNING: Please try and keep it to one word only" };
-
+											   		 	 "\n - Adds a word or phrase to the profanity filter.", 
+											   		 	 "\nWARNING: If you are adding a phrase, dont add spaces" };
+								
                             	int maxPages = ((commandList.length/2) - 5);
 
                             	String header = "~*[HELP: Commands page (" + index + " / " + maxPages + ")]*~:\n-*I===============================I*-";
@@ -272,7 +272,7 @@ public class Main {
 
                             case ".addProfanity":
                             {
-                            	api.postMessage(api.resolveChannelUUID(message.channelUUID), "adding profanity!");
+                            	api.postMessage(api.resolveChannel("bot-log"), "adding profanity!");
 
                             	String profanities = "";
 
@@ -290,14 +290,15 @@ public class Main {
                             		if(addProfanity)
                             		{
 	                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
-
+	                            		
+	                            		/*
 	                            		String addProf = "";
 	                            		for(int i = 1; i < args.length; i++)
 	                            			addProf += args[i] + "_";
-	                            		addProf = addProf.substring(0, addProf.length() - 1);
-
-	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + addProf + " ]");
-
+	                            		addProf = addProf.substring(0, addProf.length() - 1);*/
+	                            		
+	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
+	                            		
 	                            		String[] swears = profanities.split(",+");
 	                            		for(String s : swears)
 	                            		{
@@ -309,13 +310,12 @@ public class Main {
 
 	                            		out.flush();
 	                            		out.close();
-
-	                            		api.postMessage(api.resolveChannelUUID(message.channelUUID), "\nReloading profanity list!");
+	                            		
 	                                	loadProfanities(getProfanities());
-	                                	api.postMessage(api.resolveChannelUUID(message.channelUUID), "[Success]\nprofanity list reloaded!\n\t- Added profanity to filter!");
+	                                	api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Added *'" + args[1] + "'* to filter!\n- Added by " + api.mention(message.senderName));
                             		}
                             		else
-                            			api.postMessage(api.resolveChannelUUID(message.channelUUID), "[Failed]\n\t- The profanity you are trying to add is already in the filter!");
+                            			api.postMessage(api.resolveChannel("bot-log"), "[Failed]\n- *'" + args[1] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(message.senderName));
                             	} catch(IOException e)
                             	{e.printStackTrace();}
 
@@ -399,10 +399,10 @@ public class Main {
     }
 
     private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
-        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "_");
-
+        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "");
+        
         for(String str : swearWords)
-        	if(message.contains(str))
+        	if(message.toLowerCase().contains(str.toLowerCase()))
         		return true;
 
         return false;
