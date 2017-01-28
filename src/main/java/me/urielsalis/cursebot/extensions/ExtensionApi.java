@@ -1,5 +1,7 @@
 package me.urielsalis.cursebot.extensions;
 
+import me.urielsalis.cursebot.Main;
+import me.urielsalis.cursebot.api.CurseApi;
 import net.engio.mbassy.bus.MBassador;
 
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ExtensionApi {
     ConcurrentHashMap<String, MBassador> bus = new ConcurrentHashMap<>();
+    CurseApi curseAPI = Main.api;
 
     public void addListener(String eventName, Listener listener) {
         if(!bus.containsKey(eventName))
@@ -24,11 +27,15 @@ public class ExtensionApi {
         }
     }
 
-    public interface Listener {
+    public CurseApi getCurseAPI() {
+        return curseAPI;
+    }
+
+    public static interface Listener {
         String name();
     }
 
-    public class Event {
+    public static class Event {
         String eventName;
         String value;
     }

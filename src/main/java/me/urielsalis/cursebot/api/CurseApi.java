@@ -5,6 +5,11 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import me.urielsalis.cursebot.api.Util;
+import me.urielsalis.cursebot.events.CommandEvent;
+import me.urielsalis.cursebot.events.MessageEvent;
+import me.urielsalis.cursebot.extensions.Extension;
+import me.urielsalis.cursebot.extensions.ExtensionApi;
+import me.urielsalis.cursebot.extensions.ExtensionHandler;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -283,6 +288,10 @@ public class CurseApi {
     }
 
     private void updateListeners(Message message) {
+        ExtensionHandler.api.fire("message", new MessageEvent(message));
+        if(message.body.startsWith(".")) {
+            ExtensionHandler.api.fire("command", new CommandEvent(message));
+        }
         synchronized (listeners) {
             for(Listener listener: listeners)
                 listener.run(message);

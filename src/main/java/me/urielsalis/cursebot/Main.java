@@ -13,13 +13,12 @@ import java.util.concurrent.TimeUnit;
  * License: GPL 3.0
  */
 public class Main {
+    public static CurseApi api;
     private String groupID = "";
     private String username = "";
     private String password = "";
     private String clientID = "";
     private String machineKey = "";
-    private String[] authorizedUsers;
-    private String[] swearWords;
     private ArrayList<String> authedLinkers = new ArrayList<>();
     private HashMap<Long, Long> banned = new HashMap<>();
 
@@ -30,7 +29,7 @@ public class Main {
     public Main() {
         loadProperties();
 
-        final CurseApi api = new CurseApi(groupID, username, password, clientID, machineKey);
+        api = new CurseApi(groupID, username, password, clientID, machineKey);
         api.startMessageLoop();
         //wait 5 seconds so all messages are flushed and only new ones shown
         try {
@@ -55,21 +54,13 @@ public class Main {
                 }
                 updateBans(message.timestamp, api);
                 
-                try 
-                {
-					if(containsCurseWord(message.body) && !(isUserAuthorized(message.senderName))) {
-					    api.deleteMessage(message);
-					    api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
-					}
-				} 
-                catch (UnsupportedEncodingException e1) 
-                {e1.printStackTrace();}
+
                 
                 if(isLinkAndNotAuthed(message.body, message.senderName)) {
                     api.deleteMessage(message);
                     api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
                 }
-                if(isUserAuthorized(message.senderName)) {
+                if(Util.isUserAuthorized(message.senderName)) {
                     String[] args = message.body.split(" ");
                     if(args.length > 0) {
                         switch (args[0]) {
@@ -191,7 +182,7 @@ public class Main {
                             case ".kick":
                             {
                                 String username = args[1];
-                                if(!isUserAuthorized(username))
+                                if(!Util.isUserAuthorized(username))
                                     api.kickUser(api.resolveMember(username));
                             }
                             break;
@@ -263,58 +254,6 @@ public class Main {
                                 String username = args[1];
                                 authedLinkers.add(username.toLowerCase().trim());
                                 api.postMessage(api.resolveChannelUUID(message.channelUUID), username+" its now authed to post links");
-                            }
-                            break;
-
-                            case ".addProfanity":
-                            {
-                            	api.postMessage(api.resolveChannel("bot-log"), "adding profanity!");
-
-                            	String profanities = "";
-
-                            	try {profanities = getProfanities();}
-                            	catch (IOException e)
-                            	{e.printStackTrace();}
-
-                            	boolean addProfanity = true;
-                            	try
-                            	{
-                            		for(String s : swearWords)
-                            			if(s.equalsIgnoreCase(args[1]))
-                            				addProfanity = false;
-
-                            		if(addProfanity)
-                            		{
-	                            		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
-	                            		
-	                            		/*
-	                            		String addProf = "";
-	                            		for(int i = 1; i < args.length; i++)
-	                            			addProf += args[i] + "_";
-	                            		addProf = addProf.substring(0, addProf.length() - 1);*/
-	                            		
-	                            		profanities = profanities.trim().replaceFirst(" \\]", ",," + args[1] + " ]");
-	                            		
-	                            		String[] swears = profanities.split(",+");
-	                            		for(String s : swears)
-	                            		{
-	                            			if(!(s.contains("]")))
-	                            				out.write(s + ",\n");
-	                            			else
-	                            				out.write(s);
-	                            		}
-
-	                            		out.flush();
-	                            		out.close();
-	                            		
-	                                	loadProfanities(getProfanities());
-	                                	api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Added *'" + args[1] + "'* to filter!\n- Added by " + api.mention(message.senderName));
-                            		}
-                            		else
-                            			api.postMessage(api.resolveChannel("bot-log"), "[Failed]\n- *'" + args[1] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(message.senderName));
-                            	} catch(IOException e)
-                            	{e.printStackTrace();}
-
                             }
                             break;
 
@@ -394,21 +333,9 @@ public class Main {
         return false;
     }
 
-    private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
-        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "");
-        
-        for(String str : swearWords)
-        	if(message.toLowerCase().contains(str.toLowerCase()))
-        		return true;
 
-        return false;
-    }
 
-    private boolean isUserAuthorized(String senderName) {
-        for(String string: authorizedUsers)
-            if(Util.equals(string, senderName)) return true;
-        return false;
-    }
+
 
     private void loadProperties() {
         try {
@@ -422,9 +349,7 @@ public class Main {
                 password = prop.getProperty("password");
                 clientID = prop.getProperty("clientID");
                 machineKey = prop.getProperty("machineKey");
-                authorizedUsers = prop.getProperty("authorizedUsers").split(",");
-                
-                loadProfanities(getProfanities());
+                Util.authorizedUsers = prop.getProperty("authorizedUsers").split(",");
                 
                 inputStream.close();
             }
@@ -433,56 +358,4 @@ public class Main {
         }
     }
 
-    private String getProfanities() throws IOException
-    {
-    	Scanner in = resetScanner("profanities.txt");
-    	String prof = "";
-    	String[] swears;
-
-    	if(!(in.hasNextLine()))
-    		prof = "[ fuck,";
-    	else
-    	{
-    		while(in.hasNextLine())
-    		{
-    			prof += in.nextLine() + ",";
-    		}
-    	}
-
-    	prof = prof.substring(0, prof.length() - 1);
-    	if(!(prof.endsWith("]")))
-    		prof += " ]";
-
-    	try
-    	{
-    		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
-
-    		swears = prof.split(",+");
-    		for(String s : swears)
-    		{
-    			if(!(s.contains("]")))
-    				out.write(s + ",\n");
-    			else
-    				out.write(s);
-    		}
-
-    		out.flush();
-    		out.close();
-    	} catch(IOException e)
-    	{e.printStackTrace(); System.out.println("T5");}
-
-    	in.close();
-
-    	return prof;
-    }
-
-    private void loadProfanities(String profanities)
-    {
-    	swearWords = profanities.replaceAll("(\\[ )|( \\])", "").split(",+");
-    }
-
-    private Scanner resetScanner(String file) throws FileNotFoundException
-    {
-    	return new Scanner(new FileInputStream(file), "UTF-8");
-    }
 }

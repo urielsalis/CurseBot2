@@ -21,8 +21,9 @@ import java.util.TimeZone;
  * License: GPL 3.0
  */
 public class Util {
-	
-	//public static final String logbot = "ce2ccadd-38c4-4bc7-8317-8aa294b1ea43";
+    public static String[] authorizedUsers;
+
+    //public static final String logbot = "ce2ccadd-38c4-4bc7-8317-8aa294b1ea43";
 	
     public static String sendGet(String url, String auth) {
         try {
@@ -147,5 +148,11 @@ public class Util {
     {
     	String test = new String(cont.getBytes("UTF-8"), "UTF-8");
     	return test.toString().indexOf(new String(s.toString().getBytes("UTF-8"), "UTF-8")) > 1;
+    }
+
+    public static boolean isUserAuthorized(String senderName) {
+        for(String string: authorizedUsers)
+            if(Util.equals(string, senderName)) return true;
+        return false;
     }
 }

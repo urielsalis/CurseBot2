@@ -22,7 +22,7 @@ import java.util.Set;
  * Created by urielsalis on 1/28/2017
  */
 public class ExtensionHandler {
-    ExtensionApi api = new ExtensionApi();
+    public static ExtensionApi api = new ExtensionApi();
     public void init() {
         loadJars();
         Configuration configuration = new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath());
