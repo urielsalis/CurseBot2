@@ -10,7 +10,7 @@ import me.urielsalis.cursebot.extensions.ExtensionHandler;
 @Extension(name = "TestExtension", version = "1.0.0", id = "TestExtension/1.0.0")
 public class Main {
     @ExtensionHandler.ExtensionInit("TestExtension/1.0.0")
-    public void init(ExtensionApi api) {
+    public static void init(ExtensionApi api) {
         //do init here
         //api can be used to register events or listen to them
 

@@ -15,13 +15,13 @@ import java.util.*;
  */
 @Extension(name = "ModCommands", version = "1.0.0", id = "Modcommands/1.0.0")
 public class Main {
-    ExtensionApi extApi;
-    CurseApi api;
-    private HashMap<Long, Long> banned = new HashMap<>();
+    static ExtensionApi extApi;
+    static CurseApi api;
+    private static HashMap<Long, Long> banned = new HashMap<>();
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
-    public void init(ExtensionApi api2) {
-        this.extApi = api2;
+    public static void init(ExtensionApi api2) {
+        extApi = api2;
         extApi.addListener("commands", new ModCommandsListener());
         Timer timer = new Timer();
         TimerTask unban = new TimerTask() {
@@ -35,7 +35,7 @@ public class Main {
         api = extApi.getCurseAPI();
     }
 
-    private class ModCommandsListener implements ExtensionApi.Listener {
+    private static class ModCommandsListener implements ExtensionApi.Listener {
         @Override
         public String name() {
             return "ModCommandsListener/1.0.0";
@@ -50,7 +50,7 @@ public class Main {
         }
     }
 
-    private void handleCommand(Command command) {
+    private static void handleCommand(Command command) {
         switch (command.command) {
             case "delete":
             {
@@ -117,7 +117,7 @@ public class Main {
         }
     }
 
-    private void updateBans(long timestamp) {
+    private static void updateBans(long timestamp) {
         ArrayList<Long> toUnban = new ArrayList<>();
         for(Map.Entry<Long, Long> entry: banned.entrySet()) {
             if(entry.getValue() < timestamp) {

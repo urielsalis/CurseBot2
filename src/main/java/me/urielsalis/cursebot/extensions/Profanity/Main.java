@@ -18,21 +18,22 @@ import java.util.Scanner;
  */
 @Extension(name = "Profanity",version = "1.0.0", id = "Profanity/1.0.0")
 public class Main{
-    ExtensionApi extApi;
-    CurseApi api;
-    private String[] swearWords;
+    static ExtensionApi extApi;
+    static  CurseApi api;
+    private static String[] swearWords;
 
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
-    public void init(ExtensionApi api2) {
-        this.extApi = api2;
+    public static void init(ExtensionApi api2) {
+        System.out.println("Loading Profanity init");
+        extApi = api2;
         extApi.addListener("message", new ProfanityListener());
         extApi.addListener("command", new ProfanityCommandListener());
         api = extApi.getCurseAPI();
         loadProfanities(getProfanities());
     }
 
-    private class ProfanityListener implements ExtensionApi.Listener {
+    private static class ProfanityListener implements ExtensionApi.Listener {
         @Override
         public String name() {
             return "ProfanityListener/1.0.0";
@@ -48,7 +49,7 @@ public class Main{
     }
 
 
-    private class ProfanityCommandListener implements ExtensionApi.Listener {
+    private static  class ProfanityCommandListener implements ExtensionApi.Listener {
         @Override
         public String name() {
             return "ProfanityCommandListener/1.0.0";
@@ -63,7 +64,7 @@ public class Main{
         }
     }
 
-    private void parseMessage(Message message) {
+    private static void parseMessage(Message message) {
         try
         {
             if(containsCurseWord(message.body) && !(Util.isUserAuthorized(message.senderName))) {
@@ -76,7 +77,7 @@ public class Main{
     }
 
 
-    private void handleCommand(CommandEvent commandEvent) {
+    private static void handleCommand(CommandEvent commandEvent) {
         switch (commandEvent.command.command) {
             case "addProfanity":
             {
@@ -131,7 +132,7 @@ public class Main{
     }
 
 
-    private boolean containsCurseWord(String body) throws UnsupportedEncodingException {
+    private static boolean containsCurseWord(String body) throws UnsupportedEncodingException {
         String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "");
 
         for(String str : swearWords)
@@ -141,7 +142,7 @@ public class Main{
         return false;
     }
 
-    private String getProfanities()
+    private static String getProfanities()
     {
         try {
             Scanner in = resetScanner("profanities.txt");
@@ -186,12 +187,12 @@ public class Main{
         return null;
     }
 
-    private void loadProfanities(String profanities)
+    private static void loadProfanities(String profanities)
     {
         swearWords = profanities.replaceAll("(\\[ )|( \\])", "").split(",+");
     }
 
-    private Scanner resetScanner(String file) throws FileNotFoundException
+    private static Scanner resetScanner(String file) throws FileNotFoundException
     {
         return new Scanner(new FileInputStream(file), "UTF-8");
     }
