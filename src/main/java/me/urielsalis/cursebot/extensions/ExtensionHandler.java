@@ -1,5 +1,6 @@
 package me.urielsalis.cursebot.extensions;
 
+import org.apache.commons.collections4.bag.SynchronizedSortedBag;
 import org.reflections.Configuration;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
@@ -29,14 +30,16 @@ public class ExtensionHandler {
 
         Reflections reflections = new Reflections(configuration);
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Extension.class);
-        for(Class clazz: annotated) {
-            while (clazz != Object.class) { // need to iterated thought hierarchy in order to retrieve methods from above the current instance
+        for(Class clazz : annotated) {
+            while (clazz != Object.class) {
+                // need to iterated thought hierarchy in order to retrieve methods from above the current instance
                 // iterate though the list of methods declared in the class represented by klass variable, and add those annotated with the specified annotation
                 final List<Method> allMethods = new ArrayList<Method>(Arrays.asList(clazz.getDeclaredMethods()));
                 for (final Method method : allMethods) {
                     if (method.isAnnotationPresent(ExtensionInit.class)) {
                         try {
                             System.out.println("Invoking " + method.getName());
+
                             method.invoke(null, api); //invoker is null as its static
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             System.out.println("Error while trying to run method");
@@ -58,8 +61,21 @@ public class ExtensionHandler {
     }
 
     private static void loadJars() {
-        File directory = new File("extensions");
-        File[] files = directory.listFiles((dir, name) -> name.endsWith(".jar"));
+        File directory = new File("src\\main\\java\\me\\urielsalis\\cursebot\\extensions");
+        File[] files = directory.listFiles((dir, name) -> new File(dir, name).isDirectory());
+
+        for (int i = 0; i < files.length; i++)
+        {
+            files[i] = new File(files[i].toPath() + "\\" + files[i].listFiles()[0].getName());
+        }
+
+        /*int x = 0;
+        for (int i = 0; i < annotatedDir.length; i++)
+        {
+            String addPath = "";
+            if(annotatedDir[i].isDirectory())
+                addPath = directory.toPath() + "\\" + test[i].getName();
+        }*/
 
         if (files != null) {
             for (File file : files) {
