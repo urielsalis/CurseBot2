@@ -6,7 +6,7 @@ import me.urielsalis.cursebot.events.MessageEvent;
 import me.urielsalis.cursebot.extensions.Extension;
 import me.urielsalis.cursebot.extensions.ExtensionApi;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
-import net.engio.mbassy.listener.Handler;
+import me.urielsalis.cursebot.extensions.Handle;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public class Main {
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {
         extApi = api2;
-        extApi.addListener("commands", new ModCommandsListener());
+        extApi.addListener("command", new ModCommandsListener());
         Timer timer = new Timer();
         TimerTask unban = new TimerTask() {
             @Override
@@ -41,7 +41,7 @@ public class Main {
             return "ModCommandsListener/1.0.0";
         }
 
-        @Handler
+        @Handle
         public void handle(ExtensionApi.Event event) {
             if(event instanceof CommandEvent) {
                 CommandEvent commandEvent = (CommandEvent) event;

@@ -8,7 +8,7 @@ import me.urielsalis.cursebot.events.MessageEvent;
 import me.urielsalis.cursebot.extensions.Extension;
 import me.urielsalis.cursebot.extensions.ExtensionApi;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
-import net.engio.mbassy.listener.Handler;
+import me.urielsalis.cursebot.extensions.Handle;
 
 import java.io.*;
 import java.util.Scanner;
@@ -39,7 +39,7 @@ public class Main{
             return "ProfanityListener/1.0.0";
         }
 
-        @Handler
+        @Handle
         public void handle(ExtensionApi.Event event) {
             if(event instanceof MessageEvent) {
                 MessageEvent messageEvent = (MessageEvent) event;
@@ -55,7 +55,7 @@ public class Main{
             return "ProfanityCommandListener/1.0.0";
         }
 
-        @Handler
+        @Handle
         public void handle(ExtensionApi.Event event) {
             if(event instanceof CommandEvent) {
                 CommandEvent commandEvent = (CommandEvent) event;
