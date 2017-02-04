@@ -8,6 +8,7 @@ import me.urielsalis.cursebot.extensions.ExtensionApi;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
 import me.urielsalis.cursebot.extensions.Handle;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -114,6 +115,132 @@ public class Main {
                 System.exit(0);
             }
             break;
+            case "send":
+            {
+                String channel = command.args[0];
+                String body = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
+                if(body.startsWith(".")) break;
+                api.postMessage(api.resolveChannel(channel), body);
+            }
+            break;
+
+            case "sender":
+            {
+                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hai "+command.message.senderName);
+            }
+            break;
+
+            case "resolve":
+            {
+                String resolve = command.args[0];
+                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), api.resolveChannelUUID(resolve).groupTitle);
+            }
+            break;
+
+            case "help":
+            {
+                int index = 1;
+
+                System.out.println("Test: " + command.args.length);
+                if(command.args.length == 1)
+                {
+                    try
+                    {index = Integer.parseInt(command.args[0]);}
+                    catch(NumberFormatException e)
+                    {index = command.args.length + 5;}
+                }
+
+                String helpMsg = "";	 //- Page 1
+                String[] commandList = { "\n*.quit* ",
+                        "\n - Shuts all bots down",
+
+                        "\n*.send <channel> <message>* ",
+                        "\n - Sends a message to a specified channel",
+
+                        "\n*.sender* ",
+                        "\n - Displays the sender of this command",
+
+                        "\n*.resolver <uuid>* ",
+                        "\n - Resolves a UUID to channel name",
+
+                        "\n*.delete30 <channel> <username>* ",
+                        "\n - Deletes 30 last messages of user",
+
+                        "\n*.kick <username>* ",
+                        "\n - Kicks a specified user from the server",
+
+                        //- New Page: Page 2
+                        "\n*.addProfanity <word|phrase>* ",
+                        "\n - Adds a word or phrase to the profanity filter.",
+                        "\nWARNING: If you are adding a phrase, dont add spaces" };
+
+                int maxPages = ((commandList.length/2) - 5);
+
+                String header = "~*[HELP: Commands page (" + index + " / " + maxPages + ")]*~:\n-*I===============================I*-";
+
+                if(!(index > maxPages))
+                {
+                    helpMsg += header;
+                    for(int i = (((index * 11) - 11)); i <= (index * 11); i++)
+                    {
+                        if(index > 1 && i == (((index * 11) - 11)))
+                            i++;
+
+                        if(i == commandList.length)
+                            break;
+                        else
+                            helpMsg += commandList[i];
+                    }
+
+                    api.postMessage(api.resolveChannelUUID(command.message.channelUUID), helpMsg);
+                }
+                else
+                    api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "The requested page does not exist!");
+            }
+            break;
+
+            case "addLinker":
+            {
+                String username = command.args[0];
+                me.urielsalis.cursebot.Main.authedLinkers.add(username.toLowerCase().trim());
+                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), username+" its now authed to post links");
+            }
+            break;
+
+            case "rmLinker":
+            {
+                String username = command.args[0];
+                me.urielsalis.cursebot.Main.authedLinkers.remove(username.toLowerCase().trim());
+                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), username+" its now deauthed to post links");
+            }
+            break;
+
+
+
+            case "shrug":
+            {
+                String shrug = "not shrug";
+                try {
+                    shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), shrug);
+            }
+            break;
+
+            case "banLeft":
+            {
+                int userID = Integer.parseInt(command.args[0]);
+                api.banMember(userID, "Reasons");
+            }
+            break;
+            case "unbanLeft":
+            {
+                int userID = Integer.parseInt(command.args[0]);
+                api.unBanMember(userID);
+            }
         }
     }
 

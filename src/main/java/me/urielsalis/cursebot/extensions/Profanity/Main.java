@@ -71,6 +71,22 @@ public class Main{
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
             }
+            try {
+                message.body = new String(message.body.getBytes("UTF-8"), "UTF-8");
+            } catch (UnsupportedEncodingException e2) {
+                e2.printStackTrace();
+            }
+
+            if(message.isPM) {
+                System.out.println(Util.timestampToDate(message.timestamp) + "  [" + message.senderName + "] " + message.body);
+            } else {
+                System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
+            }
+
+            if(isLinkAndNotAuthed(message.body, message.senderName)) {
+                api.deleteMessage(message);
+                api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
+            }
         }
         catch (UnsupportedEncodingException e1)
         {e1.printStackTrace();}
@@ -196,4 +212,12 @@ public class Main{
     {
         return new Scanner(new FileInputStream(file), "UTF-8");
     }
+
+    private static boolean isLinkAndNotAuthed(String body, String username) {
+        if(body.contains("https") || body.contains(".com") || body.contains(".net") || body.contains("http") || body.contains(".org") || body.contains(".ly")) {
+            if(!me.urielsalis.cursebot.Main.authedLinkers.contains(username.toLowerCase().trim())) return true;
+        }
+        return false;
+    }
+
 }
