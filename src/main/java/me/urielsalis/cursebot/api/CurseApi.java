@@ -135,6 +135,16 @@ public class CurseApi {
                                             System.out.println(m.senderName + " joined!");
                                         }
                                         System.out.println();
+                                    } else if(changeType==3) {
+                                        String sender = (String) body.get("SenderName");
+                                        JSONArray members2 = (JSONArray) body.get("Members");
+                                        JSONObject object = (JSONObject) members2.get(0);
+
+                                        String removedid = (String) object.get("UserID");
+                                        String removedname = (String) object.get("UserName");
+
+                                        postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
+
                                     }
                                 }
                             } catch (ParseException e) {
