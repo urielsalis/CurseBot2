@@ -82,7 +82,7 @@ public class Main{
     private static void parseMessage(Message message) {
         try
         {
-            if(message.channelUUID.equals(api.resolveChannel("#bot-log"))||message.channelUUID.equals(api.resolveChannel("#bot-stats"))) return;
+            if(message.channelUUID.equals(api.resolveChannel("bot-log"))||message.channelUUID.equals(api.resolveChannel("bot-stats"))) return;
             if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), message.senderName + "said a curse word:" + message.body);
@@ -100,7 +100,7 @@ public class Main{
                 System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
             }
 
-            if(/*isLinkAndNotAuthed(message.body, message.senderName)*/!Util.isAuthorizedLinker(api, message)) {
+            if(!Util.isAuthorizedLinker(api, message)) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), message.senderName + "posted a link:" + message.body);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");

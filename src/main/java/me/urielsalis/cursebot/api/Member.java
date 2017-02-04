@@ -8,7 +8,7 @@ import java.io.Serializable;
  * License: GPL 3.0
  */
 public class Member implements Serializable {
-    
+
     public String senderName;
     public String username;
     public long senderID;
