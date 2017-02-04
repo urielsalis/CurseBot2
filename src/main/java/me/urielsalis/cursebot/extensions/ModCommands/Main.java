@@ -121,6 +121,7 @@ public class Main {
                 String channel = command.args[0];
                 String body = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
                 if(body.startsWith(".")) break;
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 api.postMessage(api.resolveChannel(channel), body);
             }
             break;
@@ -128,6 +129,7 @@ public class Main {
             case "sender":
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hai "+command.message.senderName);
             }
             break;
@@ -136,6 +138,7 @@ public class Main {
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String resolve = command.args[0];
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), api.resolveChannelUUID(resolve).groupTitle);
             }
             break;
@@ -145,7 +148,7 @@ public class Main {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int index = 1;
 
-                System.out.println("Test: " + command.args.length);
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 if(command.args.length == 1)
                 {
                     try
@@ -206,6 +209,8 @@ public class Main {
             case "addLinker":
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
+
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 String username = command.args[0];
                 me.urielsalis.cursebot.Main.authedLinkers.add(username.toLowerCase().trim());
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), username+" its now authed to post links");
@@ -215,6 +220,8 @@ public class Main {
             case "rmLinker":
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
+
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 String username = command.args[0];
                 me.urielsalis.cursebot.Main.authedLinkers.remove(username.toLowerCase().trim());
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), username+" its now deauthed to post links");
@@ -227,6 +234,7 @@ public class Main {
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String shrug = "not shrug";
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 try {
                     shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
@@ -241,6 +249,7 @@ public class Main {
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int userID = Integer.parseInt(command.args[0]);
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 api.banMember(userID, "Reasons");
             }
             break;
@@ -248,6 +257,7 @@ public class Main {
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int userID = Integer.parseInt(command.args[0]);
+                api.postMessage(api.resolveChannel("bot-log"), command.message.senderName + "issued: " + command.message.body);
                 api.unBanMember(userID);
             }
         }

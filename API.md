@@ -138,6 +138,15 @@ Request: *POST*
 
 Requires: `Query`, `PageNumber`, `PageSize`, `GroupTitle`, `OwnerUsername`, `MinMemberCount`, `MaxMemberCount`, `Tags`, `Games`, `IsPublic`, `SortType`, `SortAscending`, `IncludeInappropriateContent`
 
+**Get contacts**
+
+https://contacts-v1.curseapp.net/contacts
+
+Request: *GET*
+
+Returns: All the info from the contacts of the selected account, including servers, groups and users
+
+
 ## Web sockets for notifications
 
 Open a websocket to `wss://notifications-na-v1.curseapp.net/`
