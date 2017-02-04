@@ -123,12 +123,9 @@ public class CurseApi {
                                             Object userIDMember = member.get("UserID");
                                             Object bestRole = member.get("BestRole");
                                             Member m = new Member(nickname, username, userIDMember, bestRole);
-                                            if(members.contains(m)) {
-                                                //user was already here
-                                                postMessage(resolveChannel("lobby"), "Welcome back @" +m.senderID+":"+m.senderName);
-                                            } else {
+                                            if(!members.contains(m)) {
                                                 //new user, TODO
-                                                postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName);
+                                                postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName + ", dont forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
                                                 members.add(m);
                                             }
                                             System.out.println(m.senderName + " joined!");
