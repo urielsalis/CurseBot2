@@ -83,7 +83,7 @@ public class Main{
                 System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
             }
 
-            if(isLinkAndNotAuthed(message.body, message.senderName)) {
+            if(/*isLinkAndNotAuthed(message.body, message.senderName)*/!Util.isAuthorizedLinker(api, message)) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
             }
@@ -112,7 +112,7 @@ public class Main{
 
                     if(addProfanity)
                     {
-                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
+                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
 
 	                            		/*
 	                            		String addProf = "";
@@ -161,7 +161,7 @@ public class Main{
     private static String getProfanities()
     {
         try {
-            Scanner in = resetScanner("profanities.txt");
+            Scanner in = resetScanner("filters\\profanities.txt");
             String prof = "";
             String[] swears;
 
@@ -178,7 +178,7 @@ public class Main{
                 prof += " ]";
 
             try {
-                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("profanities.txt"), "UTF-8"));
+                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
 
                 swears = prof.split(",+");
                 for (String s : swears) {
@@ -192,7 +192,6 @@ public class Main{
                 out.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("T5");
             }
             in.close();
 
