@@ -129,6 +129,8 @@ public class CurseApi {
                                                 //new user, TODO
                                                 postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName + ", dont forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
                                                 members.add(m);
+                                            } else {
+                                                postMessage(resolveChannel("bot-stats"), "@" +m.senderID+":"+m.senderName+" joined again");
                                             }
                                             System.out.println(m.senderName + " joined!");
                                         }
