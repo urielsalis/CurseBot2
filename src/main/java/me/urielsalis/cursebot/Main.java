@@ -42,12 +42,6 @@ public class Main {
         handler.init();
     }
 
-
-
-
-
-
-
     private void loadProperties() {
         try {
             Properties prop = new Properties();
