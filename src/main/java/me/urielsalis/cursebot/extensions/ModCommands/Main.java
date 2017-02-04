@@ -117,6 +117,7 @@ public class Main {
             break;
             case "send":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String channel = command.args[0];
                 String body = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
                 if(body.startsWith(".")) break;
@@ -126,12 +127,14 @@ public class Main {
 
             case "sender":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hai "+command.message.senderName);
             }
             break;
 
             case "resolve":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String resolve = command.args[0];
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), api.resolveChannelUUID(resolve).groupTitle);
             }
@@ -139,6 +142,7 @@ public class Main {
 
             case "help":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int index = 1;
 
                 System.out.println("Test: " + command.args.length);
@@ -201,6 +205,7 @@ public class Main {
 
             case "addLinker":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String username = command.args[0];
                 me.urielsalis.cursebot.Main.authedLinkers.add(username.toLowerCase().trim());
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), username+" its now authed to post links");
@@ -209,6 +214,7 @@ public class Main {
 
             case "rmLinker":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String username = command.args[0];
                 me.urielsalis.cursebot.Main.authedLinkers.remove(username.toLowerCase().trim());
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), username+" its now deauthed to post links");
@@ -219,6 +225,7 @@ public class Main {
 
             case "shrug":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String shrug = "not shrug";
                 try {
                     shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
@@ -232,12 +239,14 @@ public class Main {
 
             case "banLeft":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int userID = Integer.parseInt(command.args[0]);
                 api.banMember(userID, "Reasons");
             }
             break;
             case "unbanLeft":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int userID = Integer.parseInt(command.args[0]);
                 api.unBanMember(userID);
             }
