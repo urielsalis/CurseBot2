@@ -67,7 +67,7 @@ public class Main{
     private static void parseMessage(Message message) {
         try
         {
-            if(containsCurseWord(message.body) && !(Util.isUserAuthorized(message.senderName))) {
+            if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
             }

@@ -150,9 +150,7 @@ public class Util {
     	return test.toString().indexOf(new String(s.toString().getBytes("UTF-8"), "UTF-8")) > 1;
     }
 
-    public static boolean isUserAuthorized(String senderName) {
-        for(String string: authorizedUsers)
-            if(Util.equals(string, senderName)) return true;
-        return false;
+    public static boolean isUserAuthorized(CurseApi api, Member member) {
+        return api.bestRank >= api.roles.get(member.bestRole);
     }
 }

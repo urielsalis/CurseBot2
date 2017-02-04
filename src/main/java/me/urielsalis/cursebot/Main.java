@@ -60,7 +60,7 @@ public class Main {
                     api.deleteMessage(message);
                     api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
                 }
-                if(Util.isUserAuthorized(message.senderName)) {
+                if(Util.isUserAuthorized(api, api.resolveMember(message.senderName))) {
                     String[] args = message.body.split(" ");
                     if(args.length > 0) {
                         switch (args[0]) {

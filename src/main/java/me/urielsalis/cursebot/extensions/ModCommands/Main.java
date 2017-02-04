@@ -54,7 +54,7 @@ public class Main {
         switch (command.command) {
             case "delete":
             {
-                if(!Util.isUserAuthorized(command.message.senderName)) return;
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannel("bot-log"), "Executing delete command! sender: " + command.message.senderName + " Deleted messages:");
                 String channelName = command.args[0];
                 String username = command.args[1];
@@ -82,9 +82,9 @@ public class Main {
             break;
             case "kick":
             {
-                if(!Util.isUserAuthorized(command.message.senderName)) return;
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String username = command.args[0];
-                if(!Util.isUserAuthorized(username)) {
+                if(!Util.isUserAuthorized(api, api.resolveMember(username))) {
                     api.kickUser(api.resolveMember(username));
                     api.postMessage(api.resolveChannel("bot-log"), "Kicked user "+username + ". Sender: "+command.message.senderName);
                 }
@@ -92,7 +92,7 @@ public class Main {
             break;
             case "ban":
             {
-                if(!Util.isUserAuthorized(command.message.senderName)) return;
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String username = command.args[0];
                 int minutes = Integer.parseInt(command.args[1]);
                 String reason = "";
@@ -109,7 +109,7 @@ public class Main {
             break;
             case "quit":
             {
-                if(!Util.isUserAuthorized(command.message.senderName)) return;
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannel("bot-log"), "Shut down command executed! sender: " + command.message.senderName);
                 System.exit(0);
             }

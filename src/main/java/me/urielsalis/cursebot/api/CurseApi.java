@@ -32,6 +32,8 @@ public class CurseApi {
     private String groupID = "";
     private String clientID = "";
     private String machineKey = "";
+    public HashMap<Long, Long> roles = new HashMap<>();
+    public long bestRank;
     private HashMap<String, Channel> channels = new HashMap<String, Channel>();
     private ArrayList<Member> members = new ArrayList<Member>();
     static boolean isDeleteInProgress = false;
@@ -189,6 +191,13 @@ public class CurseApi {
         try {
             String json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "?showDeletedChannels=false", getAuthToken());
             JSONObject object = (JSONObject) new JSONParser().parse(json);
+            JSONArray arrayRoles = (JSONArray) object.get("Roles");
+            for(Object obj2: arrayRoles) {
+                JSONObject role = (JSONObject) obj2;
+                roles.put((long)role.get("RoleID"), (long)role.get("Rank"));
+            }
+            JSONObject membership = (JSONObject) object.get("Membership");
+            bestRank = roles.get(membership.get("BestRole"));
             JSONArray array = (JSONArray) object.get("Channels");
             for (Object obj : array) {
                 JSONObject channel = (JSONObject) obj;
