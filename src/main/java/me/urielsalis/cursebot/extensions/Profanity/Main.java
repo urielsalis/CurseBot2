@@ -82,8 +82,10 @@ public class Main{
     private static void parseMessage(Message message) {
         try
         {
+            if(message.channelUUID.equals(api.resolveChannel("#bot-log"))||message.channelUUID.equals(api.resolveChannel("#bot-stats"))) return;
             if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
+                api.postMessage(api.resolveChannel("bot-log"), message.senderName + "said a curse word:" + message.body);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
             }
             try {
@@ -100,11 +102,13 @@ public class Main{
 
             if(isLinkAndNotAuthed(message.body, message.senderName)) {
                 api.deleteMessage(message);
+                api.postMessage(api.resolveChannel("bot-log"), message.senderName + "posted a link:" + message.body);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
             }
 
             if(isUpperCase(message.body)) {
                 api.deleteMessage(message);
+                api.postMessage(api.resolveChannel("bot-log"), message.senderName + "caps:" + message.body);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", Chill out the caps");
             }
         }
