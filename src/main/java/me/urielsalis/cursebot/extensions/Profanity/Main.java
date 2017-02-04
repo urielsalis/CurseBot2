@@ -64,6 +64,21 @@ public class Main{
         }
     }
 
+    public static boolean isUpperCase(String s)
+    {
+        long all = s.length();
+        long upperCase = 0;
+        for (int i=0; i<s.length(); i++)
+        {
+            if (Character.isUpperCase(s.charAt(i)))
+            {
+                upperCase++;
+            }
+        }
+        return ((double)upperCase/(double)all) >= 0.8;
+    }
+
+
     private static void parseMessage(Message message) {
         try
         {
@@ -86,6 +101,11 @@ public class Main{
             if(isLinkAndNotAuthed(message.body, message.senderName)) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
+            }
+
+            if(isUpperCase(message.body)) {
+                api.deleteMessage(message);
+                api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", Chill out the caps");
             }
         }
         catch (UnsupportedEncodingException e1)
