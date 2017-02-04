@@ -153,4 +153,19 @@ public class Util {
     public static boolean isUserAuthorized(CurseApi api, Member member) {
         return api.bestRank >= api.roles.get(member.bestRole);
     }
+
+    public static boolean isAuthorizedLinker(CurseApi api, Message message){
+        boolean canPost = false;
+        Member member = api.resolveMember(message.senderName);
+        Channel channel = api.resolveChannelUUID(message.channelUUID);
+        String body = message.body;
+
+
+
+        if(isUserAuthorized(api, member)){
+            canPost = true;
+        }
+
+        return true;
+    }
 }
