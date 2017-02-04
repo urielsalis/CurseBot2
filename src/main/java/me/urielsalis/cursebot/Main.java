@@ -5,6 +5,8 @@ import me.urielsalis.cursebot.extensions.ExtensionHandler;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
@@ -40,6 +42,37 @@ public class Main {
 
         ExtensionHandler handler = new ExtensionHandler();
         handler.init();
+        loadMembers();
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+        service.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                updateMembersTable();
+            }
+
+        }, 0, 5, TimeUnit.MINUTES);
+    }
+
+    private void loadMembers() {
+        try {
+            FileInputStream f_in = new FileInputStream("members.data");
+            ObjectInputStream obj_in = new ObjectInputStream(f_in);
+            Object obj = obj_in.readObject();
+            api.setMembers((ArrayList<Member>) obj);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void updateMembersTable() {
+        try {
+            FileOutputStream f_out = new FileOutputStream("members.data");
+            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+            obj_out.writeObject(api.getMembersList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadProperties() {
