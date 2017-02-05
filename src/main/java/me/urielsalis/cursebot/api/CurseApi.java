@@ -43,6 +43,7 @@ public class CurseApi {
     private String sessionID;
     public long userJoins = 0;
     public long messages = 0;
+    public long removedUsers = 0;
 
     public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
@@ -140,6 +141,7 @@ public class CurseApi {
                                         }
                                         System.out.println();
                                     } else if(changeType==3) {
+                                        removedUsers++;
                                         String sender = (String) body.get("SenderName");
                                         JSONArray members2 = (JSONArray) body.get("Members");
                                         JSONObject object = (JSONObject) members2.get(0);

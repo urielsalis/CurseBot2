@@ -51,8 +51,11 @@ public class Main {
     private void showStats() {
         api.postMessage(api.resolveChannel("bot-stats"), "Users joined: " + api.userJoins);
         api.postMessage(api.resolveChannel("bot-stats"), "Messages posted: " + api.messages);
+        api.postMessage(api.resolveChannel("bot-stats"), "Removed users: " + api.removedUsers);
+
         api.userJoins = 0;
         api.messages = 0;
+        api.removedUsers = 0;
 
     }
 
