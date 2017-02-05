@@ -9,6 +9,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,6 +41,9 @@ public class Main {
 
         api = new CurseApi(groupID, username, password, clientID, machineKey);
         api.startMessageLoop();
+
+        api.postMessage(api.resolveChannel("bot-log"), "*Bot startup:* Bot is starting up");
+
         //wait 5 seconds so all messages are flushed and only new ones shown
         try {
             TimeUnit.SECONDS.sleep(5);
@@ -45,24 +51,30 @@ public class Main {
             e.printStackTrace();
         }
 
+        api.postMessage(api.resolveChannel("bot-log"), "*Bot startup:* Bot online!");
+
         ExtensionHandler handler = new ExtensionHandler();
         handler.init();
         loadMembers();
+        showStats();
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                updateMembersTable();
-            }
+        service.scheduleAtFixedRate(() -> updateMembersTable(), 0, 5, TimeUnit.MINUTES);
+        service.scheduleAtFixedRate(() -> showStats(), 1, 1, TimeUnit.DAYS);
+        service.scheduleAtFixedRate(() -> fetchDomains(), 0, 7, TimeUnit.DAYS);
+    }
 
-        }, 0, 5, TimeUnit.MINUTES);
+    private void showStats() {
+        api.postMessage(api.resolveChannel("bot-stats"), "[*Stats:* ~" + new Date().toString() + "~ ]"
+                                                                            + "\n-*I===============================I*-"
+                                                                            + "\n*Users joined:*            |     " + api.userJoins
+                                                                            + "\n*Messages posted:*   |     " + api.messages
+                                                                            + "\n*Removed users:*      |     " + api.removedUsers
+                                                                            + "\n*Left users:*                |     " + api.leftUsers);
 
-        service.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                fetchDomains();
-            }
-        }, 0, 7, TimeUnit.DAYS);
+        api.userJoins = 0;
+        api.messages = 0;
+        api.removedUsers = 0;
+        api.leftUsers = 0;
     }
 
     private void loadMembers() {

@@ -41,6 +41,11 @@ public class CurseApi {
     public WebSocket websocket;
     private long userID;
     private String sessionID;
+    public long userJoins = 0;
+    public long messages = 0;
+    public long removedUsers = 0;
+    public long leftUsers = 0;
+    private ArrayList<Long> removedUsersList = new ArrayList<>();
 
     public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
@@ -342,7 +347,6 @@ public class CurseApi {
         Util.sendPost("https://conversations-v1.curseapp.net/conversations/"+channel.groupID, parameters, getAuthToken());
         return true;
     }
-
 
     /**
      * Removes a user from the server
