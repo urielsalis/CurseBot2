@@ -364,7 +364,6 @@ public class CurseApi {
         return true;
     }
 
-
     /**
      * Removes a user from the server
      * @param member member to be removed
