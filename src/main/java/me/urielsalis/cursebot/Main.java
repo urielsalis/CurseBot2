@@ -45,7 +45,7 @@ public class Main {
         loadMembers();
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(() -> updateMembersTable(), 0, 5, TimeUnit.MINUTES);
-        service.scheduleAtFixedRate(() -> showStats(), 0, 1, TimeUnit.DAYS);
+        service.scheduleAtFixedRate(() -> showStats(), 1, 1, TimeUnit.DAYS);
     }
 
     private void showStats() {

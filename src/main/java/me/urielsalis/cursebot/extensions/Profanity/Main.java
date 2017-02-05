@@ -180,7 +180,7 @@ public class Main{
 
                 String profanities = "";
 
-                profanities = getProfanities();
+                //profanities =getProfanities();
 
                 boolean removeProfanity = false;
                 String remove = "";
@@ -219,7 +219,7 @@ public class Main{
                         out.flush();
                         out.close();
 
-                        loadProfanities(getProfanities());
+                        //loadProfanities(getProfanities());
                         api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
                     }
                     else
@@ -356,7 +356,7 @@ public class Main{
 
             if (m.find()) {
                 s = m.group(1);
-                if(!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
+                if (!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
                     s = "http://" + s;
                 }
 
@@ -364,16 +364,11 @@ public class Main{
                     URL url = new URL(s);
                     String host = url.getHost();
                     String tld = host.substring(host.lastIndexOf('.') + 1, host.length());
-                    System.out.println(tld);
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     System.out.println("unable to open connection");
                 }
-
-                System.out.println("String contains URL");
-            } else {
-                System.out.println("No link detected");
             }
+
         }
 
         /*

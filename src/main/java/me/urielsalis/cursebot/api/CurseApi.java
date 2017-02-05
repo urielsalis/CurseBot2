@@ -131,7 +131,6 @@ public class CurseApi {
                                             Member m = new Member(nickname, username, userIDMember, bestRole);
                                             userJoins++;
                                             if(!members.contains(m)) {
-                                                //new user, TODO
                                                 postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName + ", dont forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
                                                 members.add(m);
                                             } else {
@@ -145,8 +144,11 @@ public class CurseApi {
                                         JSONArray members2 = (JSONArray) body.get("Members");
                                         JSONObject object = (JSONObject) members2.get(0);
 
-                                        String removedid = (String) object.get("UserID");
-                                        String removedname = (String) object.get("UserName");
+                                        long removedid = (long) object.get("UserID");
+                                        String removedname = (String) object.get("Username");
+                                        if(removedname==null) {
+                                            removedname = (String) object.get("Nickname");
+                                        }
 
                                         postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
 
