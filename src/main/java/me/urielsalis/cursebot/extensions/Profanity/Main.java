@@ -1,8 +1,6 @@
 package me.urielsalis.cursebot.extensions.Profanity;
 
-import me.urielsalis.cursebot.api.CurseApi;
-import me.urielsalis.cursebot.api.Message;
-import me.urielsalis.cursebot.api.Util;
+import me.urielsalis.cursebot.api.*;
 import me.urielsalis.cursebot.events.CommandEvent;
 import me.urielsalis.cursebot.events.MessageEvent;
 import me.urielsalis.cursebot.extensions.Extension;
@@ -11,7 +9,12 @@ import me.urielsalis.cursebot.extensions.ExtensionHandler;
 import me.urielsalis.cursebot.extensions.Handle;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by urielsalis on 1/28/2017
@@ -21,7 +24,8 @@ public class Main{
     static ExtensionApi extApi;
     static  CurseApi api;
     private static String[] swearWords;
-
+    private static String[] whiteListedChannels;
+    private static String[] authroizedLinks;
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {
@@ -30,7 +34,8 @@ public class Main{
         extApi.addListener("message", new ProfanityListener());
         extApi.addListener("command", new ProfanityCommandListener());
         api = extApi.getCurseAPI();
-        loadProfanities(getProfanities());
+        loadProfanities(getFilterElements("profanities.txt"));
+        loadWhitelistedLinkingChannels(getFilterElements("linkerchannels.txt"));
     }
 
     private static class ProfanityListener implements ExtensionApi.Listener {
@@ -82,16 +87,17 @@ public class Main{
     private static void parseMessage(Message message) {
         try
         {
+            try {
+                message.body = new String(message.body.getBytes("UTF-8"), "UTF-8");
+            } catch (UnsupportedEncodingException e2) {
+                e2.printStackTrace();
+            }
+
             if(message.channelUUID.equals(api.resolveChannel("#bot-log"))||message.channelUUID.equals(api.resolveChannel("#bot-stats"))) return;
             if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), message.senderName + "said a curse word:" + message.body);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please dont swear");
-            }
-            try {
-                message.body = new String(message.body.getBytes("UTF-8"), "UTF-8");
-            } catch (UnsupportedEncodingException e2) {
-                e2.printStackTrace();
             }
 
             if(message.isPM) {
@@ -100,16 +106,16 @@ public class Main{
                 System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
             }
 
-            if(/*isLinkAndNotAuthed(message.body, message.senderName)*/!Util.isAuthorizedLinker(api, message)) {
+            if(!isAuthorizedLinker(api, message)) {
                 api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), message.senderName + "posted a link:" + message.body);
-                api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", please get permission before posting links");
+                api.postMessage(api.resolveChannel("bot-log"), "[" + api.mention(message.senderName) + "] *posted a link:* " + message.body);
+                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please get permission before posting those types of links.");
             }
 
             if(isUpperCase(message.body)) {
                 api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), message.senderName + "caps:" + message.body);
-                api.postMessage(api.resolveChannelUUID(message.channelUUID), "@"+message.senderName+", Chill out the caps");
+                api.postMessage(api.resolveChannel("bot-log"), "[" + api.mention(message.senderName) + "] *caps:* " + message.body);
+                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please lay off the caps.");
             }
         }
         catch (UnsupportedEncodingException e1)
@@ -125,7 +131,7 @@ public class Main{
 
                 String profanities = "";
 
-                profanities = getProfanities();
+                profanities = getFilterElements("profanities.txt");
 
                 boolean addProfanity = true;
                 try
@@ -158,13 +164,19 @@ public class Main{
                         out.flush();
                         out.close();
 
-                        loadProfanities(getProfanities());
+                        loadProfanities(getFilterElements("profanities.txt"));
                         api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
                     }
                     else
                         api.postMessage(api.resolveChannel("bot-log"), "[Failed]\n- *'" + commandEvent.command.args[0] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
                 } catch(IOException e)
                 {e.printStackTrace();}
+
+            }
+            break;
+
+            case "rmProfanity":
+            {
 
             }
             break;
@@ -182,19 +194,51 @@ public class Main{
         return false;
     }
 
-    private static String getProfanities()
+    private static String getFilterElements(String file)
     {
         try {
-            Scanner in = resetScanner("filters\\profanities.txt");
+            Scanner in = resetScanner("filters\\" + file);
             String prof = "";
-            String[] swears;
+            String[] elements;
 
-            if (!(in.hasNextLine()))
-                prof = "[ fuck,";
-            else {
-                while (in.hasNextLine()) {
-                    prof += in.nextLine() + ",";
+            switch(file) {
+                case "profanities.txt":
+                {
+                    if (!(in.hasNextLine())) {
+                        prof = "[ fuck,";
+                    } else {
+                        while (in.hasNextLine()) {
+                            prof += in.nextLine() + ",";
+                        }
+                    }
                 }
+                break;
+
+                case "linkerchannels.txt":
+                {
+                    if (!(in.hasNextLine())) {
+                        prof = "[ add-channels-here,";
+                    } else {
+                        while (in.hasNextLine()) {
+                            prof += in.nextLine() + ",";
+                        }
+                    }
+                }
+                break;
+
+                case "authorizedLinks.txt":
+                {
+                    if (!(in.hasNextLine())) {
+                        prof = "[ paste.ee,";
+                    } else {
+                        while (in.hasNextLine()) {
+                            prof += in.nextLine() + ",";
+                        }
+                    }
+                }
+                break;
+                default:
+                    throw new FileNotFoundException();
             }
 
             prof = prof.substring(0, prof.length() - 1);
@@ -202,10 +246,10 @@ public class Main{
                 prof += " ]";
 
             try {
-                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
+                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\" + file), "UTF-8"));
 
-                swears = prof.split(",+");
-                for (String s : swears) {
+                elements = prof.split(",+");
+                for (String s : elements) {
                     if (!(s.contains("]")))
                         out.write(s + ",\n");
                     else
@@ -226,13 +270,19 @@ public class Main{
         return null;
     }
 
-    private static void loadProfanities(String profanities)
-    {
+    private static void loadProfanities(String profanities) {
         swearWords = profanities.replaceAll("(\\[ )|( \\])", "").split(",+");
     }
 
-    private static Scanner resetScanner(String file) throws FileNotFoundException
-    {
+    private static void loadWhitelistedLinkingChannels(String channels) {
+        whiteListedChannels = channels.replaceAll("(\\[ )|( \\])", "").split(",+");
+    }
+
+    private static void loadAuthorizedLinksUniversal(String links) {
+        authroizedLinks = links.replaceAll("(\\[ )|( \\])", "").split(",+");
+    }
+
+    private static Scanner resetScanner(String file) throws FileNotFoundException {
         return new Scanner(new FileInputStream(file), "UTF-8");
     }
 
@@ -243,4 +293,79 @@ public class Main{
         return false;
     }
 
+    public static boolean isAuthorizedLinker(CurseApi api, Message message) {
+        boolean canPost = true;
+        Member member = api.resolveMember(message.senderName);
+        Channel channel = api.resolveChannelUUID(message.channelUUID);
+        String[] body = message.body.split("\\s+");
+
+
+        String url_regex = "(((http|ftp|https):\\/\\/)?([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
+        Pattern p = Pattern.compile(url_regex);
+
+        for (String s : body) {
+            Matcher m = p.matcher(s);
+
+            if (m.find()) {
+                s = m.group(1);
+                if(!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
+                    s = "http://" + s;
+                }
+
+                try {
+                    URL url = new URL(s);
+                    String host = url.getHost();
+                    String tld = host.substring(host.lastIndexOf('.') + 1, host.length());
+                    System.out.println(tld);
+                }
+                catch (IOException e) {
+                    System.out.println("unable to open connection");
+                }
+
+                System.out.println("String contains URL");
+            } else {
+                System.out.println("No link detected");
+            }
+        }
+
+        /*
+        for(String s : body) {
+            try {
+                if(!(s.startsWith("http://") || s.startsWith("https://"))) {
+                    s = "http://" + s;
+                }
+
+                s = s.substring(s.indexOf("http://"), s.length() - 1);
+                System.out.println(s);
+
+
+                URL url = new URL(s);
+                System.out.println("<a href=\"" + url + "\">"+ url + "</a> " url.getAuthority() + " " + url.getRef());
+            } catch (MalformedURLException e) {
+                System.out.println("Invalid link");
+                canPost = true;
+            }
+        }*/
+
+        /*for (String s : authroizedLinks) {
+            for(String s : whiteListedChannels) {
+                if (api.resolveChannel(s).equals(channel) && ) {
+                    canPost = true;
+                }
+            }
+
+            else {
+                canPost = false;
+            }
+        }*/
+
+        //for(String s : body)
+            //System.out.println(s);
+
+        if(Util.isUserAuthorized(api, member)){
+            canPost = true;
+        }
+
+        return canPost;
+    }
 }
