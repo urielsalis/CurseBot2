@@ -41,6 +41,8 @@ public class CurseApi {
     public WebSocket websocket;
     private long userID;
     private String sessionID;
+    public long userJoins = 0;
+    public long messages = 0;
 
     public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
@@ -98,6 +100,7 @@ public class CurseApi {
                                     String channelUUID = (String) body.get("ConversationID");
                                     updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"));
                                     Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
+                                    messages++;
                                     if(isPM) {
                                         updateListeners(message);
                                     } else {
@@ -126,6 +129,7 @@ public class CurseApi {
                                             Object userIDMember = member.get("UserID");
                                             Object bestRole = member.get("BestRole");
                                             Member m = new Member(nickname, username, userIDMember, bestRole);
+                                            userJoins++;
                                             if(!members.contains(m)) {
                                                 //new user, TODO
                                                 postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName + ", dont forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");

@@ -44,13 +44,16 @@ public class Main {
         handler.init();
         loadMembers();
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                updateMembersTable();
-            }
+        service.scheduleAtFixedRate(() -> updateMembersTable(), 0, 5, TimeUnit.MINUTES);
+        service.scheduleAtFixedRate(() -> showStats(), 0, 1, TimeUnit.DAYS);
+    }
 
-        }, 0, 5, TimeUnit.MINUTES);
+    private void showStats() {
+        api.postMessage(api.resolveChannel("bot-stats"), "Users joined: " + api.userJoins);
+        api.postMessage(api.resolveChannel("bot-stats"), "Messages posted: " + api.messages);
+        api.userJoins = 0;
+        api.messages = 0;
+
     }
 
     private void loadMembers() {
