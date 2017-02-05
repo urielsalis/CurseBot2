@@ -4,6 +4,11 @@ import me.urielsalis.cursebot.api.*;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,6 +56,13 @@ public class Main {
             }
 
         }, 0, 5, TimeUnit.MINUTES);
+
+        service.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                fetchDomains();
+            }
+        }, 0, 7, TimeUnit.DAYS);
     }
 
     private void loadMembers() {
@@ -71,6 +83,21 @@ public class Main {
             ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
             obj_out.writeObject(api.getMembersList());
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void fetchDomains() {
+        try {
+            URL website = new URL("https://data.iana.org/TLD/tlds-alpha-by-domain.txt");
+            try (InputStream in = website.openStream()) {
+                Files.copy(in, new File("filters\\domains.txt").toPath(), StandardCopyOption.REPLACE_EXISTING);
+                me.urielsalis.cursebot.extensions.Profanity.Main.loadTLDs();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }

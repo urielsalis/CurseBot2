@@ -12,6 +12,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +28,8 @@ public class Main{
     private static String[] swearWords;
     private static String[] whiteListedChannels;
     private static String[] authroizedLinks;
+    private static HashSet<String> tlds = new HashSet<>();
+    private static String tldRegex = "";
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {
@@ -36,6 +40,7 @@ public class Main{
         api = extApi.getCurseAPI();
         loadProfanities(getFilterElements("profanities.txt"));
         loadWhitelistedLinkingChannels(getFilterElements("linkerchannels.txt"));
+        loadAuthorizedLinksUniversal(getFilterElements("authorizedlinks.txt"));
     }
 
     private static class ProfanityListener implements ExtensionApi.Listener {
@@ -108,7 +113,7 @@ public class Main{
 
             if(!isAuthorizedLinker(api, message)) {
                 api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), "[" + api.mention(message.senderName) + "] *posted a link:* " + message.body);
+                api.postMessage(api.resolveChannel("bot-log"), "[ " + api.mention(message.senderName) + " ] *posted a link:* " + message.body);
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please get permission before posting those types of links.");
             }
 
@@ -180,7 +185,7 @@ public class Main{
 
                 String profanities = "";
 
-                profanities = getProfanities();
+                profanities = getFilterElements("profanities.txt");
 
                 boolean removeProfanity = false;
                 String remove = "";
@@ -219,7 +224,7 @@ public class Main{
                         out.flush();
                         out.close();
 
-                        loadProfanities(getProfanities());
+                        loadProfanities(getFilterElements("profanities.txt"));
                         api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
                     }
                     else
@@ -274,7 +279,7 @@ public class Main{
                 }
                 break;
 
-                case "authorizedLinks.txt":
+                case "authorizedlinks.txt":
                 {
                     if (!(in.hasNextLine())) {
                         prof = "[ paste.ee,";
@@ -330,27 +335,91 @@ public class Main{
         authroizedLinks = links.replaceAll("(\\[ )|( \\])", "").split(",+");
     }
 
+    public static void loadTLDs() {
+        try {
+            Scanner s = new Scanner(new File("filters\\domains.txt"));
+            s.nextLine();
+            tldRegex += "(";
+            while (s.hasNextLine()) {
+                String add = s.nextLine().toLowerCase();
+                tlds.add(add);
+                tldRegex += "(." + add + ")|";
+            }
+            tldRegex = tldRegex.substring(0, tldRegex.length() - 1);
+            tldRegex += ")";
+            System.out.println(tldRegex);
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static Scanner resetScanner(String file) throws FileNotFoundException {
         return new Scanner(new FileInputStream(file), "UTF-8");
     }
 
-    private static boolean isLinkAndNotAuthed(String body, String username) {
-        if(body.contains("https") || body.contains(".com") || body.contains(".net") || body.contains("http") || body.contains(".org") || body.contains(".ly")) {
-            if(!me.urielsalis.cursebot.Main.authedLinkers.contains(username.toLowerCase().trim())) return true;
-        }
-        return false;
-    }
-
-    public static boolean isAuthorizedLinker(CurseApi api, Message message) {
-        boolean canPost = true;
+    private static boolean isAuthorizedLinker(CurseApi api, Message message) {
+        //boolean canPost = true;
         Member member = api.resolveMember(message.senderName);
         Channel channel = api.resolveChannelUUID(message.channelUUID);
-        String[] body = message.body.split("\\s+");
+        //String[] body = message.body.split("\\s+");
+        String body = message.body.replaceAll("\\s+", "");
 
 
         String url_regex = "(((http|ftp|https):\\/\\/)?([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
         Pattern p = Pattern.compile(url_regex);
+        Pattern tldP = Pattern.compile(tldRegex);
 
+        if(Util.isUserAuthorized(api, member)){
+            return true;
+        }
+
+        String body2 = body;
+        Matcher m = p.matcher(body2);
+        if (m.find()) {
+            body2 = m.group(1);
+            if(!(body2.startsWith("http://") || body2.startsWith("https://") || body2.startsWith("ftp://"))) {
+                body2 = "http://" + body2;
+            }
+
+            try {
+                System.out.println(body2);
+                URL url = new URL(body2);
+                String host = url.getHost();
+                String tld = host.substring(host.lastIndexOf('.') + 1, host.length()).toLowerCase();
+
+                System.out.println("PRE PRE: " + tld + " " + tlds.contains(tld));
+
+                Matcher tldM = tldP.matcher(tld);
+
+                System.out.println("PRE: " + tld + " " + tlds.contains(tld));
+
+
+                //tld = tld.replaceAll("[a-zA-Z\\w.,@?^=%&:/~+#-@?^=%&/~+#-\\]\\\\ ]*", "");
+                if(tldM.find()){
+                        tld = tld.substring(tldM.start(), tldM.end());
+                }
+
+                System.out.println("POST: " + tld + " " + tlds.contains(tld));
+
+                if(tlds.contains(tld)) {
+                    for (String c : whiteListedChannels) {
+                        if(api.resolveChannel(c).equals(channel)) {
+                            return true;
+                        }
+                    }
+
+                    if(!(Arrays.asList(authroizedLinks).contains(host) || Arrays.asList(authroizedLinks).contains(url))) {
+                        return false;
+                    }
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /*
         for (String s : body) {
             Matcher m = p.matcher(s);
 
@@ -363,57 +432,29 @@ public class Main{
                 try {
                     URL url = new URL(s);
                     String host = url.getHost();
-                    String tld = host.substring(host.lastIndexOf('.') + 1, host.length());
-                    System.out.println(tld);
+                    String tld = host.substring(host.lastIndexOf('.') + 1, host.length()).toLowerCase();
+
+                    if(tlds.contains(tld)) {
+                        for (String c : whiteListedChannels) {
+                            if(api.resolveChannel(c).equals(channel)) {
+                                return true;
+                            }
+                        }
+
+                        if(!(Arrays.asList(authroizedLinks).contains(host) || Arrays.asList(authroizedLinks).contains(url))) {
+                            return false;
+                        }
+                    }
                 }
                 catch (IOException e) {
                     System.out.println("unable to open connection");
                 }
-
                 System.out.println("String contains URL");
             } else {
                 System.out.println("No link detected");
             }
-        }
-
-        /*
-        for(String s : body) {
-            try {
-                if(!(s.startsWith("http://") || s.startsWith("https://"))) {
-                    s = "http://" + s;
-                }
-
-                s = s.substring(s.indexOf("http://"), s.length() - 1);
-                System.out.println(s);
-
-
-                URL url = new URL(s);
-                System.out.println("<a href=\"" + url + "\">"+ url + "</a> " url.getAuthority() + " " + url.getRef());
-            } catch (MalformedURLException e) {
-                System.out.println("Invalid link");
-                canPost = true;
-            }
         }*/
 
-        /*for (String s : authroizedLinks) {
-            for(String s : whiteListedChannels) {
-                if (api.resolveChannel(s).equals(channel) && ) {
-                    canPost = true;
-                }
-            }
-
-            else {
-                canPost = false;
-            }
-        }*/
-
-        //for(String s : body)
-            //System.out.println(s);
-
-        if(Util.isUserAuthorized(api, member)){
-            canPost = true;
-        }
-
-        return canPost;
+        return true;
     }
 }
