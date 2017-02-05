@@ -93,7 +93,7 @@ public class Main{
                 e2.printStackTrace();
             }
 
-            if(message.channelUUID.equals(api.resolveChannel("#bot-log"))||message.channelUUID.equals(api.resolveChannel("#bot-stats"))) return;
+            if(message.channelUUID.equals(api.resolveChannel("bot-log"))||message.channelUUID.equals(api.resolveChannel("bot-stats"))) return;
             if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), message.senderName + "said a curse word:" + message.body);
@@ -174,10 +174,58 @@ public class Main{
 
             }
             break;
-
             case "rmProfanity":
             {
+                api.postMessage(api.resolveChannel("bot-log"), "removing profanity!");
 
+                String profanities = "";
+
+                profanities = getProfanities();
+
+                boolean removeProfanity = false;
+                String remove = "";
+                try
+                {
+                    for(String s : swearWords) {
+                        if (s.equalsIgnoreCase(commandEvent.command.args[0])) {
+                            removeProfanity = true;
+                            remove = s;
+                        }
+                    }
+
+                    if(removeProfanity)
+                    {
+
+                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
+
+	                            		/*
+	                            		String addProf = "";
+	                            		for(int i = 1; i < args.length; i++)
+	                            			addProf += args[i] + "_";
+	                            		addProf = addProf.substring(0, addProf.length() - 1);*/
+
+                        profanities = profanities.trim().replaceFirst(" \\]", ",," + commandEvent.command.args[0] + " ]");
+
+                        String[] swears = profanities.split(",+");
+                        for(String s : swears)
+                        {
+                            if(s.equals(remove)) continue;
+                            if(!(s.contains("]")))
+                                out.write(s + ",\n");
+                            else
+                                out.write(s);
+                        }
+
+                        out.flush();
+                        out.close();
+
+                        loadProfanities(getProfanities());
+                        api.postMessage(api.resolveChannel("bot-log"), "[Success]\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                    }
+                    else
+                        api.postMessage(api.resolveChannel("bot-log"), "[Failed]\n- *'" + commandEvent.command.args[0] + "'* is not in the filter!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                } catch(IOException e)
+                {e.printStackTrace();}
             }
             break;
         }

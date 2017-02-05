@@ -96,6 +96,7 @@ public class CurseApi {
                                     long conversationType = (long) body.get("ConversationType");
                                     boolean isPM = conversationType==3;
                                     String channelUUID = (String) body.get("ConversationID");
+                                    updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"));
                                     Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
                                     if(isPM) {
                                         updateListeners(message);
@@ -135,6 +136,16 @@ public class CurseApi {
                                             System.out.println(m.senderName + " joined!");
                                         }
                                         System.out.println();
+                                    } else if(changeType==3) {
+                                        String sender = (String) body.get("SenderName");
+                                        JSONArray members2 = (JSONArray) body.get("Members");
+                                        JSONObject object = (JSONObject) members2.get(0);
+
+                                        String removedid = (String) object.get("UserID");
+                                        String removedname = (String) object.get("UserName");
+
+                                        postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
+
                                     }
                                 }
                             } catch (ParseException e) {
@@ -148,6 +159,14 @@ public class CurseApi {
             websocket.sendText("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
         } catch ( WebSocketException | IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateMember(long senderID, long senderVanityRole) {
+        for(Member member: members) {
+            if(member.senderID==senderID) {
+                member.bestRole = senderVanityRole;
+            }
         }
     }
 
@@ -480,5 +499,13 @@ public class CurseApi {
                 return entry.getValue();
         }
         return null;
+    }
+
+    public void setMembers(ArrayList<Member> members) {
+        this.members = members;
+    }
+
+    public ArrayList<Member> getMembersList() {
+        return members;
     }
 }
