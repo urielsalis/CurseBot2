@@ -44,6 +44,7 @@ public class CurseApi {
     public long userJoins = 0;
     public long messages = 0;
     public long removedUsers = 0;
+    public long leftUsers = 0;
 
     public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
@@ -141,7 +142,6 @@ public class CurseApi {
                                         }
                                         System.out.println();
                                     } else if(changeType==3) {
-                                        removedUsers++;
                                         String sender = (String) body.get("SenderName");
                                         JSONArray members2 = (JSONArray) body.get("Members");
                                         JSONObject object = (JSONObject) members2.get(0);
@@ -151,8 +151,14 @@ public class CurseApi {
                                         if(removedname==null) {
                                             removedname = (String) object.get("Nickname");
                                         }
+                                        if(removedname.equals(sender)) {
+                                            leftUsers++;
+                                            postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" left");
+                                        } else {
+                                            removedUsers++;
+                                            postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
+                                        }
 
-                                        postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
 
                                     }
                                 }
