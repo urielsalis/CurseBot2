@@ -425,7 +425,7 @@ public class Main{
 
             if (m.find()) {
                 s = m.group(1);
-                if(!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
+                if (!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
                     s = "http://" + s;
                 }
 
