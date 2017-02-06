@@ -2,6 +2,8 @@
 
 ---
 
+[![Build Status](http://www.tabpixels.tech:8080/job/CurseBot/badge/icon)](http://www.tabpixels.tech:8080/job/CurseBot/)
+
 ## Usage (manual)
 
 * Clone the workspace to your local computer
