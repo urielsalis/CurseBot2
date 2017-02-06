@@ -14,7 +14,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>me.urielsalis.urielsalads.Main</mainClass>
+                            <mainClass>me.urielsalis.cursebot.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
