@@ -2,7 +2,7 @@
 
 ---
 
-[![Build Status](http://www.tabpixels.tech:8080/job/CurseBot/badge/icon)](http://www.tabpixels.tech:8080/job/CurseBot/)
+[![Build Status](http://tabpixels.tech:8080/job/CurseBot/badge/icon)](http://tabpixels.tech:8080/job/CurseBot/)
 
 ## Usage (manual)
 
