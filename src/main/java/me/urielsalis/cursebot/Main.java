@@ -56,7 +56,6 @@ public class Main {
         ExtensionHandler handler = new ExtensionHandler();
         handler.init();
         loadMembers();
-        showStats();
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(() -> updateMembersTable(), 0, 5, TimeUnit.MINUTES);
         service.scheduleAtFixedRate(() -> showStats(), 1, 1, TimeUnit.DAYS);
