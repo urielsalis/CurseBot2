@@ -347,16 +347,10 @@ public class Main{
         try {
             Scanner s = new Scanner(new File("filters\\domains.txt"));
             s.nextLine();
-            //tldRegex += "(";
             while (s.hasNextLine()) {
                 String add = "." + s.nextLine().toLowerCase();
                 tlds.add(add);
-                //tldRegex += "(" + add + ")|";
             }
-            //tldRegex = tldRegex.substring(0, tldRegex.length() - 1);
-            //tldRegex += ")";
-            //tldRegex = tldRegex.replaceAll("-", "\\\\-");
-            //System.out.println(tldRegex);
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -368,18 +362,15 @@ public class Main{
     }
 
     private static boolean isAuthorizedLinker(CurseApi api, Message message) {
-        //boolean canPost = true;
         Member member = api.resolveMember(message.senderName);
         Channel channel = api.resolveChannelUUID(message.channelUUID);
         String[] body = message.body.split("\\s+");
-        //String body = message.body.replaceAll("\\s+", "");
 
 
         String url_regex = "(((http|ftp|https):\\/\\/)?([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
         Pattern p = Pattern.compile(url_regex);
-        //Pattern tldP = Pattern.compile(tldRegex);
 
-        if(Util.isUserAuthorized(api, member)){
+        if (Util.isUserAuthorized(api, member)) {
             return true;
         }
 
@@ -388,7 +379,7 @@ public class Main{
 
             if (m.find()) {
                 s = m.group(1);
-                if(!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
+                if (!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
                     s = "http://" + s;
                 }
 
@@ -397,19 +388,18 @@ public class Main{
                     String host = url.getHost();
                     String tld = host.substring(host.lastIndexOf('.'), host.length()).toLowerCase();
 
-                    if(tlds.contains(tld)) {
+                    if (tlds.contains(tld)) {
                         for (String c : whiteListedChannels) {
-                            if(api.resolveChannel(c).equals(channel)) {
+                            if (api.resolveChannel(c).equals(channel)) {
                                 return true;
                             }
                         }
 
-                        if(!(Arrays.asList(authroizedLinks).contains(host) || Arrays.asList(authroizedLinks).contains(url))) {
+                        if (!(Arrays.asList(authroizedLinks).contains(host) || Arrays.asList(authroizedLinks).contains(url))) {
                             return false;
                         }
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     System.out.println("unable to open connection");
                 }
                 System.out.println("String contains URL");
@@ -417,74 +407,5 @@ public class Main{
         }
 
         return true;
-
-        /*
-        String body2 = body;
-        Matcher m = p.matcher(body2);
-        if (m.find()) {
-            System.out.println("GROUP: " + m.group(1));
-            body2 = m.group(1);
-            if(!(body2.startsWith("http://") || body2.startsWith("https://") || body2.startsWith("ftp://"))) {
-                body2 = "http://" + body2;
-            }
-
-            try {
-                System.out.println(body2);
-                URL url = new URL(body2);
-                String host = url.getHost();
-                String tld = host.substring(host.lastIndexOf('.'), host.length()).toLowerCase();
-
-                System.out.println("URL: " + url.getHost() + " " + linkExists(url));
-                System.out.println("PRE PRE: " + tld + " " + tlds.contains(tld));
-                System.out.println("TLD REPLACE: " + tld.replaceAll("[^" + tldRegex + "]", ""));
-                Matcher tldM = tldP.matcher(tld);
-                System.out.println("PRE: " + tld + " " + tlds.contains(tld));
-
-                if(tldM.matches()){
-                        tld = tld.substring(tldM.start(), tldM.end());
-                }
-
-                System.out.println("POST: " + tld + " " + tlds.contains(tld));
-
-                if(tlds.contains(tld)) {
-                    for (String c : whiteListedChannels) {
-                        if(api.resolveChannel(c).equals(channel)) {
-                            return true;
-                        }
-                    }
-
-                    if(!(Arrays.asList(authroizedLinks).contains(host) || Arrays.asList(authroizedLinks).contains(url))) {
-                        return false;
-                    }
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
     }
-
-    /*
-    public static boolean linkExists(URL url) throws IOException {
-        boolean canConnect = false;
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.connect();
-
-            int code = con.getResponseCode();
-            System.out.println("RESPONSE CODE: " + code);
-
-            con.disconnect();
-            if (code == HttpURLConnection.HTTP_OK || code == HttpURLConnection.HTTP_FORBIDDEN) {
-                canConnect = true;
-            }
-        }
-        catch (Exception e) {
-            System.out.println("RESPONSE CODE: none");
-            canConnect = false;
-        }
-        return canConnect;
-    }*/
 }
