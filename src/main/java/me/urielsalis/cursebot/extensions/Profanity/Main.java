@@ -150,8 +150,7 @@ public class Main{
                     {
                         Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
 
-                        profanities = profanities.trim().replaceFirst("\\s\\]", "");
-                        profanities += ",," + commandEvent.command.args[0] + " ]";
+                        profanities = profanities.trim().replaceFirst(" \\]", ",," + commandEvent.command.args[0] + " ]");
 
                         String[] swears = profanities.split(",+");
                         for(String s : swears)
@@ -247,7 +246,7 @@ public class Main{
 
 
     private static boolean containsCurseWord(String body) throws UnsupportedEncodingException {
-        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll("((\\s+)|(\\-)|(_))", "").trim();
+        String message = new String(body.getBytes("UTF-8"), "UTF-8").replaceAll(" +", "");
 
         for(String str : swearWords)
             if(message.toLowerCase().contains(str.toLowerCase()))
