@@ -103,7 +103,6 @@ public class CurseApi {
                                     String channelUUID = (String) body.get("ConversationID");
                                     updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"));
                                     Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
-                                    messages++;
                                     if(isPM) {
                                         updateListeners(message);
                                     } else {
@@ -132,17 +131,12 @@ public class CurseApi {
                                             Object userIDMember = member.get("UserID");
                                             Object bestRole = member.get("BestRole");
                                             Member m = new Member(nickname, username, userIDMember, bestRole);
-                                            userJoins++;
                                             if(!members.contains(m)) {
+                                                //new user, TODO
                                                 postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName + ", dont forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
                                                 members.add(m);
                                             } else {
-                                                if (removedUsersList.contains(m.senderID)) {
-                                                    postMessage(resolveChannel("bot-stats"), "@" + m.senderID + ":" + m.senderName + " joined after being removed previously");
-                                                    removedUsersList.remove(m.senderID);
-                                                } else {
-                                                    postMessage(resolveChannel("bot-stats"), "@" + m.senderID + ":" + m.senderName + " joined again");
-                                                }
+                                                postMessage(resolveChannel("bot-stats"), "@" +m.senderID+":"+m.senderName+" joined again");
                                             }
                                             System.out.println(m.senderName + " joined!");
                                         }
@@ -152,20 +146,10 @@ public class CurseApi {
                                         JSONArray members2 = (JSONArray) body.get("Members");
                                         JSONObject object = (JSONObject) members2.get(0);
 
-                                        long removedid = (long) object.get("UserID");
-                                        String removedname = (String) object.get("Username");
-                                        if(removedname==null) {
-                                            removedname = (String) object.get("Nickname");
-                                        }
-                                        if(removedname.equals(sender)) {
-                                            leftUsers++;
-                                            postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" left");
-                                        } else {
-                                            removedUsers++;
-                                            removedUsersList.add(removedid);
-                                            postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
-                                        }
+                                        String removedid = (String) object.get("UserID");
+                                        String removedname = (String) object.get("UserName");
 
+                                        postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
 
                                     }
                                 }
