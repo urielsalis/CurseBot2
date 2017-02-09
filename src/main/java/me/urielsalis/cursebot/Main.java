@@ -65,7 +65,8 @@ public class Main {
     private void showStats() {
         api.postMessage(api.resolveChannel("bot-stats"), "[*Stats:* ~" + new Date().toString() + "~ ]"
                                                                             + "\n-*I===============================I*-"
-                                                                            + "\n*Users joined:*            |     " + api.userJoins
+                                                                            + "\n*Net users joined:*        |     " + api.userJoins
+                                                                            + "\n*Unique joins:*          |     " + api.userUniqueJoins
                                                                             + "\n*Messages posted:*   |     " + api.messages
                                                                             + "\n*Removed users:*      |     " + api.removedUsers
                                                                             + "\n*Left users:*                |     " + api.leftUsers);

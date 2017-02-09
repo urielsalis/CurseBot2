@@ -102,7 +102,7 @@ public class Main{
             if(message.channelUUID.equals(api.resolveChannel("bot-log"))||message.channelUUID.equals(api.resolveChannel("bot-stats"))) return;
             if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Action:* message auto-deleted! Verbal warning received!");
+                api.postMessage(api.resolveChannel("bot-log"), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
             }
 
@@ -114,13 +114,13 @@ public class Main{
 
             if(!isAuthorizedLinker(api, message)) {
                 api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                api.postMessage(api.resolveChannel("bot-log"), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please get permission before posting those types of links.");
             }
 
             if(isUpperCase(message.body)) {
                 api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), "~*[Capital Letters Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                api.postMessage(api.resolveChannel("bot-log"), "~*[Capital Letters Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please lay off the caps.");
             }
         }
