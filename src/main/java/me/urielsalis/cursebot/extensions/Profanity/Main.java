@@ -9,12 +9,10 @@ import me.urielsalis.cursebot.extensions.ExtensionHandler;
 import me.urielsalis.cursebot.extensions.Handle;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,10 +25,8 @@ public class Main{
     static ExtensionApi extApi;
     static  CurseApi api;
     private static String[] swearWords;
-    private static String[] whiteListedChannels;
-    private static String[] authroizedLinks;
+    private static List<String> linkBlacklist;
     private static HashSet<String> tlds = new HashSet<>();
-    //private static String tldRegex = "";
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {
@@ -40,8 +36,7 @@ public class Main{
         extApi.addListener("command", new ProfanityCommandListener());
         api = extApi.getCurseAPI();
         loadProfanities(getFilterElements("profanities.txt"));
-        loadWhitelistedLinkingChannels(getFilterElements("linkerchannels.txt"));
-        loadAuthorizedLinksUniversal(getFilterElements("authorizedlinks.txt"));
+        loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
     }
 
     private static class ProfanityListener implements ExtensionApi.Listener {
@@ -100,25 +95,25 @@ public class Main{
             }
 
             if(message.channelUUID.equals(api.resolveChannel("bot-log"))||message.channelUUID.equals(api.resolveChannel("bot-stats"))) return;
-            if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
-                api.deleteMessage(message);
-                api.postMessage(api.resolveChannel("bot-log"), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
-                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
-            }
 
             if(message.isPM) {
                 System.out.println(Util.timestampToDate(message.timestamp) + "  [" + message.senderName + "] " + message.body);
-            } else {
+            }
+            else {
                 System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
             }
 
             if(!isAuthorizedLinker(api, message)) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
-                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please get permission before posting those types of links.");
+                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
             }
-
-            if(isUpperCase(message.body)) {
+            else if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
+                api.deleteMessage(message);
+                api.postMessage(api.resolveChannel("bot-log"), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
+                api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
+            }
+            else if(isUpperCase(message.body)) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), "~*[Capital Letters Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please lay off the caps.");
@@ -222,26 +217,6 @@ public class Main{
                 {e.printStackTrace();}
             }
             break;
-
-            /*
-            case "addLink":
-            {
-            }
-            break;
-            case "rmLink":
-            {
-            }
-            break;
-
-            case "whitelistChannel":
-            {
-            }
-            break;
-
-            case "blacklistChannel":
-            {
-            }
-            break;*/
         }
     }
 
@@ -276,22 +251,10 @@ public class Main{
                 }
                 break;
 
-                case "linkerchannels.txt":
+                case "linkblacklist.txt":
                 {
                     if (!(in.hasNextLine())) {
-                        prof = "[ add-channels-here,";
-                    } else {
-                        while (in.hasNextLine()) {
-                            prof += in.nextLine() + ",";
-                        }
-                    }
-                }
-                break;
-
-                case "authorizedlinks.txt":
-                {
-                    if (!(in.hasNextLine())) {
-                        prof = "[ paste.ee,";
+                        prof = "[ pornhub.com,";
                     } else {
                         while (in.hasNextLine()) {
                             prof += in.nextLine() + ",";
@@ -336,12 +299,32 @@ public class Main{
         swearWords = profanities.replaceAll("(\\[ )|( \\])", "").split(",+");
     }
 
-    private static void loadWhitelistedLinkingChannels(String channels) {
-        whiteListedChannels = channels.replaceAll("(\\[ )|( \\])", "").split(",+");
-    }
+    private static void loadLinkBlacklist(String links) {
+        linkBlacklist = Arrays.asList(links.replaceAll("(\\[ )|( \\])", "").split(",+"));
+        for (int i = 0; i < linkBlacklist.size(); i++) {
+            if (!(linkBlacklist.get(i).startsWith("https://www.") || linkBlacklist.get(i).startsWith("http://www."))) {
+                if(linkBlacklist.get(i).startsWith("www.")) {
+                    linkBlacklist.set(i, linkBlacklist.get(i).replaceFirst("www.", "https://www."));
+                }
+                else if(linkBlacklist.get(i).startsWith("https://") || linkBlacklist.get(i).startsWith("http://")) {
+                    linkBlacklist.set(i, linkBlacklist.get(i).replaceFirst("((https://)|(http://))", "https://www."));
+                }
+                else {
+                    linkBlacklist.set(i, "https://www." + linkBlacklist.get(i));
+                }
+            }
 
-    private static void loadAuthorizedLinksUniversal(String links) {
-        authroizedLinks = links.replaceAll("(\\[ )|( \\])", "").split(",+");
+            try {
+                URL url = new URL(linkBlacklist.get(i));
+                String host = url.getHost().toLowerCase();
+                String tld = host.substring(host.indexOf('.', host.indexOf('.') + 1));
+
+                linkBlacklist.set(i, linkBlacklist.get(i).replaceFirst(tld, ".[TLDEXISTS]"));
+            }
+            catch (IOException e) {
+                System.out.println("Unable to load connection!");
+            }
+        }
     }
 
     public static void loadTLDs() {
@@ -364,7 +347,6 @@ public class Main{
 
     private static boolean isAuthorizedLinker(CurseApi api, Message message) {
         Member member = api.resolveMember(message.senderName);
-        Channel channel = api.resolveChannelUUID(message.channelUUID);
         String[] body = message.body.split("\\s+");
 
 
@@ -380,23 +362,29 @@ public class Main{
 
             if (m.find()) {
                 s = m.group(1);
-                if (!(s.startsWith("http://") || s.startsWith("https://") || s.startsWith("ftp://"))) {
-                    s = "http://" + s;
+
+                if (!(s.startsWith("http://www.") || s.startsWith("https://www."))) {
+                    if(s.startsWith("www.")) {
+                        s = s.replaceFirst("www.", "https://www.");
+                    }
+                    else if(s.startsWith("https://") || s.startsWith("http://")) {
+                        s = s.replaceFirst("((https://)|(http://))", "https://www.");
+                    }
+                    else {
+                        s = "https://www." + s;
+                    }
                 }
 
                 try {
                     URL url = new URL(s);
-                    String host = url.getHost();
-                    String tld = host.substring(host.lastIndexOf('.'), host.length()).toLowerCase();
+                    String host = url.getHost().toLowerCase();
+                    String tld = host.substring(host.lastIndexOf('.'), host.length());
+                    String tld2 = host.substring(host.indexOf('.', host.indexOf('.') + 1));
+                    host = "https://" + host.replaceFirst(tld2, ".[TLDEXISTS]");
 
                     if (tlds.contains(tld)) {
-                        for (String c : whiteListedChannels) {
-                            if (api.resolveChannel(c).equals(channel)) {
-                                return true;
-                            }
-                        }
-
-                        if (!(Arrays.asList(authroizedLinks).contains(host) || Arrays.asList(authroizedLinks).contains(url))) {
+                        s = s.replaceFirst(tld2, ".[TLDEXISTS]");
+                        if ((linkBlacklist.contains(host) || linkBlacklist.contains(s))) {
                             return false;
                         }
                     }
@@ -406,7 +394,6 @@ public class Main{
                 System.out.println("String contains URL");
             }
         }
-
         return true;
     }
 }
