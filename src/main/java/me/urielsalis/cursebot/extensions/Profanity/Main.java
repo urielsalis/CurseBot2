@@ -148,8 +148,8 @@ public class Main{
                         profanities = profanities.trim().replaceFirst("\\s\\]", "");
                         profanities += ",," + commandEvent.command.args[0] + " ]";
 
-                        String[] swears = profanities.split(",+");
-                        for(String s : swears)
+                        String[] list = profanities.split(",+");
+                        for(String s : list)
                         {
                             if(!(s.contains("]")))
                                 out.write(s + ",\n");
@@ -161,13 +161,12 @@ public class Main{
                         out.close();
 
                         loadProfanities(getFilterElements("profanities.txt"));
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to the filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
                     }
                     else
                         api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
                 } catch(IOException e)
                 {e.printStackTrace();}
-
             }
             break;
 
@@ -196,8 +195,8 @@ public class Main{
 
                         profanities = profanities.trim().replaceFirst(",," + remove, "");
 
-                        String[] swears = profanities.split(",+");
-                        for(String s : swears)
+                        String[] list = profanities.split(",+");
+                        for(String s : list)
                         {
                             if(s.equals(remove)) continue;
                             if(!(s.contains("]")))
@@ -210,10 +209,49 @@ public class Main{
                         out.close();
 
                         loadProfanities(getFilterElements("profanities.txt"));
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]**\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to filter!\n- Removed by " + api.mention(commandEvent.command.message.senderName));
+                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]**\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to the filter!\n- Removed by " + api.mention(commandEvent.command.message.senderName));
                     }
                     else
                         api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is not in the filter!\n- Attempted to be removed by " + api.mention(commandEvent.command.message.senderName));
+                } catch(IOException e)
+                {e.printStackTrace();}
+            }
+            break;
+
+            case "blacklistLink": {
+                api.postMessage(api.resolveChannel("bot-log"), "~*[Executing blacklisting link]*~");
+
+                String links = "";
+
+                links = getFilterElements("linkblacklist.txt");
+
+                try
+                {
+                    if(isLink(commandEvent.command.args[0]))
+                    {
+                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\linkblacklist.txt"), "UTF-8"));
+
+                        links = links.trim().replaceFirst("\\s\\]", "");
+                        links += ",," + commandEvent.command.args[0] + " ]";
+
+                        String[] list = links.split(",+");
+                        for(String s : list)
+                        {
+                            if(!(s.contains("]")))
+                                out.write(s + ",\n");
+                            else
+                                out.write(s);
+                        }
+
+                        out.flush();
+                        out.close();
+
+                        loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
+                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nlink blacklist reloaded!\n- Added *'```" + commandEvent.command.args[0] + "```'* to the blacklist!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                    }
+                    else {
+                        api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- '```" + commandEvent.command.args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                    }
                 } catch(IOException e)
                 {e.printStackTrace();}
             }
@@ -350,51 +388,59 @@ public class Main{
         Member member = api.resolveMember(message.senderName);
         String[] body = message.body.split("\\s+");
 
-
-        String url_regex = "(((http|ftp|https):\\/\\/)?([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
-        Pattern p = Pattern.compile(url_regex);
-
         if (Util.isUserAuthorized(api, member)) {
             return true;
         }
 
         for (String s : body) {
-            Matcher m = p.matcher(s);
-
-            if (m.find()) {
-                s = m.group(1);
-
-                if (!(s.startsWith("http://www.") || s.startsWith("https://www."))) {
-                    if(s.startsWith("www.")) {
-                        s = s.replaceFirst("www.", "https://www.");
-                    }
-                    else if(s.startsWith("https://") || s.startsWith("http://")) {
-                        s = s.replaceFirst("((https://)|(http://))", "https://www.");
-                    }
-                    else {
-                        s = "https://www." + s;
-                    }
-                }
-
-                try {
-                    URL url = new URL(s);
-                    String host = url.getHost().toLowerCase();
-                    String tld = host.substring(host.lastIndexOf('.'), host.length());
-                    String tld2 = host.substring(host.indexOf('.', host.indexOf('.') + 1));
-                    host = "https://" + host.replaceFirst(tld2, ".[TLDEXISTS]");
-
-                    if (tlds.contains(tld)) {
-                        s = s.replaceFirst(tld2, ".[TLDEXISTS]");
-                        if ((linkBlacklist.contains(host) || linkBlacklist.contains(s))) {
-                            return false;
-                        }
-                    }
-                } catch (IOException e) {
-                    System.out.println("unable to open connection");
-                }
-                System.out.println("String contains URL");
+            if (isLink(s)) {
+                return false;
             }
         }
         return true;
+    }
+
+    private static boolean isLink(String link) {
+        String url_regex = "(((http|ftp|https):\\/\\/)?([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?)";
+        Pattern p = Pattern.compile(url_regex);
+        Matcher m = p.matcher(link);
+
+        if (m.find()) {
+            link = m.group(1);
+
+            if (!(link.startsWith("http://www.") || link.startsWith("https://www."))) {
+                if(link.startsWith("www.")) {
+                    link = link.replaceFirst("www.", "https://www.");
+                }
+                else if(link.startsWith("https://") || link.startsWith("http://")) {
+                    link = link.replaceFirst("((https://)|(http://))", "https://www.");
+                }
+                else {
+                    link = "https://www." + link;
+                }
+            }
+
+            try {
+                URL url = new URL(link);
+                String host = url.getHost().toLowerCase();
+                String tld = host.substring(host.lastIndexOf('.'), host.length());
+                String tld2 = host.substring(host.indexOf('.', host.indexOf('.') + 1));
+                host = "https://" + host.replaceFirst(tld2, ".[TLDEXISTS]");
+
+                if (tlds.contains(tld)) {
+                    link = link.replaceFirst(tld2, ".[TLDEXISTS]");
+                    if ((linkBlacklist.contains(host) || linkBlacklist.contains(link))) {
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("unable to open connection");
+            }
+            System.out.println("String contains URL");
+        }
+        return false;
     }
 }
