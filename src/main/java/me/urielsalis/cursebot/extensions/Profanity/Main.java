@@ -135,38 +135,40 @@ public class Main{
                 profanities = getFilterElements("profanities.txt");
 
                 boolean addProfanity = true;
-                try
-                {
-                    for(String s : swearWords)
-                        if(s.equalsIgnoreCase(commandEvent.command.args[0]))
-                            addProfanity = false;
+                if(commandEvent.command.args != null && commandEvent.command.args.length > 0) {
+                    try {
+                        for (String s : swearWords)
+                            if (s.equalsIgnoreCase(commandEvent.command.args[0]))
+                                addProfanity = false;
 
-                    if(addProfanity)
-                    {
-                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
+                        if (addProfanity) {
+                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
 
-                        profanities = profanities.trim().replaceFirst("\\s\\]", "");
-                        profanities += ",," + commandEvent.command.args[0] + " ]";
+                            profanities = profanities.trim().replaceFirst("\\s\\]", "");
+                            profanities += ",," + commandEvent.command.args[0] + " ]";
 
-                        String[] list = profanities.split(",+");
-                        for(String s : list)
-                        {
-                            if(!(s.contains("]")))
-                                out.write(s + ",\n");
-                            else
-                                out.write(s);
-                        }
+                            String[] list = profanities.split(",+");
+                            for (String s : list) {
+                                if (!(s.contains("]")))
+                                    out.write(s + ",\n");
+                                else
+                                    out.write(s);
+                            }
 
-                        out.flush();
-                        out.close();
+                            out.flush();
+                            out.close();
 
-                        loadProfanities(getFilterElements("profanities.txt"));
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to the filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                            loadProfanities(getFilterElements("profanities.txt"));
+                            api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to the filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                        } else
+                            api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    else
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
-                } catch(IOException e)
-                {e.printStackTrace();}
+                }
+                else {
+                    api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                }
             }
             break;
 
@@ -180,41 +182,43 @@ public class Main{
 
                 boolean removeProfanity = false;
                 String remove = "";
-                try
-                {
-                    for(String s : swearWords) {
-                        if (s.equalsIgnoreCase(commandEvent.command.args[0])) {
-                            removeProfanity = true;
-                            remove = s;
-                        }
-                    }
-
-                    if(removeProfanity)
-                    {
-                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
-
-                        profanities = profanities.trim().replaceFirst(",," + remove, "");
-
-                        String[] list = profanities.split(",+");
-                        for(String s : list)
-                        {
-                            if(s.equals(remove)) continue;
-                            if(!(s.contains("]")))
-                                out.write(s + ",\n");
-                            else
-                                out.write(s);
+                if(commandEvent.command.args != null && commandEvent.command.args.length > 0) {
+                    try {
+                        for (String s : swearWords) {
+                            if (s.equalsIgnoreCase(commandEvent.command.args[0])) {
+                                removeProfanity = true;
+                                remove = s;
+                            }
                         }
 
-                        out.flush();
-                        out.close();
+                        if (removeProfanity) {
+                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
 
-                        loadProfanities(getFilterElements("profanities.txt"));
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]**\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to the filter!\n- Removed by " + api.mention(commandEvent.command.message.senderName));
+                            profanities = profanities.trim().replaceFirst(",," + remove, "");
+
+                            String[] list = profanities.split(",+");
+                            for (String s : list) {
+                                if (s.equals(remove)) continue;
+                                if (!(s.contains("]")))
+                                    out.write(s + ",\n");
+                                else
+                                    out.write(s);
+                            }
+
+                            out.flush();
+                            out.close();
+
+                            loadProfanities(getFilterElements("profanities.txt"));
+                            api.postMessage(api.resolveChannel("bot-log"), "*[Success]**\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to the filter!\n- Removed by " + api.mention(commandEvent.command.message.senderName));
+                        } else
+                            api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is not in the filter!\n- Attempted to be removed by " + api.mention(commandEvent.command.message.senderName));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    else
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is not in the filter!\n- Attempted to be removed by " + api.mention(commandEvent.command.message.senderName));
-                } catch(IOException e)
-                {e.printStackTrace();}
+                }
+                else {
+                    api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                }
             }
             break;
 
@@ -225,35 +229,37 @@ public class Main{
 
                 links = getFilterElements("linkblacklist.txt");
 
-                try
-                {
-                    if(isLink(commandEvent.command.args[0]))
-                    {
-                        Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\linkblacklist.txt"), "UTF-8"));
+                if(commandEvent.command.args != null && commandEvent.command.args.length > 0) {
+                    try {
+                        if (isLink(commandEvent.command.args[0])) {
+                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\linkblacklist.txt"), "UTF-8"));
 
-                        links = links.trim().replaceFirst("\\s\\]", "");
-                        links += ",," + commandEvent.command.args[0] + " ]";
+                            links = links.trim().replaceFirst("\\s\\]", "");
+                            links += ",," + commandEvent.command.args[0] + " ]";
 
-                        String[] list = links.split(",+");
-                        for(String s : list)
-                        {
-                            if(!(s.contains("]")))
-                                out.write(s + ",\n");
-                            else
-                                out.write(s);
+                            String[] list = links.split(",+");
+                            for (String s : list) {
+                                if (!(s.contains("]")))
+                                    out.write(s + ",\n");
+                                else
+                                    out.write(s);
+                            }
+
+                            out.flush();
+                            out.close();
+
+                            loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
+                            api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nlink blacklist reloaded!\n- Added *'```" + commandEvent.command.args[0] + "```'* to the blacklist!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                        } else {
+                            api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- '```" + commandEvent.command.args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
                         }
-
-                        out.flush();
-                        out.close();
-
-                        loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Success]*\nlink blacklist reloaded!\n- Added *'```" + commandEvent.command.args[0] + "```'* to the blacklist!\n- Added by " + api.mention(commandEvent.command.message.senderName));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    else {
-                        api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- '```" + commandEvent.command.args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
-                    }
-                } catch(IOException e)
-                {e.printStackTrace();}
+                }
+                else {
+                    api.postMessage(api.resolveChannel("bot-log"), "*[Failed]*\n- No link was specified!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                }
             }
             break;
         }
