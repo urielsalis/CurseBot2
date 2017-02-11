@@ -170,6 +170,7 @@ public class Main{
 
             }
             break;
+
             case "rmProfanity":
             {
                 api.postMessage(api.resolveChannel("bot-log"), "~*[Executing remove profanity]*~");
@@ -193,7 +194,7 @@ public class Main{
                     {
                         Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
 
-                        profanities = profanities.trim().replaceFirst(" \\]", ",," + commandEvent.command.args[0] + " ]");
+                        profanities = profanities.trim().replaceFirst(",," + remove, "");
 
                         String[] swears = profanities.split(",+");
                         for(String s : swears)

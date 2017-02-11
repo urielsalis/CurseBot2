@@ -140,7 +140,7 @@ asswad,
 asswipe,
 ballbag,
 nutsack,
-wtf,
 nigga,
 nigger,
-butt-plug ]
+buttplug,
+wtf ]
