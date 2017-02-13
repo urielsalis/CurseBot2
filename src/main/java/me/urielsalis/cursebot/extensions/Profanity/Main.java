@@ -437,14 +437,14 @@ public class Main{
                     link = link.replaceFirst(tld2, ".[TLDEXISTS]");
                     if ((linkBlacklist.contains(host) || linkBlacklist.contains(link))) {
                         return false;
-                    }
-                    else {
+                    } else {
                         return true;
                     }
-                } catch (IOException e) {
-                    me.urielsalis.cursebot.Main.logger.log(Level.SEVERE, "unable to open connection");
-                }
+                }   
+            } catch (IOException e) {
+                me.urielsalis.cursebot.Main.logger.log(Level.SEVERE, "unable to open connection");
             }
+
         }
         return false;
     }
