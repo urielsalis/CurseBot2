@@ -4,6 +4,7 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
+import me.urielsalis.cursebot.Main;
 import me.urielsalis.cursebot.api.Util;
 import me.urielsalis.cursebot.events.CommandEvent;
 import me.urielsalis.cursebot.events.MessageEvent;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -138,9 +141,9 @@ public class CurseApi {
                                             } else {
                                                 postMessage(resolveChannel("bot-stats"), "@" +m.senderID+":"+m.senderName+" joined again");
                                             }
-                                            System.out.println(m.senderName + " joined!");
+                                            Main.logger.log(Level.FINE, m.senderName + " joined!");
                                         }
-                                        System.out.println();
+                                        Main.logger.log(Level.FINE, "");
                                     } else if(changeType==3) {
                                         String sender = (String) body.get("SenderName");
                                         JSONArray members2 = (JSONArray) body.get("Members");
@@ -159,9 +162,6 @@ public class CurseApi {
                         }
                     })
                     .connect();
-            System.out.println(websocket.isOpen());
-            System.out.println("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
-            websocket.sendText("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
         } catch ( WebSocketException | IOException e) {
             e.printStackTrace();
         }
@@ -183,7 +183,7 @@ public class CurseApi {
            if(((long)object.get("Status"))==1) {
                 JSONObject session = (JSONObject) object.get("Session");
                 authToken = (String) session.get("Token");
-                System.out.println(authToken);
+               Main.logger.log(Level.INFO, "Auth token: "+authToken);
                 userID = (long) session.get("UserID");
            } else {
                System.err.println("Wrong Password");

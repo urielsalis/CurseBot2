@@ -16,6 +16,10 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 
 /**
@@ -31,8 +35,14 @@ public class Main {
     private String clientID = "";
     private String machineKey = "";
     public static ArrayList<String> authedLinkers = new ArrayList<>();
+    public static Logger logger;
 
     public static void main(String[] args) throws Exception {
+        logger = Logger.getLogger("CurseBot2");
+        FileHandler fh = new FileHandler("log.log");
+        logger.addHandler(fh);
+        SimpleFormatter formatter = new SimpleFormatter();
+        fh.setFormatter(formatter);
         new Main();
     }
 

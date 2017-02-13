@@ -16,6 +16,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,7 @@ public class Main{
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {
-        System.out.println("Loading Profanity init");
+        me.urielsalis.cursebot.Main.logger.log(Level.FINE, "Loading Profanity init");
         extApi = api2;
         extApi.addListener("message", new ProfanityListener());
         extApi.addListener("command", new ProfanityCommandListener());
@@ -107,9 +108,9 @@ public class Main{
             }
 
             if(message.isPM) {
-                System.out.println(Util.timestampToDate(message.timestamp) + "  [" + message.senderName + "] " + message.body);
+                me.urielsalis.cursebot.Main.logger.log(Level.FINE, Util.timestampToDate(message.timestamp) + "  [" + message.senderName + "] " + message.body);
             } else {
-                System.out.println(Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
+                me.urielsalis.cursebot.Main.logger.log(Level.FINE, Util.timestampToDate(message.timestamp) + "  <" + message.senderName + "> " + message.body);
             }
 
             if(!isAuthorizedLinker(api, message)) {
@@ -401,9 +402,8 @@ public class Main{
                         }
                     }
                 } catch (IOException e) {
-                    System.out.println("unable to open connection");
+                    me.urielsalis.cursebot.Main.logger.log(Level.SEVERE, "unable to open connection");
                 }
-                System.out.println("String contains URL");
             }
         }
 
