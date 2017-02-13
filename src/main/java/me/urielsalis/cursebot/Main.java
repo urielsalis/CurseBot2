@@ -37,6 +37,10 @@ public class Main {
     public static ArrayList<String> authedLinkers = new ArrayList<>();
     public static Logger logger;
 
+    public static int linksDeleted = 0;
+    public static int profanitiesDeleted = 0;
+    public static int capsDeleted = 0;
+
     public static void main(String[] args) throws Exception {
         logger = Logger.getLogger("CurseBot2");
         FileHandler fh = new FileHandler("log.log");
@@ -79,7 +83,11 @@ public class Main {
                                                                             + "\n*Unique joins:*          |     " + api.userUniqueJoins
                                                                             + "\n*Messages posted:*   |     " + api.messages
                                                                             + "\n*Removed users:*      |     " + api.removedUsers
-                                                                            + "\n*Left users:*                |     " + api.leftUsers);
+                                                                            + "\n*Left users:*                |     " + api.leftUsers
+                                                                            + "\n*Profanities deleted:*                |     " + profanitiesDeleted
+                                                                            + "\n*Links deleted:*                |     " + linksDeleted
+                                                                            + "\n*Caps deleted:*                |     " + capsDeleted
+                                                                            + "\n*Bot kicks:*                |     " + api.botRemoves);
 
         api.userJoins = 0;
         api.messages = 0;

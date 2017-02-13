@@ -50,6 +50,7 @@ public class CurseApi {
     public long removedUsers = 0;
     public long leftUsers = 0;
     private ArrayList<Long> removedUsersList = new ArrayList<>();
+    public int botRemoves = 0;
 
     public CurseApi(String groupID, String username, String password, String clientID, String machineKey) {
         this.groupID = groupID;
@@ -174,6 +175,7 @@ public class CurseApi {
                                             removedUsers++;
                                             removedUsersList.add(removedid);
                                             postMessage(resolveChannel("bot-log"), "~*[User Kicked!]*~\n*Command Sender:* [ " + mention(sender) + " ]\n*Kicked user:* " + removedname + ".");
+                                            if(sender.equals("MCFBot")) botRemoves++;
                                         }
                                     }
                                 }

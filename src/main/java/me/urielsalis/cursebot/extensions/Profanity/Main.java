@@ -29,6 +29,7 @@ public class Main{
     private static List<String> linkBlacklist;
     private static HashSet<String> tlds = new HashSet<>();
 
+
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {
         me.urielsalis.cursebot.Main.logger.log(Level.FINE, "Loading Profanity init");
@@ -74,6 +75,7 @@ public class Main{
     public static boolean isUpperCase(String s)
     {
         long all = s.length();
+        if(all<10) return false;
         long upperCase = 0;
         for (int i=0; i<s.length(); i++)
         {
@@ -82,7 +84,7 @@ public class Main{
                 upperCase++;
             }
         }
-        return ((double)upperCase/(double)all) >= 0.8;
+        return ((double)upperCase/(double)all) >= 0.85;
     }
 
 
@@ -107,16 +109,19 @@ public class Main{
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
+                me.urielsalis.cursebot.Main.linksDeleted++;
             }
             else if(containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
+                me.urielsalis.cursebot.Main.profanitiesDeleted++;
             }
             else if(isUpperCase(message.body)) {
                 api.deleteMessage(message);
                 api.postMessage(api.resolveChannel("bot-log"), "~*[Capital Letters Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Action:* message auto-deleted! Verbal warning received!");
                 api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please lay off the caps.");
+                me.urielsalis.cursebot.Main.capsDeleted++;
             }
         }
         catch (UnsupportedEncodingException e1)
@@ -440,7 +445,7 @@ public class Main{
                     } else {
                         return true;
                     }
-                }   
+                }
             } catch (IOException e) {
                 me.urielsalis.cursebot.Main.logger.log(Level.SEVERE, "unable to open connection");
             }
