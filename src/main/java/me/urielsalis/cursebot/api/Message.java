@@ -56,6 +56,6 @@ public class Message {
     private String resolveTimestamp(long timestamp) {
         Calendar mydate = Calendar.getInstance();
         mydate.setTimeInMillis(timestamp*1000);
-        return mydate.get(Calendar.HOUR) + ":"+mydate.get(Calendar.MINUTE)+":"+mydate.get(Calendar.SECOND);
+        return mydate.get(Calendar.HOUR) + ":"+mydate.get(Calendar.MINUTE)+":"+mydate.get(Calendar.SECOND) + ":" + mydate.get(Calendar.MILLISECOND);
     }
 }

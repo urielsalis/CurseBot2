@@ -45,6 +45,7 @@ public class CurseApi {
     private long userID;
     private String sessionID;
     public long userJoins = 0;
+    public long userUniqueJoins = 0;
     public long messages = 0;
     public long removedUsers = 0;
     public long leftUsers = 0;
@@ -106,6 +107,7 @@ public class CurseApi {
                                     String channelUUID = (String) body.get("ConversationID");
                                     updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"));
                                     Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
+                                    messages++;
                                     if(isPM) {
                                         updateListeners(message);
                                     } else {
@@ -136,10 +138,20 @@ public class CurseApi {
                                             Member m = new Member(nickname, username, userIDMember, bestRole);
                                             if(!members.contains(m)) {
                                                 //new user, TODO
-                                                postMessage(resolveChannel("lobby"), "Welcome @" +m.senderID+":"+m.senderName + ", dont forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
+                                                userUniqueJoins++;
+                                                userJoins++;
+                                                postMessage(resolveChannel("lobby"), "Welcome " + mention(m.senderName) + ", don't forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
                                                 members.add(m);
                                             } else {
-                                                postMessage(resolveChannel("bot-stats"), "@" +m.senderID+":"+m.senderName+" joined again");
+                                                if(removedUsersList.contains(m.senderID)) {
+                                                    userJoins++;
+                                                    postMessage(resolveChannel("bot-log"), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server after being kicked!");
+                                                    removedUsersList.remove(m.senderID);
+                                                }
+                                                else {
+                                                    userJoins++;
+                                                    postMessage(resolveChannel("bot-log"), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server!");
+                                                }
                                             }
                                             Main.logger.log(Level.FINE, m.senderName + " joined!");
                                         }
@@ -149,11 +161,20 @@ public class CurseApi {
                                         JSONArray members2 = (JSONArray) body.get("Members");
                                         JSONObject object = (JSONObject) members2.get(0);
 
-                                        String removedid = (String) object.get("UserID");
-                                        String removedname = (String) object.get("UserName");
-
-                                        postMessage(resolveChannel("bot-stats"), "@" +removedid+":"+removedname+" was kicked by " + sender);
-
+                                        long removedid = (long) object.get("UserID");
+                                        String removedname = (String) object.get("Username");
+                                        if(removedname == null) {
+                                            removedname = (String) object.get("Nickname");
+                                        }
+                                        if(removedname.equals(sender)) {
+                                            leftUsers++;
+                                            postMessage(resolveChannel("bot-log"), "~*[User left!]*~\n*User:* " + removedname + ".");
+                                        }
+                                        else {
+                                            removedUsers++;
+                                            removedUsersList.add(removedid);
+                                            postMessage(resolveChannel("bot-log"), "~*[User Kicked!]*~\n*Command Sender:* [ " + mention(sender) + " ]\n*Kicked user:* " + removedname + ".");
+                                        }
                                     }
                                 }
                             } catch (ParseException e) {
