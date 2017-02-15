@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,7 @@ public class Main{
     private static String[] swearWords;
     private static List<String> linkBlacklist;
     private static HashSet<String> tlds = new HashSet<>();
+    public static Logger logger = Logger.getLogger("CurseBot");
 
     @ExtensionHandler.ExtensionInit("Profanity/1.0.0")
     public static void init(ExtensionApi api2) {

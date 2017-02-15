@@ -49,11 +49,6 @@ public class Message {
         return result;
     }
 
-    public void print() {
-        System.out.println(getString());
-
-    }
-
     public String getString() {
         return resolveTimestamp(timestamp)+"  <"+senderName+">"+body;
     }

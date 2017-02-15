@@ -10,6 +10,7 @@ import me.urielsalis.cursebot.events.MessageEvent;
 import me.urielsalis.cursebot.extensions.Extension;
 import me.urielsalis.cursebot.extensions.ExtensionApi;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
+import me.urielsalis.cursebot.extensions.Profanity.Main;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 
 /**
@@ -150,9 +152,8 @@ public class CurseApi {
                                                     postMessage(resolveChannel("bot-log"), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server!");
                                                 }
                                             }
-                                            System.out.println(m.senderName + " joined!");
+                                            Main.logger.log(Level.INFO, m.senderName + " joined!");
                                         }
-                                        System.out.println();
                                     } else if(changeType==3) {
                                         String sender = (String) body.get("SenderName");
                                         JSONArray members2 = (JSONArray) body.get("Members");
@@ -180,8 +181,8 @@ public class CurseApi {
                         }
                     })
                     .connect();
-            System.out.println(websocket.isOpen());
-            System.out.println("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
+            Main.logger.log(Level.INFO, "Websocket: " + websocket.isOpen());
+            Main.logger.log(Level.INFO, "{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
             websocket.sendText("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
         } catch ( WebSocketException | IOException e) {
             e.printStackTrace();
@@ -204,7 +205,7 @@ public class CurseApi {
            if(((long)object.get("Status"))==1) {
                 JSONObject session = (JSONObject) object.get("Session");
                 authToken = (String) session.get("Token");
-                System.out.println(authToken);
+               Main.logger.log(Level.INFO, authToken);
                 userID = (long) session.get("UserID");
            } else {
                System.err.println("Wrong Password");

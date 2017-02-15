@@ -1,5 +1,6 @@
 package me.urielsalis.cursebot.extensions;
 
+import me.urielsalis.cursebot.extensions.Profanity.Main;
 import org.apache.commons.collections4.bag.SynchronizedSortedBag;
 import org.reflections.Configuration;
 import org.reflections.Reflections;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Created by urielsalis on 1/28/2017
@@ -38,11 +40,9 @@ public class ExtensionHandler {
                 for (final Method method : allMethods) {
                     if (method.isAnnotationPresent(ExtensionInit.class)) {
                         try {
-                            System.out.println("Invoking " + method.getName());
-
                             method.invoke(null, api); //invoker is null as its static
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            System.out.println("Error while trying to run method");
+                            Main.logger.log(Level.INFO, "Error while trying to run method");
                             e.printStackTrace();
                             System.exit(1);
                         }
@@ -80,16 +80,14 @@ public class ExtensionHandler {
         if (files != null) {
             for (File file : files) {
                 try {
-                    System.out.println("Loading .jar: " + file.getName());
+                    Main.logger.log(Level.INFO, "Loading .jar: " + file.getName());
                     ClassPathHacker.addFile(file);
                 } catch (IOException e) {
-                    System.out.println("This should never happen, this is bad");
+                    Main.logger.log(Level.SEVERE, "This should never happen, this is bad");
                     e.printStackTrace();
                     System.exit(1);
                 }
             }
-        } else {
-            System.out.println("No extensions to load");
         }
     }
 }

@@ -16,7 +16,7 @@ public class Member implements Serializable {
 
     public Member(Object nickname, Object username, Object userID, Object bestRole) {
         this.senderName = (String) nickname;
-        if(nickname==null)
+        if(nickname==null || ((String) nickname).isEmpty())
             this.senderName = (String) username;
         this.username = (String) username;
         this.senderID = (long) userID;
