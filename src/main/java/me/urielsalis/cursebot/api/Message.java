@@ -11,9 +11,11 @@ public class Message {
     public String senderName;
     public String body;
     public long timestamp;
+    public long cursetimestamp;
     public String serverID;
     public String channelUUID;
     public boolean isPM;
+
     public Message(Object senderName, Object body, Object timestamp, Object serverID, Object channelUUID) {
         this(senderName, body, timestamp, serverID, channelUUID, false);
     }
@@ -22,6 +24,7 @@ public class Message {
         this.senderName = (String) senderName;
         this.body = (String) body;
         this.timestamp = (Long) timestamp;
+        this.cursetimestamp = (Long) timestamp / 1000L;
         this.serverID = (String) serverID;
         this.channelUUID = (String) conversationID;
         this.isPM = isPM;

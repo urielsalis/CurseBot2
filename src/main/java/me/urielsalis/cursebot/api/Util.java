@@ -14,6 +14,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 /**
  * BattleCode 2017
@@ -22,8 +23,15 @@ import java.util.TimeZone;
  */
 public class Util {
     public static String[] authorizedUsers;
+    public static Logger logger = Logger.getLogger("CurseBot");
 
-    //public static final String logbot = "ce2ccadd-38c4-4bc7-8317-8aa294b1ea43";
+    //:: Bot
+    public static String botName;
+
+    //:: Bot channels
+    public static String botlogChannel;
+    public static String botstatChannel;
+    public static String botcmdChannel;
 	
     public static String sendGet(String url, String auth) {
         try {
@@ -33,7 +41,7 @@ public class Util {
             con.setRequestProperty("User-Agent", "CurseApi/1.0.0");
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             con.setRequestProperty("AuthenticationToken", auth);
-            int responseCode = con.getResponseCode();
+            //int responseCode = con.getResponseCode();
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
@@ -64,7 +72,7 @@ public class Util {
             con.setRequestProperty("User-Agent", "CurseApi/1.0.0");
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
             con.setRequestProperty("AuthenticationToken", auth);
-            int responseCode = con.getResponseCode();
+            //int responseCode = con.getResponseCode();
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream(), "UTF-8"));

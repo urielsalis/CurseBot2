@@ -17,7 +17,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +106,7 @@ public class CurseApi {
                                     long conversationType = (long) body.get("ConversationType");
                                     boolean isPM = conversationType==3;
                                     String channelUUID = (String) body.get("ConversationID");
-                                    updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"));
+                                    updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"), (String) body.get("SenderName"));
                                     Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
                                     messages++;
                                     if(isPM) {
@@ -135,6 +137,7 @@ public class CurseApi {
                                             Object userIDMember = member.get("UserID");
                                             Object bestRole = member.get("BestRole");
                                             Member m = new Member(nickname, username, userIDMember, bestRole);
+                                            addMemberIfNotFound(m.senderName, m.senderID);
                                             if(!members.contains(m)) {
                                                 //new user, TODO
                                                 userUniqueJoins++;
@@ -144,15 +147,15 @@ public class CurseApi {
                                             } else {
                                                 if(removedUsersList.contains(m.senderID)) {
                                                     userJoins++;
-                                                    postMessage(resolveChannel("bot-log"), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server after being kicked!");
+                                                    postMessage(resolveChannel(Util.botlogChannel), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server after being kicked!");
                                                     removedUsersList.remove(m.senderID);
                                                 }
                                                 else {
                                                     userJoins++;
-                                                    postMessage(resolveChannel("bot-log"), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server!");
+                                                    postMessage(resolveChannel(Util.botlogChannel), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server!");
                                                 }
                                             }
-                                            Main.logger.log(Level.INFO, m.senderName + " joined!");
+                                            Util.logger.log(Level.INFO, m.senderName + " joined!");
                                         }
                                     } else if(changeType==3) {
                                         String sender = (String) body.get("SenderName");
@@ -166,12 +169,14 @@ public class CurseApi {
                                         }
                                         if(removedname.equals(sender)) {
                                             leftUsers++;
-                                            postMessage(resolveChannel("bot-log"), "~*[User left!]*~\n*User:* " + removedname + ".");
+                                            postMessage(resolveChannel(Util.botlogChannel), "~*[User left!]*~\n*User:* " + removedname + ".");
                                         }
                                         else {
                                             removedUsers++;
                                             removedUsersList.add(removedid);
-                                            postMessage(resolveChannel("bot-log"), "~*[User Kicked!]*~\n*Command Sender:* [ " + mention(sender) + " ]\n*Kicked user:* " + removedname + ".");
+                                            if (!resolveMember(sender).senderName.equals(Util.botName)) {
+                                                postMessage(resolveChannel(Util.botlogChannel), "~*[User Kicked!]*~\n*Command Sender:* [ " + mention(sender) + " ]\n*Kicked user:* " + removedname + ".");
+                                            }
                                         }
                                     }
                                 }
@@ -181,18 +186,19 @@ public class CurseApi {
                         }
                     })
                     .connect();
-            Main.logger.log(Level.INFO, "Websocket: " + websocket.isOpen());
-            Main.logger.log(Level.INFO, "{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
+            Util.logger.log(Level.INFO, "Websocket: " + websocket.isOpen());
+            Util.logger.log(Level.INFO, "{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
             websocket.sendText("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
         } catch ( WebSocketException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateMember(long senderID, long senderVanityRole) {
+    private void updateMember(long senderID, long senderVanityRole, String senderName) {
         for(Member member: members) {
             if(member.senderID==senderID) {
                 member.bestRole = senderVanityRole;
+                member.senderName = senderName;
             }
         }
     }
@@ -205,7 +211,7 @@ public class CurseApi {
            if(((long)object.get("Status"))==1) {
                 JSONObject session = (JSONObject) object.get("Session");
                 authToken = (String) session.get("Token");
-               Main.logger.log(Level.INFO, authToken);
+               Util.logger.log(Level.INFO, authToken);
                 userID = (long) session.get("UserID");
            } else {
                System.err.println("Wrong Password");
@@ -343,8 +349,14 @@ public class CurseApi {
 
     private void updateListeners(Message message) {
         ExtensionHandler.api.fire("message", new MessageEvent(message));
+        String[] commandExodus = message.body.split("\n");
+
         if(message.body.startsWith(".")) {
-            ExtensionHandler.api.fire("command", new CommandEvent(message));
+            for(String cmd : commandExodus) {
+                Message cmdEx = message;
+                cmdEx.body = cmd;
+                ExtensionHandler.api.fire("command", new CommandEvent(cmdEx));
+            }
         }
         synchronized (listeners) {
             for(Listener listener: listeners)
@@ -453,8 +465,9 @@ public class CurseApi {
      * Unbans a member
      * @param userID userid of member to unban
      */
-    public void unBanMember(long userID) {
+    public void unBanMember(long userID, String bannedUsername) {
         Util.sendDelete("https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans/"+userID, getAuthToken());
+        postMessage(resolveChannel(Util.botlogChannel), "~*[Unbanning: Timer is up]*~\nThe user *'" + userID + ":" + bannedUsername + "'* has been unbanned!");
     }
     
     /**

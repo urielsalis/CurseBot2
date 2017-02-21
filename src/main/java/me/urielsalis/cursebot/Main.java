@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 
 /**
@@ -126,6 +127,13 @@ public class Main {
                 password = prop.getProperty("password");
                 clientID = prop.getProperty("clientID");
                 machineKey = prop.getProperty("machineKey");
+
+                Util.botName = prop.getProperty("username");
+
+                Util.botlogChannel = prop.getProperty("loggingChannel");
+                Util.botstatChannel = prop.getProperty("statsChannel");
+                Util.botcmdChannel = prop.getProperty("commandChannel");
+
                 Util.authorizedUsers = prop.getProperty("authorizedUsers").split(",");
                 
                 inputStream.close();
@@ -134,5 +142,4 @@ public class Main {
             e.printStackTrace();
         }
     }
-    
 }
