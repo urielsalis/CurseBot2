@@ -1,5 +1,6 @@
 package me.urielsalis.cursebot.extensions;
 
+import me.urielsalis.cursebot.api.Util;
 import me.urielsalis.cursebot.extensions.Profanity.Main;
 import org.apache.commons.collections4.bag.SynchronizedSortedBag;
 import org.reflections.Configuration;
@@ -42,7 +43,7 @@ public class ExtensionHandler {
                         try {
                             method.invoke(null, api); //invoker is null as its static
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            Main.logger.log(Level.INFO, "Error while trying to run method");
+                            Util.logger.log(Level.INFO, "Error while trying to run method");
                             e.printStackTrace();
                             System.exit(1);
                         }
@@ -69,21 +70,13 @@ public class ExtensionHandler {
             files[i] = new File(files[i].toPath() + "\\" + files[i].listFiles()[0].getName());
         }
 
-        /*int x = 0;
-        for (int i = 0; i < annotatedDir.length; i++)
-        {
-            String addPath = "";
-            if(annotatedDir[i].isDirectory())
-                addPath = directory.toPath() + "\\" + test[i].getName();
-        }*/
-
         if (files != null) {
             for (File file : files) {
                 try {
-                    Main.logger.log(Level.INFO, "Loading .jar: " + file.getName());
+                    Util.logger.log(Level.INFO, "Loading .jar: " + file.getName());
                     ClassPathHacker.addFile(file);
                 } catch (IOException e) {
-                    Main.logger.log(Level.SEVERE, "This should never happen, this is bad");
+                    Util.logger.log(Level.SEVERE, "This should never happen, this is bad");
                     e.printStackTrace();
                     System.exit(1);
                 }
