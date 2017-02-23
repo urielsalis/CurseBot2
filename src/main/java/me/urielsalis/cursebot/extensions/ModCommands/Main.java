@@ -7,7 +7,7 @@ import me.urielsalis.cursebot.extensions.ExtensionApi;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
 import me.urielsalis.cursebot.extensions.Handle;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -189,6 +189,7 @@ public class Main {
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Shut down command executed!]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
+                saveStats();
                 System.exit(0);
             }
             break;
@@ -451,6 +452,52 @@ public class Main {
                     api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
                 }
             }
+            case "showStats":
+            {
+                api.postMessage(api.resolveChannel(Util.botstatChannel), "[*Stats:* ~" + new Date().toString() + "~ ]"
+                        + "\n-*I===============================I*-"
+                        + "\n*Net users joined:*        |     " + api.userJoins
+                        + "\n*Unique joins:*          |     " + api.userUniqueJoins
+                        + "\n*Messages posted:*   |     " + api.messages
+                        + "\n*Removed users:*      |     " + api.removedUsers
+                        + "\n*Left users:*                |     " + api.leftUsers);
+
+            }
+            break;
+            case "loadStats":
+            {
+                loadStats();
+                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Stats loaded");
+            }
+            break;
+        }
+    }
+
+    private static void loadStats() {
+        try {
+            Scanner myReader = new Scanner(new File("stats.sav"));
+            api.userJoins = Long.parseLong(myReader.nextLine());
+            api.userUniqueJoins = Long.parseLong(myReader.nextLine());
+            api.messages = Long.parseLong(myReader.nextLine());
+            api.removedUsers = Long.parseLong(myReader.nextLine());
+            api.leftUsers = Long.parseLong(myReader.nextLine());
+            myReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveStats() {
+        try {
+            PrintWriter writer = new PrintWriter("stats.sav");
+            writer.println(api.userJoins);
+            writer.println(api.userUniqueJoins);
+            writer.println(api.messages);
+            writer.println(api.removedUsers);
+            writer.println(api.leftUsers);
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }

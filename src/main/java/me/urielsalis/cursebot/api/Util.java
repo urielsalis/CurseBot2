@@ -163,6 +163,6 @@ public class Util {
     }
 
     public static boolean isUserAuthorized(CurseApi api, Member member) {
-        return api.bestRank >= api.roles.get(member.bestRole);
+        return member != null && api.bestRank >= api.roles.get(member.bestRole);
     }
 }
