@@ -29,9 +29,13 @@ public class Util {
     public static String botName;
 
     //:: Bot channels
+    public static String defaultChannel;
     public static String botlogChannel;
     public static String botstatChannel;
     public static String botcmdChannel;
+
+    //:: Bote modes
+    public static boolean unhidden = false;
 	
     public static String sendGet(String url, String auth) {
         try {
