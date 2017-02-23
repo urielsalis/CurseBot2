@@ -36,15 +36,22 @@ public class CurseApi {
     private String groupID = "";
     private String clientID = "";
     private String machineKey = "";
+
     public HashMap<Long, Long> roles = new HashMap<>();
     public long bestRank;
     private HashMap<String, Channel> channels = new HashMap<String, Channel>();
     private ArrayList<Member> members = new ArrayList<Member>();
+
     static boolean isDeleteInProgress = false;
+
     private ArrayList<Listener> listeners = new ArrayList<Listener>();
+
     public WebSocket websocket;
+
     private long userID;
     private String sessionID;
+
+    //:: Stats
     public long userJoins = 0;
     public long userUniqueJoins = 0;
     public long messages = 0;
@@ -106,6 +113,7 @@ public class CurseApi {
                                     long conversationType = (long) body.get("ConversationType");
                                     boolean isPM = conversationType==3;
                                     String channelUUID = (String) body.get("ConversationID");
+                                    addMemberIfNotFound((String) body.get("SenderName"), (long) body.get("SenderID"));
                                     updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"), (String) body.get("SenderName"));
                                     Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
                                     messages++;
@@ -142,7 +150,8 @@ public class CurseApi {
                                                 //new user, TODO
                                                 userUniqueJoins++;
                                                 userJoins++;
-                                                postMessage(resolveChannel("lobby"), "Welcome " + mention(m.senderName) + ", don't forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
+                                                if (Util.unhidden)
+                                                    postMessage(resolveChannel(Util.defaultChannel), "Welcome " + mention(m.senderName) + ", don't forget to read the rules in the *#rules* channel!. Enjoy your stay! :)");
                                                 members.add(m);
                                             } else {
                                                 if(removedUsersList.contains(m.senderID)) {
@@ -152,7 +161,7 @@ public class CurseApi {
                                                 }
                                                 else {
                                                     userJoins++;
-                                                    postMessage(resolveChannel(Util.botlogChannel), "~*[Rejoin]*~\n*Details:* " + mention(m.senderName) + " re-joined the server!");
+                                                    //postMessage(resolveChannel(Util.botlogChannel), "~*[Join]*~\n*Details:* " + mention(m.senderName) + " joined the server!");
                                                 }
                                             }
                                             Util.logger.log(Level.INFO, m.senderName + " joined!");
@@ -169,13 +178,13 @@ public class CurseApi {
                                         }
                                         if(removedname.equals(sender)) {
                                             leftUsers++;
-                                            postMessage(resolveChannel(Util.botlogChannel), "~*[User left!]*~\n*User:* " + removedname + ".");
+                                            //postMessage(resolveChannel(Util.botlogChannel), "~*[User left!]*~\n*User:* " + removedname + ".");
                                         }
                                         else {
                                             removedUsers++;
                                             removedUsersList.add(removedid);
                                             if (!resolveMember(sender).senderName.equals(Util.botName)) {
-                                                postMessage(resolveChannel(Util.botlogChannel), "~*[User Kicked!]*~\n*Command Sender:* [ " + mention(sender) + " ]\n*Kicked user:* " + removedname + ".");
+                                                postMessage(resolveChannel(Util.botlogChannel), "~*[User Kicked!]*~\n*Command Sender:* [ " + sender + " ]\n*Kicked user:* " + removedname + ".");
                                             }
                                         }
                                     }
@@ -377,7 +386,8 @@ public class CurseApi {
      */
     public boolean postMessage(Channel channel, String message) {
         if(channel==null) return false;
-        String parameters = "AttachmentID=00000000-0000-0000-0000-000000000000&Body="+message+"&AttachmentRegionID=0&MachineKey="+machineKey+"&ClientID="+clientID;
+        String div = (channel.groupTitle.equalsIgnoreCase(Util.botlogChannel) || channel.groupTitle.equalsIgnoreCase(Util.botstatChannel)) ? "\n-*I================================================I*-\n" : "";
+        String parameters = "AttachmentID=00000000-0000-0000-0000-000000000000&Body=" + (div + message) + "&AttachmentRegionID=0&MachineKey=" + machineKey + "&ClientID=" + clientID;
         Util.sendPost("https://conversations-v1.curseapp.net/conversations/"+channel.groupID, parameters, getAuthToken());
         return true;
     }

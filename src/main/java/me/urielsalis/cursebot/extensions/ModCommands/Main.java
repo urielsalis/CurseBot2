@@ -81,7 +81,7 @@ public class Main {
                     Message message1;
 
                     if (channel != null) {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing delete command!]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Deleted messages:*\n-*I===============================I*-");
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing delete command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Deleted messages:*\n-*I===============================I*-");
                         for (int i = channel.messages.size() - 1; i >= 0; i--) {
                             message1 = (Message) channel.messages.toArray()[i];
                             if (counter >= count) break;
@@ -95,13 +95,14 @@ public class Main {
                                 counter++;
                             }
                         }
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), count + " of " + api.mention(username) + "'s latest messages have been successfuly deleted from the channel " + channelName);
                     }
                     else {
-                        api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Specified channel does not exist or could not be deleted from!");
+                        api.postMessage(api.resolveChannelUUID(Util.botcmdChannel), "Specified channel does not exist or could not be deleted from!");
                     }
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[ERROR: Invalid command syntax!]*~\n*Command:* .delete");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid command syntax!]*~\n*Command:* .delete");
                 }
             }
             break;
@@ -112,10 +113,11 @@ public class Main {
 
                 if(api.resolveMember(username) != null && !Util.isUserAuthorized(api, api.resolveMember(username))) {
                     api.kickUser(api.resolveMember(username));
-                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing kick command!]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Kicked user:* " + username + ".");
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing kick command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Kicked user:* " + username + ".");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user " + username + " was successfully removed from the server!");
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not kick *'" + username + "'*");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not kick *'" + username + "'*");
                 }
             }
             break;
@@ -140,7 +142,6 @@ public class Main {
                             if(hours == -1 && minutes == -1) {
                                 throw new NumberFormatException();
                             }
-                            System.out.println("Mins from Hours: " + hours + "\nMins: " + minutes);
                             if (command.args.length > 2) {
                                 reason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 2, command.args.length)).replaceAll("/n", "\n");
                             }
@@ -153,7 +154,7 @@ public class Main {
                             if(command.args.length > 1) {
                                 if(command.args.length > 2) {
                                     reason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 2, command.args.length)).replaceAll("/n", "\n");
-                                    api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Invalid time given! Defaulting to 5 minutes!");
+                                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Invalid time given! Defaulting to 5 minutes!");
                                 }
                                 else {
                                     reason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
@@ -176,17 +177,18 @@ public class Main {
                     int minutesBanned = (minutes % 60);
                     api.banMember(member.senderID,reason + "\nYou can rejoin in: " + hoursBanned + "hr " + minutesBanned + "mins!\nBanned by: " + command.message.senderName);
                     unbanUpdater.schedule(() -> api.unBanMember(member.senderID, member.senderName), (minutes + hours), TimeUnit.MINUTES);
-                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing ban user command!]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Banned user:* " + username + ".\n*Reason:* \"" + reason + "\"\n*Timeout:* '" + (minutes + hours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing ban user command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Banned user:* " + username + ".\n*Reason:* \"" + reason + "\"\n*Timeout:* '" + (minutes + hours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Successfully banned " + username + " for '" + (minutes + hours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not temp ban *'" + username + "'*");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not temp ban *'" + username + "'*");
                 }
             }
             break;
             case "quit":
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
-                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Shut down command executed!]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]");
+                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Shut down command executed!]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                 System.exit(0);
             }
             break;
@@ -197,11 +199,12 @@ public class Main {
                 String body = (command.args != null && command.args.length > 1) ? (Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n")) : "";
                 if(body.startsWith(".")) break;
                 if (api.resolveChannel(channel) != null && !body.equals("")) {
-                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing send command]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Sending:* \"" + body + "\"");
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing send command]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Sending:* \"" + body + "\"");
                     api.postMessage(api.resolveChannel(channel), body);
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Your message has been sent to #" + channel);
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[ERROR: Invalid channel!]*~\n*Details:* Could not send message to channel *'" + channel + "'*");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid channel!]*~\n*Details:* Could not send message to channel *'" + channel + "'*");
                 }
             }
             break;
@@ -209,8 +212,45 @@ public class Main {
             case "sender":
             {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
-                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing sender command]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]");
-                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hello there " + api.mention(command.message.senderName));
+                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing sender command]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
+                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hello there " + api.mention(command.message.senderName) + "!");
+            }
+            break;
+
+            case "mode":
+            {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
+
+                String mode = (command.args != null && command.args.length > 0) ? command.args[0] : "-1";
+                String status = (command.args != null && command.args.length > 1) ? command.args[1] : "-1";
+
+                switch(mode) {
+                    case "hide": {
+                        if(status.equalsIgnoreCase("status")) {
+                            if(Util.unhidden) {
+                                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing Mode status]*~\nMode: unhidden");
+                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot is currently unhidden, and is able to take actions upon users!");
+                            }
+                            else {
+                                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing Mode status]*~\nMode: hidden");
+                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot is currently hidden, and is unable to take actions upon users, but is logging actions as normal!");
+                            }
+                        }
+                        else {
+                            if (Util.unhidden) { //hide
+                                Util.unhidden = false;
+                                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Toggling Hide mode]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Mode:* hidden");
+                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot has been suppressed from invoking actions, but will continue logging as normal.");
+                            }
+                            else { //unhide
+                                Util.unhidden = true;
+                                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Toggling Hide mode]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Mode:* Unhidden");
+                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot has been unsuppressed from invoking actions, and will continue logging as normal.");
+                            }
+                        }
+                    }
+                    break;
+                }
             }
             break;
 
@@ -220,47 +260,53 @@ public class Main {
                 String resolve = (command.args != null && command.args.length > 0) ? command.args[0] : "";
                 String resolveThis = (command.args != null && command.args.length > 1) ? command.args[1] : "";
                 if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("member") || resolve.equalsIgnoreCase("user"))) {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                     if (api.resolveMember(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Username '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderName + "\n*Nickname:* " + api.resolveMember(resolveThis).username);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Username '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderName + "\n*Nickname:* " + api.resolveMember(resolveThis).username);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Username:* Unable to resolve '" + resolveThis + "' to a username!");
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Username:* Unable to resolve '" + resolveThis + "' to a username!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("userID") || resolve.equalsIgnoreCase("memberID"))) {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                     if (api.resolveMember(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*User ID '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderID);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User ID '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderID);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*User ID:* Unable to resolve '" + resolveThis + "' to a user ID!");
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User ID:* Unable to resolve '" + resolveThis + "' to a user ID!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("userRole") || resolve.equalsIgnoreCase("memberRole") || resolve.equalsIgnoreCase("role"))) {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                     if (api.resolveMember(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*User role '" + resolveThis + "':* " + api.resolveMember(resolveThis).bestRole);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User role '" + resolveThis + "':* " + api.resolveMember(resolveThis).bestRole);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*User role:* Unable to resolve '" + resolveThis + "' to a user role!");
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User role:* Unable to resolve '" + resolveThis + "' to a user role!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && resolve.equalsIgnoreCase("channel")) {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                     if (api.resolveChannel(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Channel name '" + resolveThis + "':* " + api.resolveChannel(resolveThis).groupTitle);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel name '" + resolveThis + "':* " + api.resolveChannel(resolveThis).groupTitle);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Channel name:* Unable to resolve '" + resolveThis + "' to a channel name!");
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel name:* Unable to resolve '" + resolveThis + "' to a channel name!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && resolve.equalsIgnoreCase("channelID")) {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                     if (api.resolveChannel(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Channel ID '" + resolveThis + "':* " + api.resolveChannel(resolveThis).groupID);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel ID '" + resolveThis + "':* " + api.resolveChannel(resolveThis).groupID);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Channel ID:* Unable to resolve '" + resolveThis + "' to a channel ID!");
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel ID:* Unable to resolve '" + resolveThis + "' to a channel ID!");
                     }
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Unresolved:* Unable to resolve anything in given the parameters!");
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing resolving " + resolve + "]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Unresolved:* Unable to resolve anything in given the parameters!");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Unresolved:* Unable to resolve anything from given the parameters!");
                 }
             }
             break;
@@ -270,7 +316,7 @@ public class Main {
                 if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int index = 1;
 
-                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing help command]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]");
+                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing help command]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                 if(!(command.args == null) && (command.args.length == 1))
                 {
                     try
@@ -343,10 +389,10 @@ public class Main {
                             helpMsg += commandList[i];
                     }
 
-                    api.postMessage(api.resolveChannelUUID(command.message.channelUUID), helpMsg);
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), helpMsg);
                 }
                 else
-                    api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "The requested page does not exist!");
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "The requested page does not exist!");
             }
             break;
 
@@ -371,7 +417,8 @@ public class Main {
                 try {
                     userID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
                     if(userID != -1) {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing banLeft command]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Banned member not in the server:* " + userID);
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing banLeft command]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Banned member not in the server:* " + userID);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user with the user ID of " + userID + " has been prevented from joining back onto the server!");
                         api.banMember(userID, "No reason provided!");
                     }
                     else {
@@ -379,7 +426,8 @@ public class Main {
                     }
                 }
                 catch (NumberFormatException e) {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + userID + "'*");
+                    String uuid = userID + "";
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
                 }
             }
             break;
@@ -390,7 +438,8 @@ public class Main {
                 try {
                     userID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
                     if(userID != -1) {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing unbanLeft command]*~\n*Command Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Unbanned member not in the server:* " + userID);
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing unbanLeft command]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Unbanned member not in the server:* " + userID);
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user with the user ID of " + userID + " has been allowed to joining back onto the server!");
                         api.unBanMember(userID, "unavailable");
                     }
                     else {
@@ -398,7 +447,8 @@ public class Main {
                     }
                 }
                 catch (NumberFormatException e) {
-                    api.postMessage(api.resolveChannel(Util.botstatChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + userID + "'*");
+                    String uuid = userID + "";
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
                 }
             }
         }

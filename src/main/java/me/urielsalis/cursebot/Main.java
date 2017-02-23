@@ -43,7 +43,7 @@ public class Main {
         api = new CurseApi(groupID, username, password, clientID, machineKey);
         api.startMessageLoop();
 
-        api.postMessage(api.resolveChannel("bot-log"), "*Bot startup:* Bot is starting up");
+        api.postMessage(api.resolveChannel(Util.botlogChannel), "*Bot startup:* Bot is starting up");
 
         //wait 5 seconds so all messages are flushed and only new ones shown
         try {
@@ -52,7 +52,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        api.postMessage(api.resolveChannel("bot-log"), "*Bot startup:* Bot online!");
+        api.postMessage(api.resolveChannel(Util.botlogChannel), "*Bot startup:* Bot online!");
 
         ExtensionHandler handler = new ExtensionHandler();
         handler.init();
@@ -64,7 +64,7 @@ public class Main {
     }
 
     private void showStats() {
-        api.postMessage(api.resolveChannel("bot-stats"), "[*Stats:* ~" + new Date().toString() + "~ ]"
+        api.postMessage(api.resolveChannel(Util.botstatChannel), "[*Stats:* ~" + new Date().toString() + "~ ]"
                                                                             + "\n-*I===============================I*-"
                                                                             + "\n*Net users joined:*        |     " + api.userJoins
                                                                             + "\n*Unique joins:*          |     " + api.userUniqueJoins
@@ -130,6 +130,7 @@ public class Main {
 
                 Util.botName = prop.getProperty("username");
 
+                Util.defaultChannel = prop.getProperty("defaultChannel");
                 Util.botlogChannel = prop.getProperty("loggingChannel");
                 Util.botstatChannel = prop.getProperty("statsChannel");
                 Util.botcmdChannel = prop.getProperty("commandChannel");

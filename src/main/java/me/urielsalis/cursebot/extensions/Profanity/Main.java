@@ -102,24 +102,42 @@ public class Main{
 
             if (!userSender.senderName.equals(Util.botName)) {
                 if (!isAuthorizedLinker(api, message)) {
-                    api.deleteMessage(message);
+                    if(Util.unhidden) {
+                        api.deleteMessage(message);
+                    }
+
                     if (canRemoveUser(userSender.senderID)) {
                         api.kickUser(userSender);
                         api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
-                    } else {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
-                        api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
+                    }
+                    else {
+                        if(Util.unhidden) {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                            api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
+                        }
+                        else {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* 0\n*Action:* No action taken! Bot currently is in hidden mode!");
+                        }
                     }
                 } else if (containsCurseWord(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
-                    api.deleteMessage(message);
+                    if(Util.unhidden) {
+                        api.deleteMessage(message);
+                    }
+
                     if (canRemoveUser(userSender.senderID)) {
                         api.kickUser(userSender);
                         api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
                     } else {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
-                        api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
+                        if(Util.unhidden) {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                            api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
+                        }
+                        else {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* 0\n*Action:* No action taken! Bot currently is in hidden mode!");
+                        }
                     }
-                } /*else if (isUpperCase(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
+                }
+                /*else if (isUpperCase(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
                     api.deleteMessage(message);
                     if (canRemoveUser(userSender.senderID)) {
                         api.kickUser(userSender);
@@ -172,15 +190,20 @@ public class Main{
                             out.close();
 
                             loadProfanities(getFilterElements("profanities.txt"));
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Success]*\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to the filter!\n- Added by " + api.mention(commandEvent.command.message.senderName));
-                        } else
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is already in the filter!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Success]*\nprofanity list reloaded!\n- Added *'" + commandEvent.command.args[0] + "'* to the filter!\n- Added by " + commandEvent.command.message.senderName);
+                            api.postMessage(api.resolveChannel(Util.botcmdChannel), "Successfully added word to the filter!");
+                        }
+                        else {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is already in the filter!\n- Attempted to be added by " + commandEvent.command.message.senderName);
+                            api.postMessage(api.resolveChannel(Util.botcmdChannel), "Word already exists in the filter!");
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + commandEvent.command.message.senderName);
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "No word specified to add to the filter!");
                 }
             }
             break;
@@ -222,15 +245,20 @@ public class Main{
                             out.close();
 
                             loadProfanities(getFilterElements("profanities.txt"));
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Success]**\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to the filter!\n- Removed by " + api.mention(commandEvent.command.message.senderName));
-                        } else
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is not in the filter!\n- Attempted to be removed by " + api.mention(commandEvent.command.message.senderName));
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Success]**\nprofanity list reloaded!\n- Removed *'" + commandEvent.command.args[0] + "'* to the filter!\n- Removed by " + commandEvent.command.message.senderName);
+                            api.postMessage(api.resolveChannel(Util.botcmdChannel), "Successfully removed word from the filter!");
+                        }
+                        else {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- *'" + commandEvent.command.args[0] + "'* is not in the filter!\n- Attempted to be removed by " + commandEvent.command.message.senderName);
+                            api.postMessage(api.resolveChannel(Util.botcmdChannel), "Unable to remove non existent word from the filter!");
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + commandEvent.command.message.senderName);
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "No word specified to remove from the filter!");
                 }
             }
             break;
@@ -262,16 +290,20 @@ public class Main{
                             out.close();
 
                             loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Success]*\nlink blacklist reloaded!\n- Added *'```" + commandEvent.command.args[0] + "```'* to the blacklist!\n- Added by " + api.mention(commandEvent.command.message.senderName));
-                        } else {
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- '```" + commandEvent.command.args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Success]*\nlink blacklist reloaded!\n- Added *'```" + commandEvent.command.args[0] + "```'* to the blacklist!\n- Added by " + commandEvent.command.message.senderName);
+                            api.postMessage(api.resolveChannel(Util.botcmdChannel), "Link was successfully blacklisted!");
+                        }
+                        else {
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- '```" + commandEvent.command.args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + commandEvent.command.message.senderName);
+                            api.postMessage(api.resolveChannel(Util.botcmdChannel), "Unable to remove non existent link from blacklist!");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- No link was specified!\n- Attempted to be added by " + api.mention(commandEvent.command.message.senderName));
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "*[Failed]*\n- No link was specified!\n- Attempted to be added by " + commandEvent.command.message.senderName);
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "No link specified to add to the blacklist!");
                 }
             }
             break;
@@ -358,8 +390,12 @@ public class Main{
             removeUserWhen.replace(userID, removeUserWhen.get(userID) + 1);
         }
 
-        //return removeUserWhen.get(userID).intValue() % 4 == 0;
-        return false;
+        if(Util.unhidden) {
+            return removeUserWhen.get(userID).intValue() % 4 == 0;
+        }
+        else {
+            return false;
+        }
     }
 
     //:: FILTER DETECTORS :://
@@ -402,23 +438,23 @@ public class Main{
     private static boolean containsCurseWord(String body) throws UnsupportedEncodingException {
         //String message = new String(body.getBytes("UTF-8"), "UTF-8").split("\\s+}");
         String message = new String(body.getBytes("UTF-8"));
-        String nmMsg = message;
+        String nmMsg = message.toLowerCase();
 
         for (String rmvInword : swearWords) {
-            nmMsg = nmMsg.replaceAll("\\b" + rmvInword + "\\b", "[¤]");
+            nmMsg = nmMsg.replaceAll("\\b" + rmvInword.toLowerCase() + "\\b", "[¤]");
         }
         //nmMsg = nmMsg.replaceAll("\\s+", "%");
         for (String rmvInword : swearWords) {
-            nmMsg = nmMsg.replaceAll("\\b" + rmvInword + "\\S{1}", "").replaceAll("\\B" + rmvInword, "");
+            nmMsg = nmMsg.replaceAll("\\b" + rmvInword.toLowerCase() + "\\S{1}", "").replaceAll("\\B" + rmvInword.toLowerCase(), "");
         }
         for (String rmvInWord : swearWords) {
             String regex = "";
             for (int i = 0; i < rmvInWord.length(); i++) {
                 if (i != rmvInWord.length() - 1) {
-                    regex += rmvInWord.charAt(i) + "+\\s*";
+                    regex += rmvInWord.toLowerCase().charAt(i) + "+\\s*";
                 }
                 else {
-                    regex += rmvInWord.charAt(i) + "+";
+                    regex += rmvInWord.toLowerCase().charAt(i) + "+";
                 }
             }
 
@@ -427,8 +463,6 @@ public class Main{
         }
 
         //nmMsg = nmMsg.replaceAll("\\w", "+");
-
-        System.out.println(nmMsg);
 
         if(nmMsg.contains("[¤]")) {
             return  true;
