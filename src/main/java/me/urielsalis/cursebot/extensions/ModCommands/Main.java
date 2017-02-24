@@ -81,21 +81,23 @@ public class Main {
                     Message message1;
 
                     if (channel != null) {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing delete command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Deleted messages:*\n-*I===============================I*-");
+                        StringBuilder builder = new StringBuilder();
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing delete command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n-*I===============================I*-");
                         for (int i = channel.messages.size() - 1; i >= 0; i--) {
                             message1 = (Message) channel.messages.toArray()[i];
                             if (counter >= count) break;
                             if (Util.equals(username, message1.senderName)) {
                                 if (message1.isPM) {
-                                    api.postMessage(api.resolveChannel(Util.botlogChannel), "[ " + api.mention(message1.senderName) + " ]: ```\"" + message1.body.replaceAll("\\s+|\\n", " ") + "\"```");
+                                    builder.append("[ " + api.mention(message1.senderName) + " ]: ```\"" + message1.body.replaceAll("\\s+|\\n", " ") + "\"```");
                                 } else {
-                                    api.postMessage(api.resolveChannel(Util.botlogChannel), "< " + api.mention(message1.senderName) + " >: ```\"" + message1.body.replaceAll("\\s+|\\n", " ") + "\"```");
+                                    builder.append("< " + api.mention(message1.senderName) + " >: ```\"" + message1.body.replaceAll("\\s+|\\n", " ") + "\"```");
                                 }
                                 api.deleteMessage(message1);
                                 counter++;
                             }
                         }
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), count + " of " + api.mention(username) + "'s latest messages have been successfuly deleted from the channel " + channelName);
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "Messages deleted: " + builder.toString());
                     }
                     else {
                         api.postMessage(api.resolveChannelUUID(Util.botcmdChannel), "Specified channel does not exist or could not be deleted from!");
@@ -452,8 +454,35 @@ public class Main {
                     api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
                 }
             }
+            case "addWarning":
+            {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
+                String username = "";
+                String reason = "";
+                if ((command.args != null) && (command.args.length > 0)) {
+                    username = command.args[0];
+                    if(command.args.length > 1) {
+                        reason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
+                    }
+                }
+
+                Member member = api.resolveMember(username);
+                if(member != null) {
+                    if(Util.canRemoveUser(member.senderID)) {
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + username + ", user was removed");
+                    } else {
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + username);
+                    }
+                } else {
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + username + "'*");
+                }
+            }
+            break;
             case "showStats":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannel(Util.botstatChannel), "[*Stats:* ~" + new Date().toString() + "~ ]"
                         + "\n-*I===============================I*-"
                         + "\n*Net users joined:*        |     " + api.userJoins
@@ -466,6 +495,7 @@ public class Main {
             break;
             case "loadStats":
             {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 loadStats();
                 api.postMessage(api.resolveChannel(Util.botcmdChannel), "Stats loaded");
             }

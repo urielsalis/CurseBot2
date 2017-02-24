@@ -386,7 +386,8 @@ public class CurseApi {
      */
     public boolean postMessage(Channel channel, String message) {
         if(channel==null) return false;
-        String div = (channel.groupTitle.equalsIgnoreCase(Util.botlogChannel) || channel.groupTitle.equalsIgnoreCase(Util.botstatChannel)) ? "\n-*I================================================I*-\n" : "";
+        //String div = (channel.groupTitle.equalsIgnoreCase(Util.botlogChannel) || channel.groupTitle.equalsIgnoreCase(Util.botstatChannel)) ? "\n-*I================================================I*-\n" : "";
+        String div = "";
         String parameters = "AttachmentID=00000000-0000-0000-0000-000000000000&Body=" + (div + message) + "&AttachmentRegionID=0&MachineKey=" + machineKey + "&ClientID=" + clientID;
         Util.sendPost("https://conversations-v1.curseapp.net/conversations/"+channel.groupID, parameters, getAuthToken());
         return true;

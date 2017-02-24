@@ -13,6 +13,8 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
@@ -36,7 +38,11 @@ public class Util {
 
     //:: Bote modes
     public static boolean unhidden = false;
-	
+
+    //:: Users in trouble
+    public static Map<Long, Integer> removeUserWhen = new HashMap<Long, Integer>();
+
+
     public static String sendGet(String url, String auth) {
         try {
             URL obj = new URL(url);
@@ -165,4 +171,15 @@ public class Util {
     public static boolean isUserAuthorized(CurseApi api, Member member) {
         return member != null && api.bestRank >= api.roles.get(member.bestRole);
     }
+
+    public static boolean canRemoveUser(long userID) {
+        if (!Util.removeUserWhen.containsKey(userID)) {
+            Util.removeUserWhen.put(userID, 1);
+        } else {
+            Util.removeUserWhen.replace(userID, Util.removeUserWhen.get(userID) + 1);
+        }
+
+        return Util.unhidden && Util.removeUserWhen.get(userID) % 4 == 0;
+    }
+
 }
