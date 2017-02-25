@@ -469,10 +469,10 @@ public class Main {
                 Member member = api.resolveMember(username);
                 if(member != null) {
                     if(Util.canRemoveUser(member.senderID)) {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(username) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + username + ", user was removed");
                     } else {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(command.message.senderName) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(username) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + username);
                     }
                 } else {
