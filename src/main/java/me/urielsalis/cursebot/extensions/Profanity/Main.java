@@ -122,14 +122,14 @@ public class Main{
 
                     if (Util.canRemoveUser(userSender.senderID)) {
                         api.kickUser(userSender);
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Censored:* "+Util.tmpStringCensored+"\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
                     } else {
                         if(Util.unhidden) {
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body +  "\n*Censored:* "+Util.tmpStringCensored+"\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
                         }
                         else {
-                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* 0\n*Action:* No action taken! Bot currently is in hidden mode!");
+                            api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body +  "\n*Censored:* "+Util.tmpStringCensored+ "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* 0\n*Action:* No action taken! Bot currently is in hidden mode!");
                         }
                     }
                 }
@@ -419,6 +419,7 @@ public class Main{
         //String message = new String(body.getBytes("UTF-8"), "UTF-8").split("\\s+}");
         String message = new String(body.getBytes("UTF-8"));
         String nmMsg = message.toLowerCase();
+        Util.tmpStringCensored = "";
 
         for (String rmvInword : swearWords) {
             nmMsg = nmMsg.replaceAll("\\b" + rmvInword.toLowerCase() + "\\b", "[¤]");
@@ -443,8 +444,8 @@ public class Main{
         }
 
         //nmMsg = nmMsg.replaceAll("\\w", "+");
-
         if(nmMsg.contains("[¤]")) {
+            Util.tmpStringCensored = nmMsg;
             return  true;
         }
 
