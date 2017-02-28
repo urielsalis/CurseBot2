@@ -469,14 +469,30 @@ public class Main {
                 Member member = api.resolveMember(username);
                 if(member != null) {
                     if(Util.canRemoveUser(member.senderID)) {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(username) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Username:* [ " + api.mention(username) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + username + ", user was removed");
                     } else {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Sender:* [ " + api.mention(username) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Username:* [ " + api.mention(username) + " ]\n*Reason:* " + reason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + username);
                     }
                 } else {
                     api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + username + "'*");
+                }
+            }
+            break;
+            case "listWarning":
+            {
+                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
+                String username = "";
+                if ((command.args != null) && (command.args.length > 0)) {
+                    username = command.args[0];
+                }
+
+                Member member = api.resolveMember(username);
+                if(member != null) {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Warnings]*~\n*Username:* [ " + api.mention(username) + " ]" + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                } else {
+                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not show warnings of *'" + username + "'*");
                 }
             }
             break;
