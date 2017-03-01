@@ -144,7 +144,8 @@ public class CurseApi {
                                             Object username = member.get("Username");
                                             Object userIDMember = member.get("UserID");
                                             Object bestRole = member.get("BestRole");
-                                            Member m = new Member(nickname, username, userIDMember, bestRole);
+                                            Object displayName = member.get("DisplayName");
+                                            Member m = new Member(nickname, username, userIDMember, bestRole, displayName);
                                             addMemberIfNotFound(m.senderName, m.senderID);
                                             if(!members.contains(m)) {
                                                 //new user, TODO
@@ -280,14 +281,14 @@ public class CurseApi {
             JSONArray array = (JSONArray) new JSONParser().parse(json);
             for(Object obj: array) {
                 JSONObject memberObj = (JSONObject) obj;
-                Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"));
+                Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"), memberObj.get("DisplayName"));
                 members.add(member);
             }
             json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "/members?actives=false&page=1&pageSize=50", getAuthToken());
             array = (JSONArray) new JSONParser().parse(json);
             for(Object obj: array) {
                 JSONObject memberObj = (JSONObject) obj;
-                Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"));
+                Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"), memberObj.get("DisplayName"));
                 members.add(member);
             }
         } catch (ParseException e) {
@@ -348,7 +349,7 @@ public class CurseApi {
             if (!found) {
                 String json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "/members/" + senderID, getAuthToken());
                 JSONObject object = (JSONObject) new JSONParser().parse(json);
-                Member member = new Member(object.get("Nickname"), object.get("Username"), object.get("UserID"), object.get("BestRole"));
+                Member member = new Member(object.get("Nickname"), object.get("Username"), object.get("UserID"), object.get("BestRole"), object.get("DisplayName"));
                 members.add(member);
             }
         } catch (ParseException e) {

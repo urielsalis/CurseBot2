@@ -10,15 +10,21 @@ import java.io.Serializable;
 public class Member implements Serializable {
 
     public String senderName;
+    public String displayName;
     public String username;
     public long senderID;
     public long bestRole;
 
-    public Member(Object nickname, Object username, Object userID, Object bestRole) {
-        this.senderName = (String) nickname;
-        if(nickname==null || ((String) nickname).isEmpty())
-            this.senderName = (String) username;
+    public Member(Object nickname, Object username, Object userID, Object bestRole, Object displayName) {
+        this.senderName = (String) displayName;
+        if(senderName==null || ((String) displayName).isEmpty()) {
+            this.senderName = (String) nickname;
+            if(senderName==null || ((String) nickname).isEmpty()) {
+                this.senderName = (String) username;
+            }
+        }
         this.username = (String) username;
+        this.displayName = (String) displayName;
         this.senderID = (long) userID;
         this.bestRole = (long) bestRole;
     }
