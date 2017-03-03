@@ -42,6 +42,10 @@ public class Util {
     //:: Users in trouble
     public static Map<Long, Integer> removeUserWhen = new HashMap<Long, Integer>();
     public static String tmpStringCensored = "";
+    public static String databaseURL;
+    public static String databaseTable;
+    public static String databaseUsername;
+    public static String databasePassword;
 
 
     public static String sendGet(String url, String auth) {
