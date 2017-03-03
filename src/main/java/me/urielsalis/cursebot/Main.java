@@ -75,6 +75,8 @@ public class Main {
             Logger lgr = Logger.getLogger(Main.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }
+        Runtime.getRuntime().addShutdownHook(new Thread(this::closeDB));
+
 
     }
 
