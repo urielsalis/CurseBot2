@@ -70,16 +70,14 @@ public class ExtensionHandler {
             files[i] = new File(files[i].toPath() + "\\" + files[i].listFiles()[0].getName());
         }
 
-        if (files != null) {
-            for (File file : files) {
-                try {
-                    Util.logger.log(Level.INFO, "Loading .jar: " + file.getName());
-                    ClassPathHacker.addFile(file);
-                } catch (IOException e) {
-                    Util.logger.log(Level.SEVERE, "This should never happen, this is bad");
-                    e.printStackTrace();
-                    System.exit(1);
-                }
+        for (File file : files) {
+            try {
+                Util.logger.log(Level.INFO, "Loading .jar: " + file.getName());
+                ClassPathHacker.addFile(file);
+            } catch (IOException e) {
+                Util.logger.log(Level.SEVERE, "This should never happen, this is bad");
+                e.printStackTrace();
+                System.exit(1);
             }
         }
     }

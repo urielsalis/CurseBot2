@@ -17,6 +17,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +83,9 @@ public class CurseApi {
             JSONObject user = (JSONObject) object.get("User");
             userID = (long) user.get("UserID");
         } catch (ParseException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "Parse exception in getSessionID", sw.toString(), "");
         }
 
     }
@@ -190,7 +194,9 @@ public class CurseApi {
                                     }
                                 }
                             } catch (ParseException e) {
-                                e.printStackTrace();
+                                StringWriter sw = new StringWriter();
+                                e.printStackTrace(new PrintWriter(sw));
+                                Util.dataBase.addLogMessage("INFO", "Parse exception in openWebSocket", sw.toString(), "");
                             }
                         }
                     })
@@ -199,7 +205,9 @@ public class CurseApi {
             Util.logger.log(Level.INFO, "{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
             websocket.sendText("{\"TypeID\":-2101997347,\"Body\":{\"CipherAlgorithm\":0,\"CipherStrength\":0,\"ClientVersion\":\"7.0.138\",\"PublicKey\":null,\"MachineKey\":\""+machineKey+"\",\"UserID\":"+userID+",\"SessionID\":\""+sessionID+"\",\"Status\":1}}");
         } catch ( WebSocketException | IOException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("SEVERE", "Error opening websocket!", sw.toString(), "");
         }
     }
 
@@ -227,7 +235,9 @@ public class CurseApi {
                System.exit(1);
            }
        } catch (ParseException e) {
-           e.printStackTrace();
+           StringWriter sw = new StringWriter();
+           e.printStackTrace(new PrintWriter(sw));
+           Util.dataBase.addLogMessage("INFO", "Parse exception in login", sw.toString(), "");
        }
     }
 
@@ -236,16 +246,16 @@ public class CurseApi {
      * Updates the message table every second
      */
     public void startMessageLoop() {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    while(true) {
-                        websocket.sendText("{\"TypeID\":-476754606,\"Body\":{\"Signal\":true}}");
-                        TimeUnit.SECONDS.sleep(1); //Sleep 1 second
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            try {
+                while(true) {
+                    websocket.sendText("{\"TypeID\":-476754606,\"Body\":{\"Signal\":true}}");
+                    TimeUnit.SECONDS.sleep(1); //Sleep 1 second
                 }
+            } catch (InterruptedException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Util.dataBase.addLogMessage("SERVER", "Message loop interrupted", sw.toString(), "");
             }
         }).start();
     }
@@ -270,7 +280,10 @@ public class CurseApi {
             }
             getMembers();
         } catch (ParseException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "Parse exception in getInforFromGroup", sw.toString(), "");
+
         }
     }
 
@@ -291,7 +304,9 @@ public class CurseApi {
                 members.add(member);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "Parse exception in getMembers", sw.toString(), "");
         }
     }
 
@@ -302,7 +317,9 @@ public class CurseApi {
                 getMessages(channel);
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "Parse exception in update messages", sw.toString(), "");
         }
     }
 
@@ -325,7 +342,10 @@ public class CurseApi {
                 }
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "Parse exception in getMessages", sw.toString(), "");
+
         }
     }
 
@@ -352,7 +372,9 @@ public class CurseApi {
                 members.add(member);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "Parse exception in addMemberIfNotFound", sw.toString(), "");
         }
     }
 

@@ -63,6 +63,11 @@ public class DataBase
     //Adds new log message(in crashes) stackstrace can be get from exception(like .printStackTrace but to variable, cant remember the method)
     public void addLogMessage(String level, String message, String stacktrace, String data) {
         try {
+            if(con==null) {
+                System.err.println(message);
+                System.err.println(stacktrace);
+                return;
+            }
             String simpleProc = "{ call addLogMessage(?, ?, ?, ?) }";
             CallableStatement cs = con.prepareCall(simpleProc);
             cs.setString("level", level);

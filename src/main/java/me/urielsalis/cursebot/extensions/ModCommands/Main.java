@@ -85,7 +85,7 @@ public class Main {
                             try {
                                 cmdArgDeletMessagesX = Integer.parseInt(command.args[2]);
                             }
-                            catch (NumberFormatException e) {
+                            catch (NumberFormatException ignored) {
 
                             }
                         }
@@ -358,10 +358,12 @@ public class Main {
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, stringArgs);
                 if(!(command.args == null) && (command.args.length == 1))
                 {
-                    try
-                    {index = Integer.parseInt(command.args[0]);}
-                    catch(NumberFormatException e)
-                    {index = command.args.length + 5;}
+                    try  {
+                        index = Integer.parseInt(command.args[0]);
+                    }
+                    catch(NumberFormatException e)  {
+                        index = command.args.length + 5;
+                    }
                 }
 
                 String helpMsg = "";
@@ -443,8 +445,10 @@ public class Main {
                 try {
                     shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Util.dataBase.addLogMessage("SEVERE", "UTF-8 is not supported", sw.toString(), "");
+
                 }
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), shrug);
             }

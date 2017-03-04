@@ -2,13 +2,7 @@ package me.urielsalis.cursebot.api;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -72,12 +66,10 @@ public class Util {
             in.close();
 
             return response.toString();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "IO exception in sendGet", sw.toString(), "");
         }
         return null;
     }
@@ -103,12 +95,10 @@ public class Util {
             in.close();
 
             return response.toString();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "IO exception in sendDelete", sw.toString(), "");
         }
         return null;
     }
@@ -140,12 +130,10 @@ public class Util {
             in.close();
 
             return response.toString();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Util.dataBase.addLogMessage("INFO", "IO exception in sendPost", sw.toString(), "");
         }
         return null;
     }
