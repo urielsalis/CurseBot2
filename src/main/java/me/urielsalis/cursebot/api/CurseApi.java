@@ -181,8 +181,10 @@ public class CurseApi {
                                         else {
                                             removedUsers++;
                                             removedUsersList.add(removedid);
-                                            if (!resolveMember(sender).senderName.equals(Util.botName)) {
-                                                postMessage(resolveChannel(Util.botlogChannel), "~*[User Kicked!]*~\n*Command Sender:* [ " + sender + " ]\n*Kicked user:* " + removedname + ".");
+                                            Member senderMember = resolveMember(sender);
+                                            if (!senderMember .senderName.equals(Util.botName)) {
+                                                Util.dataBase.addWarning(senderMember.senderID, senderMember.username, removedid, removedname, "Mod removed", "Kicked");
+                                                //postMessage(resolveChannel(Util.botlogChannel), "~*[User Kicked!]*~\n*Command Sender:* [ " + sender + " ]\n*Kicked user:* " + removedname + ".");
                                             }
                                         }
                                     }
@@ -475,7 +477,7 @@ public class CurseApi {
      * @param userID userid of member to unban
      */
     public void unBanMember(long userID, String bannedUsername) {
-        Util.dataBase.addBanRecord(resolveMember(Util.botName).senderID, Util.botName, userID, bannedUsername, "Unbanning!", new Date().toString(), "Unbanned " + bannedUsername + "!");
+        //Util.dataBase.addBanRecord(resolveMember(Util.botName).senderID, Util.botName, userID, bannedUsername, "Unbanning!", new Date().toString(), "Unbanned " + bannedUsername + "!");
         Util.sendDelete("https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans/"+userID, getAuthToken());
         postMessage(resolveChannel(Util.botlogChannel), "~*[Unbanning: Timer is up]*~\nThe user *'" + userID + ":" + bannedUsername + "'* has been unbanned!");
     }

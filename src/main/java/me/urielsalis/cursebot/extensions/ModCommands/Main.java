@@ -209,7 +209,7 @@ public class Main {
                     unbanUpdater.schedule(() -> api.unBanMember(member.senderID, member.senderName), (cmdArgMinutes + cmdArgHours), TimeUnit.MINUTES);
                     //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing ban user command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Banned user:* " + cmdArgUsername + ".\n*Reason:* \"" + cmdArgReason + "\"\n*Timeout:* '" + (cmdArgMinutes + cmdArgHours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
 
-                    Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, new Date().toString(),(hoursBanned + "hr " + minutesBanned + "mins"));
+                    Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, hoursBanned*60+minutesBanned);
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, stringArgs);
                     api.postMessage(api.resolveChannel(Util.botcmdChannel), "Successfully banned " + cmdArgUsername + " for '" + (cmdArgMinutes + cmdArgHours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
                 }
@@ -458,7 +458,7 @@ public class Main {
                 try {
                     cmdArgUserID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
                     if(cmdArgUserID != -1) {
-                        Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", cmdArgReason, new Date().toString(),"No time given!");
+                        Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", cmdArgReason, 0);
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user with the user ID of " + cmdArgUserID + " has been prevented from joining back onto the server!");
                         api.banMember(cmdArgUserID, "No reason provided!");
@@ -481,7 +481,6 @@ public class Main {
                 try {
                     cmdArgUserID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
                     if(cmdArgUserID != -1) {
-                        Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", "", new Date().toString(),"Unbanned " + cmdArgUserID + "!");
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "unbanLeft", channelName, stringArgs);
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user with the user ID of " + cmdArgUserID + " has been allowed to joining back onto the server!");
                         api.unBanMember(cmdArgUserID, "unavailable");
@@ -514,10 +513,10 @@ public class Main {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                     if(Util.canRemoveUser(cmdArgMember.senderID)) {
                         //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]\n*Reason:* " + cmdArgReason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
-                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "User was issued a warning and was removed from the server! Warnings: " + Util.removeUserWhen.get(cmdArgMember.senderID));
+                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Kicked");
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + cmdArgUsername + ", user was removed");
                     } else {
-                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "User was issued a warning! Warnings: " + Util.removeUserWhen.get(cmdArgMember.senderID));
+                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Warned");
                         api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + cmdArgUsername);
                     }
                 } else {

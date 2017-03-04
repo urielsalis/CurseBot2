@@ -115,17 +115,17 @@ public class Main{
 
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "User was kicked");
+                        Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Kicked");
                         //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
                     }
                     else {
                         if(Util.unhidden) {
-                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Verbal warning");
+                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Warned");
                             //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
                         }
                         else {
-                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing, bot is hidden");
+                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing");
                         }
                     }
                 } else if (containsCurseWord(message.body) && !(Util.isUserAuthorized(api, cmdSender))) {
@@ -135,16 +135,16 @@ public class Main{
 
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "User was kicked");
+                        Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Kicked");
                         //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Censored:* "+Util.tmpStringCensored+"\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
                     } else {
                         if(Util.unhidden) {
-                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Verbal warning");
+                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Warned");
                             //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body +  "\n*Censored:* "+Util.tmpStringCensored+"\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
                         }
                         else {
-                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing, bot is hidden");
+                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing");
                             //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body +  "\n*Censored:* "+Util.tmpStringCensored+ "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* 0\n*Action:* No action taken! Bot currently is in hidden mode!");
                         }
                     }
