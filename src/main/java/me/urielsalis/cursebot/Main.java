@@ -223,7 +223,7 @@ public class Main {
                 Util.botlogChannel = prop.getProperty("loggingChannel");
                 Util.botstatChannel = prop.getProperty("statsChannel");
                 Util.botcmdChannel = prop.getProperty("commandChannel");
-                
+
                 Util.databaseURL = prop.getProperty("databaseURL");
                 Util.databaseTable = prop.getProperty("databaseTable");
                 Util.databaseUsername = prop.getProperty("databaseUsername");
