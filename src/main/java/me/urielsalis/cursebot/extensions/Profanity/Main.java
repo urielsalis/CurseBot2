@@ -459,7 +459,7 @@ public class Main{
         }
         //nmMsg = nmMsg.replaceAll("\\s+", "%");
         for (String rmvInword : swearWords) {
-            nmMsg = nmMsg.replaceAll("\\b" + rmvInword.toLowerCase() + "\\S{1}", "").replaceAll("\\B" + rmvInword.toLowerCase(), "");
+            nmMsg = nmMsg.replaceAll("\\b" + rmvInword.toLowerCase() + "\\S", "").replaceAll("\\B" + rmvInword.toLowerCase(), "");
         }
         for (String rmvInWord : swearWords) {
             String regex = "";
