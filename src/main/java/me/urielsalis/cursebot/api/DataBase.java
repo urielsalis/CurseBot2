@@ -30,7 +30,7 @@ public class DataBase
     }
 
     //Adds new ban, username must be unique curse ID(memberobj.username), duration must be a unix posix of the duration of the ban(seconds)
-    public void addBanRecord(long issuerID, String issuerUsername, long bannedID, String bannedUsername, String reason, long duration) {
+    public void addBanRecord(long issuerID, String issuerUsername, long bannedID, String bannedUsername, String reason, String bannedAtTime, String duration) {
         try {
             String simpleProc = "{ call addBanRecord(?, ?, ?, ?, ?, ?) }";
             CallableStatement cs = con.prepareCall(simpleProc);
@@ -39,7 +39,8 @@ public class DataBase
             cs.setLong("bannedId", bannedID);
             cs.setString("bannedUsername", bannedUsername);
             cs.setString("reason", reason);
-            cs.setLong("banDuration", duration);
+            cs.setString("banned", bannedAtTime);
+            cs.setString("banDuration", duration);
             cs.execute();
         } catch (SQLException e) {
             e.printStackTrace();
