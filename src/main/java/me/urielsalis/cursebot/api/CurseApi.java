@@ -18,10 +18,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -478,6 +475,7 @@ public class CurseApi {
      * @param userID userid of member to unban
      */
     public void unBanMember(long userID, String bannedUsername) {
+        Util.dataBase.addBanRecord(resolveMember(Util.botName).senderID, Util.botName, userID, bannedUsername, "Unbanning!", new Date().toString(), "Unbanned " + bannedUsername + "!");
         Util.sendDelete("https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans/"+userID, getAuthToken());
         postMessage(resolveChannel(Util.botlogChannel), "~*[Unbanning: Timer is up]*~\nThe user *'" + userID + ":" + bannedUsername + "'* has been unbanned!");
     }
