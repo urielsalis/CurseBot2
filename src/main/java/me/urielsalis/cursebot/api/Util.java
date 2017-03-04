@@ -1,6 +1,7 @@
 package me.urielsalis.cursebot.api;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.crypto.Data;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -47,6 +48,8 @@ public class Util {
     public static String databaseUsername;
     public static String databasePassword;
 
+    //:: DataBase access variable
+    public static DataBase dataBase = new DataBase();
 
     public static String sendGet(String url, String auth) {
         try {

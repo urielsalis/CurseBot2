@@ -268,7 +268,7 @@ public class Main{
 
                 if(commandEvent.command.args != null && commandEvent.command.args.length > 0) {
                     try {
-                        if (isLink(commandEvent.command.args[0])) {
+                        if (!isLink(commandEvent.command.args[0])) {
                             Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\linkblacklist.txt"), "UTF-8"));
 
                             links = links.trim().replaceFirst("\\s\\]", "");
