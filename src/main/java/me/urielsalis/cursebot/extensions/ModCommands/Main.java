@@ -42,9 +42,9 @@ public class Main {
     }
 
     private static void handleCommand(Command command) {
-
-        Member cmdSender = api.resolveMember(command.message.senderName);
-        Channel cmdChannel = api.resolveChannelUUID(command.message.channelUUID);
+        Message message = command.getMessage();
+        Member cmdSender = api.resolveMember(message.senderName);
+        Channel cmdChannel = api.resolveChannelUUID(message.channelUUID);
 
         //:: Command sender information
         //:: Sender Information
@@ -55,14 +55,17 @@ public class Main {
         long cmdSenderRole = cmdSender.bestRole;         //- The best role a user currently holds. infinity to 1.
 
         //:: Channel Information
-        String channelName = cmdChannel.groupTitle; //- The name of the channel command was sent in.
-        String channelID = cmdChannel.groupID;      //- The special ID of a channel in which to refer to a channel.
+        String channelName = cmdChannel.getGroupTitle(); //- The name of the channel command was sent in.
+        String channelID = cmdChannel.getGroupID();      //- The special ID of a channel in which to refer to a channel.
+        Channel botLogChannel = api.resolveChannel(Util.botlogChannel);
+        Channel botCommandChannel = api.resolveChannel(Util.botcmdChannel);
 
         //:: Command Information
-        String stringArgs = (command.args != null) ? Util.spaceSeparatedString(command.args) : "null";
+        String[] args = command.getArgs();
+        String stringArgs = (args != null) ? Util.spaceSeparatedString(args) : "null";
 
-        if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
-        switch (command.command) {
+        if(!Util.isUserAuthorized(api, api.resolveMember(senderName))) return;
+        switch (command.getCommand()) {
             case "delete":
             {
                 //:: Command Argument variables
@@ -73,13 +76,13 @@ public class Main {
                 boolean canDelete = true;
 
                 //:: assign arguments to variables
-                if(command.args != null && command.args.length > 0) {
-                    cmdArgChannelName = command.args[0];
-                    if (command.args.length > 1) {
-                        cmdArgUserName = command.args[1];
-                        if (command.args.length > 2) {
+                if(args != null && args.length > 0) {
+                    cmdArgChannelName = args[0];
+                    if (args.length > 1) {
+                        cmdArgUserName = args[1];
+                        if (args.length > 2) {
                             try {
-                                cmdArgDeletMessagesX = Integer.parseInt(command.args[2]);
+                                cmdArgDeletMessagesX = Integer.parseInt(args[2]);
                             }
                             catch (NumberFormatException ignored) {
 
@@ -102,40 +105,40 @@ public class Main {
                     if (channel != null) {
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, stringArgs);
 
-                        for (int i = channel.messages.size() - 1; i >= 0; i--) {
-                            message1 = (Message) channel.messages.toArray()[i];
+                        for (int i = channel.getMessages().size() - 1; i >= 0; i--) {
+                            message1 = (Message) channel.getMessages().toArray()[i];
                             if (counter >= cmdArgDeletMessagesX) break;
                             if (Util.equals(cmdArgUserName, message1.senderName)) {
                                 api.deleteMessage(message1);
                                 counter++;
                             }
                         }
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), cmdArgDeletMessagesX + " of " + api.mention(cmdArgUserName) + "'s latest messages have been successfuly deleted from the channel " + cmdArgChannelName);
+                        api.postMessage(botCommandChannel, cmdArgDeletMessagesX + " of " + api.mention(cmdArgUserName) + "'s latest messages have been successfuly deleted from the channel " + cmdArgChannelName);
                     }
                     else {
-                        api.postMessage(api.resolveChannelUUID(Util.botcmdChannel), "Specified channel does not exist or could not be deleted from!");
+                        api.postMessage(botCommandChannel, "Specified channel does not exist or could not be deleted from!");
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, "Error: Un-existent channel");
                     }
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid command syntax!]*~\n*Command:* .delete");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid command syntax!]*~\n*Command:* .delete");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, "Invalid command syntax!");
                 }
             }
             break;
             case "kick":
             {
-                String cmdArgUsername = (command.args != null && command.args.length > 0) ? command.args[0] : "";
+                String cmdArgUsername = (args != null && args.length > 0) ? args[0] : "";
                 Member cmdArgMember = api.resolveMember(cmdArgUsername);
 
                 if(cmdArgMember != null && !Util.isUserAuthorized(api, cmdArgMember)) {
                     api.kickUser(api.resolveMember(cmdArgUsername));
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, stringArgs);
                     Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "Standard kick", "User kicked from server!");
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user " + cmdArgUsername + " was successfully removed from the server!");
+                    api.postMessage(botCommandChannel, "The user " + cmdArgUsername + " was successfully removed from the server!");
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not kick *'" + cmdArgUsername + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not kick *'" + cmdArgUsername + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, "Unable to kick " + cmdArgUsername);
                 }
             }
@@ -148,18 +151,18 @@ public class Main {
                 int cmdArgMinutes = 5;
                 String cmdArgReason = "No reason given!";
 
-                if(command.args != null && command.args.length > 0) {
-                    cmdArgUsername = command.args[0];
-                    if(command.args.length > 1) {
+                if(args != null && args.length > 0) {
+                    cmdArgUsername = args[0];
+                    if(args.length > 1) {
                         try {
-                            command.args[1] = command.args[1].toLowerCase();
-                            cmdArgHours = (command.args[1].contains("h") && (command.args[1].indexOf("h") == command.args[1].lastIndexOf("h"))) ? Integer.parseInt(command.args[1].replaceFirst("((hours)(?!hours)|(hrs)(?!hrs)|(hr)(?!hr)|(h)(?!h))(([0-9]+((minutes)(?!minutes)|(mins)(?!mins)|(min)(?!min)|(m)(?!m))|[0-9]+))?", "")) * 60 : -1;
-                            cmdArgMinutes = (command.args[1].contains("m") && (command.args[1].indexOf("m") == command.args[1].lastIndexOf("m"))) ? Integer.parseInt(command.args[1].replaceFirst("[0-9]+((hours)(?!hours)|(hrs)(?!hrs)|(hr)(?!hr)|(h)(?!h))", "").replaceFirst("((minutes)(?!minutes)|(mins)(?!mins)|(min)(?!min)|(m)(?!m))", "")) : -1;
+                            args[1] = args[1].toLowerCase();
+                            cmdArgHours = (args[1].contains("h") && (args[1].indexOf("h") == args[1].lastIndexOf("h"))) ? Integer.parseInt(args[1].replaceFirst("((hours)(?!hours)|(hrs)(?!hrs)|(hr)(?!hr)|(h)(?!h))(([0-9]+((minutes)(?!minutes)|(mins)(?!mins)|(min)(?!min)|(m)(?!m))|[0-9]+))?", "")) * 60 : -1;
+                            cmdArgMinutes = (args[1].contains("m") && (args[1].indexOf("m") == args[1].lastIndexOf("m"))) ? Integer.parseInt(args[1].replaceFirst("[0-9]+((hours)(?!hours)|(hrs)(?!hrs)|(hr)(?!hr)|(h)(?!h))", "").replaceFirst("((minutes)(?!minutes)|(mins)(?!mins)|(min)(?!min)|(m)(?!m))", "")) : -1;
                             if(cmdArgHours == -1 && cmdArgMinutes == -1) {
                                 throw new NumberFormatException();
                             }
-                            if (command.args.length > 2) {
-                                cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 2, command.args.length)).replaceAll("/n", "\n");
+                            if (args.length > 2) {
+                                cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length)).replaceAll("/n", "\n");
                             }
 
                             if(cmdArgHours == -1) {
@@ -167,13 +170,13 @@ public class Main {
                             }
                         }
                         catch (NumberFormatException e) {
-                            if(command.args.length > 1) {
-                                if(command.args.length > 2) {
-                                    cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 2, command.args.length)).replaceAll("/n", "\n");
-                                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Invalid time given! Defaulting to 5 minutes!");
+                            if(args.length > 1) {
+                                if(args.length > 2) {
+                                    cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 2, args.length)).replaceAll("/n", "\n");
+                                    api.postMessage(botCommandChannel, "Invalid time given! Defaulting to 5 minutes!");
                                 }
                                 else {
-                                    cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
+                                    cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 1, args.length)).replaceAll("/n", "\n");
                                 }
                             }
 
@@ -191,22 +194,22 @@ public class Main {
                 if(member != null) {
                     int hoursBanned = (int)(Math.floor((cmdArgHours + cmdArgMinutes)/60));
                     int minutesBanned = (cmdArgMinutes % 60);
-                    api.banMember(member.senderID,cmdArgReason + "\nYou can rejoin in: " + hoursBanned + "hr " + minutesBanned + "mins!\nBanned by: " + command.message.senderName);
+                    api.banMember(member.senderID,cmdArgReason + "\nYou can rejoin in: " + hoursBanned + "hr " + minutesBanned + "mins!\nBanned by: " + senderName);
                     unbanUpdater.schedule(() -> api.unBanMember(member.senderID, member.senderName), (cmdArgMinutes + cmdArgHours), TimeUnit.MINUTES);
 
                     Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, hoursBanned*60+minutesBanned);
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, stringArgs);
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Successfully banned " + cmdArgUsername + " for '" + (cmdArgMinutes + cmdArgHours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
+                    api.postMessage(botCommandChannel, "Successfully banned " + cmdArgUsername + " for '" + (cmdArgMinutes + cmdArgHours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not temp ban *'" + cmdArgUsername + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not temp ban *'" + cmdArgUsername + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, "Unable to temporarily ba " + cmdArgUsername);
                 }
             }
             break;
             case "quit":
             {
-                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Shut down command executed!]*~\n*Command Sender:* [ " + senderName + " ]");
+                api.postMessage(botLogChannel, "~*[Shut down command executed!]*~\n*Command Sender:* [ " + senderName + " ]");
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "quit", channelName, stringArgs);
                 saveStats();
                 Util.dataBase.closeDB();
@@ -215,16 +218,16 @@ public class Main {
             break;
             case "send":
             {
-                String channel = (command.args != null && command.args.length > 0) ? command.args[0] : "";
-                String body = (command.args != null && command.args.length > 1) ? (Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n")) : "";
+                String channel = (args != null && args.length > 0) ? args[0] : "";
+                String body = (args != null && args.length > 1) ? (Util.spaceSeparatedString(Arrays.copyOfRange(args, 1, args.length)).replaceAll("/n", "\n")) : "";
                 if(body.startsWith(".")) break;
                 if (api.resolveChannel(channel) != null && !body.equals("")) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "send", channelName, stringArgs);
-                    api.postMessage(api.resolveChannel(channel), body);
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Your message has been sent to #" + channel);
+                    api.postMessage(cmdChannel, body);
+                    api.postMessage(botCommandChannel, "Your message has been sent to #" + channel);
                 }
                 else {
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid channel!]*~\n*Details:* Could not send message to channel *'" + channel + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid channel!]*~\n*Details:* Could not send message to channel *'" + channel + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "quit", channelName, "Failed to send message to " + channel + "!");
                 }
             }
@@ -232,39 +235,39 @@ public class Main {
 
             case "sender":
             {
-                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing sender command]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
-                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hello there " + api.mention(command.message.senderName) + "!");
+                api.postMessage(botLogChannel, "~*[Executing sender command]*~\n*Command Sender:* [ " + senderName + " ]");
+                api.postMessage(cmdChannel, "Hello there " + api.mention(senderName) + "!");
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "sender", channelName, stringArgs);
             }
             break;
 
             case "mode":
             {
-                String cmdArgMode = (command.args != null && command.args.length > 0) ? command.args[0] : "-1";
-                String cmdArgStatus = (command.args != null && command.args.length > 1) ? command.args[1] : "-1";
+                String cmdArgMode = (args != null && args.length > 0) ? args[0] : "-1";
+                String cmdArgStatus = (args != null && args.length > 1) ? args[1] : "-1";
 
                 switch(cmdArgMode) {
                     case "hide": {
                         if(cmdArgStatus.equalsIgnoreCase("status")) {
                             if(Util.unhidden) {
                                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "mode status", channelName, stringArgs);
-                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot is currently unhidden, and is able to take actions upon users!");
+                                api.postMessage(botCommandChannel, "Bot is currently unhidden, and is able to take actions upon users!");
                             }
                             else {
                                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "mode status", channelName, stringArgs);
-                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot is currently hidden, and is unable to take actions upon users, but is logging actions as normal!");
+                                api.postMessage(botCommandChannel, "Bot is currently hidden, and is unable to take actions upon users, but is logging actions as normal!");
                             }
                         }
                         else {
                             if (Util.unhidden) { //hide
                                 Util.unhidden = false;
                                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "mode hide", channelName, stringArgs);
-                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot has been suppressed from invoking actions, but will continue logging as normal.");
+                                api.postMessage(botCommandChannel, "Bot has been suppressed from invoking actions, but will continue logging as normal.");
                             }
                             else { //unhide
                                 Util.unhidden = true;
                                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "mode unhide", channelName, stringArgs);
-                                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Bot has been unsuppressed from invoking actions, and will continue logging as normal.");
+                                api.postMessage(botCommandChannel, "Bot has been unsuppressed from invoking actions, and will continue logging as normal.");
                             }
                         }
                     }
@@ -275,56 +278,56 @@ public class Main {
 
             case "resolve":
             {
-                String resolve = (command.args != null && command.args.length > 0) ? command.args[0] : "";
-                String resolveThis = (command.args != null && command.args.length > 1) ? command.args[1] : "";
+                String resolve = (args != null && args.length > 0) ? args[0] : "";
+                String resolveThis = (args != null && args.length > 1) ? args[1] : "";
                 if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("member") || resolve.equalsIgnoreCase("user"))) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve member", channelName, stringArgs);
                     if (api.resolveMember(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Username '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderName + "\n*Nickname:* " + api.resolveMember(resolveThis).username);
+                        api.postMessage(botCommandChannel, "*Username '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderName + "\n*Nickname:* " + api.resolveMember(resolveThis).username);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Username:* Unable to resolve '" + resolveThis + "' to a username!");
+                        api.postMessage(botCommandChannel, "*Username:* Unable to resolve '" + resolveThis + "' to a username!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("userID") || resolve.equalsIgnoreCase("memberID"))) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve userid", channelName, stringArgs);
                     if (api.resolveMember(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User ID '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderID);
+                        api.postMessage(botCommandChannel, "*User ID '" + resolveThis + "':* " + api.resolveMember(resolveThis).senderID);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User ID:* Unable to resolve '" + resolveThis + "' to a user ID!");
+                        api.postMessage(botCommandChannel, "*User ID:* Unable to resolve '" + resolveThis + "' to a user ID!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("userRole") || resolve.equalsIgnoreCase("memberRole") || resolve.equalsIgnoreCase("role"))) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve user role", channelName, stringArgs);
                     if (api.resolveMember(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User role '" + resolveThis + "':* " + api.resolveMember(resolveThis).bestRole);
+                        api.postMessage(botCommandChannel, "*User role '" + resolveThis + "':* " + api.resolveMember(resolveThis).bestRole);
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*User role:* Unable to resolve '" + resolveThis + "' to a user role!");
+                        api.postMessage(botCommandChannel, "*User role:* Unable to resolve '" + resolveThis + "' to a user role!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && resolve.equalsIgnoreCase("channel")) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve channel", channelName, stringArgs);
                     if (api.resolveChannel(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel name '" + resolveThis + "':* " + api.resolveChannel(resolveThis).groupTitle);
+                        api.postMessage(botCommandChannel, "*Channel name '" + resolveThis + "':* " + api.resolveChannel(resolveThis).getGroupID());
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel name:* Unable to resolve '" + resolveThis + "' to a channel name!");
+                        api.postMessage(botCommandChannel, "*Channel name:* Unable to resolve '" + resolveThis + "' to a channel name!");
                     }
                 }
                 else if (!(resolve.equals("") || resolveThis.equals("")) && resolve.equalsIgnoreCase("channelID")) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve channelid", channelName, stringArgs);
                     if (api.resolveChannel(resolveThis) != null) {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel ID '" + resolveThis + "':* " + api.resolveChannel(resolveThis).groupID);
+                        api.postMessage(botCommandChannel, "*Channel ID '" + resolveThis + "':* " + api.resolveChannel(resolveThis).getGroupID());
                     }
                     else {
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "*Channel ID:* Unable to resolve '" + resolveThis + "' to a channel ID!");
+                        api.postMessage(botCommandChannel, "*Channel ID:* Unable to resolve '" + resolveThis + "' to a channel ID!");
                     }
                 }
                 else {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve", channelName, "Resolve failed to resolve any information!");
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "Unresolved:* Unable to resolve anything from given the parameters!");
+                    api.postMessage(botCommandChannel, "Unresolved:* Unable to resolve anything from given the parameters!");
                 }
             }
             break;
@@ -334,17 +337,17 @@ public class Main {
                 int index = 1;
 
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, stringArgs);
-                if(!(command.args == null) && (command.args.length == 1))
+                if(!(args == null) && (args.length == 1))
                 {
                     try  {
-                        index = Integer.parseInt(command.args[0]);
+                        index = Integer.parseInt(args[0]);
                     }
                     catch(NumberFormatException e)  {
-                        index = command.args.length + 5;
+                        index = args.length + 5;
                     }
                 }
 
-                String helpMsg = "";
+                StringBuilder helpMsg = new StringBuilder();
                 String[] commandList = {
                         //- Page 1 : 12 lines per page
                         "\n*.quit* ",
@@ -396,7 +399,7 @@ public class Main {
 
                 if(!(index > maxPages))
                 {
-                    helpMsg += header;
+                    helpMsg.append(header);
                     for(int i = (((index * 11) - 11)); i <= (index * 11); i++)
                     {
                         if(index > 1 && i == (((index * 11) - 11)))
@@ -405,13 +408,13 @@ public class Main {
                         if(i == commandList.length)
                             break;
                         else
-                            helpMsg += commandList[i];
+                            helpMsg.append(commandList[i]);
                     }
 
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), helpMsg);
+                    api.postMessage(botCommandChannel, helpMsg.toString());
                 }
                 else
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "The requested page does not exist!");
+                    api.postMessage(botCommandChannel, "The requested page does not exist!");
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, "Failed to get page " + index + "!");
             }
             break;
@@ -427,20 +430,20 @@ public class Main {
                     Util.dataBase.addLogMessage("SEVERE", "UTF-8 is not supported", sw.toString(), "");
 
                 }
-                api.postMessage(api.resolveChannelUUID(command.message.channelUUID), shrug);
+                api.postMessage(cmdChannel, shrug);
             }
             break;
 
             case "banLeft":
             {
                 int cmdArgUserID = -1;
-                String cmdArgReason = (command.args != null && command.args.length > 1 ? Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n") : "No reason given!" );
+                String cmdArgReason = (args != null && args.length > 1 ? Util.spaceSeparatedString(Arrays.copyOfRange(args, 1, args.length)).replaceAll("/n", "\n") : "No reason given!" );
                 try {
-                    cmdArgUserID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
+                    cmdArgUserID = (args != null && args.length > 0) ? Integer.parseInt(args[0]) : -1;
                     if(cmdArgUserID != -1) {
                         Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", cmdArgReason, 0);
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user with the user ID of " + cmdArgUserID + " has been prevented from joining back onto the server!");
+                        api.postMessage(botCommandChannel, "The user with the user ID of " + cmdArgUserID + " has been prevented from joining back onto the server!");
                         api.banMember(cmdArgUserID, "No reason provided!");
                     }
                     else {
@@ -449,7 +452,7 @@ public class Main {
                 }
                 catch (NumberFormatException e) {
                     String uuid = cmdArgUserID + "";
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, "Failed to ban " + uuid);
                 }
             }
@@ -458,10 +461,10 @@ public class Main {
             {
                 int cmdArgUserID = -1;
                 try {
-                    cmdArgUserID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
+                    cmdArgUserID = (args != null && args.length > 0) ? Integer.parseInt(args[0]) : -1;
                     if(cmdArgUserID != -1) {
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "unbanLeft", channelName, stringArgs);
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user with the user ID of " + cmdArgUserID + " has been allowed to joining back onto the server!");
+                        api.postMessage(botCommandChannel, "The user with the user ID of " + cmdArgUserID + " has been allowed to joining back onto the server!");
                         api.unBanMember(cmdArgUserID, "unavailable");
                     }
                     else {
@@ -470,7 +473,7 @@ public class Main {
                 }
                 catch (NumberFormatException e) {
                     String uuid = cmdArgUserID + "";
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "unbanLeft", channelName, "Failed to unban " + uuid);
                 }
             }
@@ -479,10 +482,10 @@ public class Main {
                 String cmdArgUsername = "";
                 String cmdArgReason = "";
 
-                if ((command.args != null) && (command.args.length > 0)) {
-                    cmdArgUsername = command.args[0];
-                    if(command.args.length > 1) {
-                        cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n");
+                if ((args != null) && (args.length > 0)) {
+                    cmdArgUsername = args[0];
+                    if(args.length > 1) {
+                        cmdArgReason = Util.spaceSeparatedString(Arrays.copyOfRange(args, 1, args.length)).replaceAll("/n", "\n");
                     }
                 }
 
@@ -490,15 +493,14 @@ public class Main {
                 if(cmdArgMember != null) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                     if(Util.canRemoveUser(cmdArgMember.senderID)) {
-                        //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Manual warning]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]\n*Reason:* " + cmdArgReason + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                         Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Kicked");
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + cmdArgUsername + ", user was removed");
+                        api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername + ", user was removed");
                     } else {
                         Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Warned");
-                        api.postMessage(api.resolveChannel(Util.botcmdChannel), "Warning added to " + cmdArgUsername);
+                        api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername);
                     }
                 } else {
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + cmdArgUsername + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + cmdArgUsername + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, "Unable to issue a warning to " + cmdArgUsername + "!");
                 }
             }
@@ -506,16 +508,16 @@ public class Main {
             case "listWarning":
             {
                 String cmdArgUsername = "";
-                if ((command.args != null) && (command.args.length > 0)) {
-                    cmdArgUsername = command.args[0];
+                if ((args != null) && (args.length > 0)) {
+                    cmdArgUsername = args[0];
                 }
 
                 Member member = api.resolveMember(cmdArgUsername);
                 if(member != null) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, stringArgs);
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[Warnings]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                    api.postMessage(botCommandChannel, "~*[Warnings]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                 } else {
-                    api.postMessage(api.resolveChannel(Util.botcmdChannel), "~*[ERROR: Invalid user!]*~\n*Details:* Could not show warnings of *'" + cmdArgUsername + "'*");
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not show warnings of *'" + cmdArgUsername + "'*");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, "Failed to get any warnings from " + cmdArgUsername);
                 }
             }
@@ -537,7 +539,7 @@ public class Main {
             {
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "loadStats", channelName, stringArgs);
                 loadStats();
-                api.postMessage(api.resolveChannel(Util.botcmdChannel), "Stats loaded");
+                api.postMessage(botCommandChannel, "Stats loaded");
             }
             break;
         }

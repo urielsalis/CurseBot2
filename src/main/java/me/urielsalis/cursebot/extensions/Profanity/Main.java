@@ -88,6 +88,8 @@ public class Main{
         //:: Channel Information
         String channelName = cmdChannel.getGroupTitle(); //- The name of the channel command was sent in.
         String channelID = cmdChannel.getGroupID();      //- The special ID of a channel in which to refer to a channel.
+        Channel botLogChannel = api.resolveChannel(Util.botlogChannel);
+        Channel botCmdChannel = api.resolveChannel(Util.botcmdChannel);
         try
         {
             try {
@@ -96,7 +98,7 @@ public class Main{
                 e2.printStackTrace();
             }
 
-            if(message.channelUUID.equals(api.resolveChannel(Util.botlogChannel))||message.channelUUID.equals(api.resolveChannel(Util.botstatChannel))) return;
+            if(message.channelUUID.equals(botLogChannel.getGroupID())||message.channelUUID.equals(botLogChannel.getGroupID())) return;
 
             if(message.isPM) {
                 System.out.println(Util.timestampToDate(message.timestamp) + "  [" + senderName + "] " + message.body);
@@ -116,12 +118,10 @@ public class Main{
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
                         Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Kicked");
-                        //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
                     }
                     else {
                         if(Util.unhidden) {
                             Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Warned");
-                            //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Link Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
                         }
                         else {
@@ -136,29 +136,16 @@ public class Main{
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
                         Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Kicked");
-                        //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Censored:* "+Util.tmpStringCensored+"\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
                     } else {
                         if(Util.unhidden) {
                             Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Warned");
-                            //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body +  "\n*Censored:* "+Util.tmpStringCensored+"\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (Util.removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
                         }
                         else {
                             Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing");
-                            //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body +  "\n*Censored:* "+Util.tmpStringCensored+ "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userSender.senderID) + "\n*Removals:* 0\n*Action:* No action taken! Bot currently is in hidden mode!");
                         }
                     }
                 }
-                /*else if (isUpperCase(message.body) && !(Util.isUserAuthorized(api, api.resolveMember(message.senderName)))) {
-                    api.deleteMessage(message);
-                    if (canRemoveUser(userSender.senderID)) {
-                        api.kickUser(userSender);
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Capital Letters Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
-                    } else {
-                        api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Capital Letters Filter]*~\n*Sender:* [ " + api.mention(message.senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + api.resolveChannelUUID(message.channelUUID).groupTitle + "\n*Issued Warnings:* " + removeUserWhen.get(userSender.senderID) + "\n*Removals:* " + (removeUserWhen.get(userSender.senderID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
-                        api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please lay off the caps.");
-                    }
-                }*/
             }
         }
         catch (UnsupportedEncodingException e1)

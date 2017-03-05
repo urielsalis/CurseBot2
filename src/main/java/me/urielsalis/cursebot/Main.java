@@ -57,9 +57,9 @@ public class Main {
         handler.init();
         loadMembers();
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.scheduleAtFixedRate(() -> updateMembersTable(), 0, 5, TimeUnit.MINUTES);
-        service.scheduleAtFixedRate(() -> showStats(), 1, 1, TimeUnit.DAYS);
-        service.scheduleAtFixedRate(() -> fetchDomains(), 0, 7, TimeUnit.DAYS);
+        service.scheduleAtFixedRate(this::updateMembersTable, 0, 5, TimeUnit.MINUTES);
+        service.scheduleAtFixedRate(this::showStats, 1, 1, TimeUnit.DAYS);
+        service.scheduleAtFixedRate(this::fetchDomains, 0, 7, TimeUnit.DAYS);
 
         Util.dataBase.initDB();
     }
