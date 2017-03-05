@@ -2,13 +2,11 @@ package me.urielsalis.cursebot.api;
 
 import java.util.Arrays;
 
-/**
- * Created by urielsalis on 1/28/2017
- */
+
 public class Command {
-    public String command;
-    public String[] args;
-    public Message message;
+    private String command;
+    private String[] args;
+    private Message message;
 
     public Command(Message message) {
         this.message = message;
@@ -17,5 +15,29 @@ public class Command {
         if(s.length > 1) {
             args = Arrays.copyOfRange(s, 1, s.length);
         }
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    public String[] getArgs() {
+        return args;
+    }
+
+    public void setArgs(String[] args) {
+        this.args = args;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
     }
 }

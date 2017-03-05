@@ -5,17 +5,36 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import java.util.Queue;
 
 
-/**
- * CurseApi
- * @Author: Urielsalis
- * License: GPL 3.0
- */
 public class Channel {
-    public String groupTitle;
-    public String groupID;
-    public Queue<Message> messages = new CircularFifoQueue<Message>(100);
+    private String groupTitle;
+    private String groupID;
+    private Queue<Message> messages = new CircularFifoQueue<Message>(100);
     public Channel(Object groupTitle, Object groupID) {
         this.groupID = (String) groupID;
         this.groupTitle = (String) groupTitle;
+    }
+
+    public String getGroupTitle() {
+        return groupTitle;
+    }
+
+    public void setGroupTitle(String groupTitle) {
+        this.groupTitle = groupTitle;
+    }
+
+    public String getGroupID() {
+        return groupID;
+    }
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+
+    public Queue<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Queue<Message> messages) {
+        this.messages = messages;
     }
 }

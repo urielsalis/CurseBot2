@@ -12,9 +12,6 @@ import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by urielsalis on 1/28/2017
- */
 @Extension(name = "ModCommands", version = "1.0.0", id = "Modcommands/1.0.0")
 public class Main {
     static ExtensionApi extApi;
@@ -39,7 +36,7 @@ public class Main {
         public void handle(ExtensionApi.Event event) {
             if(event instanceof CommandEvent) {
                 CommandEvent commandEvent = (CommandEvent) event;
-                handleCommand(commandEvent.command);
+                handleCommand(commandEvent.getCommand());
             }
         }
     }
@@ -64,11 +61,10 @@ public class Main {
         //:: Command Information
         String stringArgs = (command.args != null) ? Util.spaceSeparatedString(command.args) : "null";
 
+        if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
         switch (command.command) {
             case "delete":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
-
                 //:: Command Argument variables
                 String cmdArgChannelName = "";
                 String cmdArgUserName = "";
@@ -104,10 +100,6 @@ public class Main {
                     Message message1;
 
                     if (channel != null) {
-                        /*api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing delete command!]*~" +
-                                                                                         "\n*Command Sender:* [ " + senderName + " ]" +
-                                                                                         "\n-*I===============================I*-");*/
-
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, stringArgs);
 
                         for (int i = channel.messages.size() - 1; i >= 0; i--) {
@@ -133,15 +125,11 @@ public class Main {
             break;
             case "kick":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String cmdArgUsername = (command.args != null && command.args.length > 0) ? command.args[0] : "";
                 Member cmdArgMember = api.resolveMember(cmdArgUsername);
 
                 if(cmdArgMember != null && !Util.isUserAuthorized(api, cmdArgMember)) {
                     api.kickUser(api.resolveMember(cmdArgUsername));
-                    /*api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing kick command!]*~" +
-                                                                                     "\n*Command Sender:* [ " + senderName + " ]" +
-                                                                                     "\n*Kicked user:* " + cmdArgUsername + ".");*/
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, stringArgs);
                     Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "Standard kick", "User kicked from server!");
                     api.postMessage(api.resolveChannel(Util.botcmdChannel), "The user " + cmdArgUsername + " was successfully removed from the server!");
@@ -154,8 +142,6 @@ public class Main {
             break;
             case "tmpban":
             {
-                if(!Util.isUserAuthorized(api, cmdSender)) return;
-
                 boolean canBan = false;
                 String cmdArgUsername = "";
                 int cmdArgHours = 0;
@@ -207,7 +193,6 @@ public class Main {
                     int minutesBanned = (cmdArgMinutes % 60);
                     api.banMember(member.senderID,cmdArgReason + "\nYou can rejoin in: " + hoursBanned + "hr " + minutesBanned + "mins!\nBanned by: " + command.message.senderName);
                     unbanUpdater.schedule(() -> api.unBanMember(member.senderID, member.senderName), (cmdArgMinutes + cmdArgHours), TimeUnit.MINUTES);
-                    //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing ban user command!]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Banned user:* " + cmdArgUsername + ".\n*Reason:* \"" + cmdArgReason + "\"\n*Timeout:* '" + (cmdArgMinutes + cmdArgHours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
 
                     Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, hoursBanned*60+minutesBanned);
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, stringArgs);
@@ -221,21 +206,19 @@ public class Main {
             break;
             case "quit":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Shut down command executed!]*~\n*Command Sender:* [ " + senderName + " ]");
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "quit", channelName, stringArgs);
                 saveStats();
+                Util.dataBase.closeDB();
                 System.exit(0);
             }
             break;
             case "send":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String channel = (command.args != null && command.args.length > 0) ? command.args[0] : "";
                 String body = (command.args != null && command.args.length > 1) ? (Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n")) : "";
                 if(body.startsWith(".")) break;
                 if (api.resolveChannel(channel) != null && !body.equals("")) {
-                    //api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing send command]*~\n*Command Sender:* [ " + command.message.senderName + " ]\n*Sending:* \"" + body + "\"");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "send", channelName, stringArgs);
                     api.postMessage(api.resolveChannel(channel), body);
                     api.postMessage(api.resolveChannel(Util.botcmdChannel), "Your message has been sent to #" + channel);
@@ -249,7 +232,6 @@ public class Main {
 
             case "sender":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing sender command]*~\n*Command Sender:* [ " + command.message.senderName + " ]");
                 api.postMessage(api.resolveChannelUUID(command.message.channelUUID), "Hello there " + api.mention(command.message.senderName) + "!");
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "sender", channelName, stringArgs);
@@ -258,8 +240,6 @@ public class Main {
 
             case "mode":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
-
                 String cmdArgMode = (command.args != null && command.args.length > 0) ? command.args[0] : "-1";
                 String cmdArgStatus = (command.args != null && command.args.length > 1) ? command.args[1] : "-1";
 
@@ -295,7 +275,6 @@ public class Main {
 
             case "resolve":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String resolve = (command.args != null && command.args.length > 0) ? command.args[0] : "";
                 String resolveThis = (command.args != null && command.args.length > 1) ? command.args[1] : "";
                 if (!(resolve.equals("") || resolveThis.equals("")) && (resolve.equalsIgnoreCase("member") || resolve.equalsIgnoreCase("user"))) {
@@ -352,7 +331,6 @@ public class Main {
 
             case "help":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int index = 1;
 
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, stringArgs);
@@ -440,7 +418,6 @@ public class Main {
 
             case "shrug":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String shrug = "not shrug";
                 try {
                     shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
@@ -456,7 +433,6 @@ public class Main {
 
             case "banLeft":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int cmdArgUserID = -1;
                 String cmdArgReason = (command.args != null && command.args.length > 1 ? Util.spaceSeparatedString(Arrays.copyOfRange(command.args, 1, command.args.length)).replaceAll("/n", "\n") : "No reason given!" );
                 try {
@@ -480,7 +456,6 @@ public class Main {
             break;
             case "unbanLeft":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 int cmdArgUserID = -1;
                 try {
                     cmdArgUserID = (command.args != null && command.args.length > 0) ? Integer.parseInt(command.args[0]) : -1;
@@ -501,7 +476,6 @@ public class Main {
             }
             case "addWarning":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String cmdArgUsername = "";
                 String cmdArgReason = "";
 
@@ -531,7 +505,6 @@ public class Main {
             break;
             case "listWarning":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 String cmdArgUsername = "";
                 if ((command.args != null) && (command.args.length > 0)) {
                     cmdArgUsername = command.args[0];
@@ -549,7 +522,6 @@ public class Main {
             break;
             case "showStats":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "showStats", channelName, stringArgs);
                 api.postMessage(api.resolveChannel(Util.botstatChannel), "[*Stats:* ~" + new Date().toString() + "~ ]"
                         + "\n-*I===============================I*-"
@@ -563,7 +535,6 @@ public class Main {
             break;
             case "loadStats":
             {
-                if(!Util.isUserAuthorized(api, api.resolveMember(command.message.senderName))) return;
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "loadStats", channelName, stringArgs);
                 loadStats();
                 api.postMessage(api.resolveChannel(Util.botcmdChannel), "Stats loaded");

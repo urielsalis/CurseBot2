@@ -13,11 +13,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
-/**
- * BattleCode 2017
- * Team: Mate
- * License: GPL 3.0
- */
 public class Util {
     public static String[] authorizedUsers;
     public static Logger logger = Logger.getLogger("CurseBot");
@@ -123,7 +118,7 @@ public class Util {
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream(), "UTF-8"));
             String inputLine;
-            StringBuffer response = new StringBuffer();
+            StringBuilder response = new StringBuilder();
 
             while ((inputLine = in.readLine()) != null)
                 response.append(inputLine);
@@ -145,7 +140,7 @@ public class Util {
     public static String spaceSeparatedString(String[] strings) {
         StringBuilder builder = new StringBuilder();
         for(String s : strings) {
-            builder.append(s + " ");
+            builder.append(s).append(" ");
         }
         return builder.toString().trim();
 
@@ -161,7 +156,7 @@ public class Util {
     public static boolean containsUTF8(CharSequence s, String cont) throws UnsupportedEncodingException
     {
     	String test = new String(cont.getBytes("UTF-8"), "UTF-8");
-    	return test.toString().indexOf(new String(s.toString().getBytes("UTF-8"), "UTF-8")) > 1;
+    	return test.indexOf(new String(s.toString().getBytes("UTF-8"), "UTF-8")) > 1;
     }
 
     public static boolean isUserAuthorized(CurseApi api, Member member) {

@@ -22,11 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-/**
- * CurseApi
- * @Author: Urielsalis
- * License: GPL 3.0
- */
 public class Main {
     public static CurseApi api;
     private String groupID = "";

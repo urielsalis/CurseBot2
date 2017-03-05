@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-/**
- * Created by urielsalis on 1/28/2017
- */
 public class ExtensionHandler {
     public static ExtensionApi api = new ExtensionApi();
     public void init() {

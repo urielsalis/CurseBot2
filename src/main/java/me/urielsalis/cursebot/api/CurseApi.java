@@ -24,12 +24,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-
-/**
- * CurseApi
- * @Author: Urielsalis
- * License: GPL 3.0
- */
 public class CurseApi {
     private String authToken = "";
     private String groupID = "";
@@ -122,8 +116,8 @@ public class CurseApi {
                                         updateListeners(message);
                                     } else {
                                         Channel channel = resolveChannelUUID(channelUUID);
-                                        if (!channel.messages.contains(message)) {
-                                            channel.messages.add(message);
+                                        if (!channel.getMessages().contains(message)) {
+                                            channel.getMessages().add(message);
                                             updateListeners(message);
                                         }
                                     }
@@ -326,17 +320,17 @@ public class CurseApi {
     private void getMessages(Channel channel) {
         try {
             String json;
-            if (channel.messages.isEmpty()) {
-                json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.groupID + "?endTimestamp=0&pageSize=30&startTimestamp=0", getAuthToken()); //Assume we start in 0
+            if (channel.getMessages().isEmpty()) {
+                json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.getGroupID() + "?endTimestamp=0&pageSize=30&startTimestamp=0", getAuthToken()); //Assume we start in 0
             } else {
-                json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.groupID + "?endTimestamp=0&pageSize=30&startTimestamp=" + channel.messages.peek().timestamp, getAuthToken()); //Get since last message to save some work to curse servers
+                json = Util.sendGet("https://conversations-v1.curseapp.net/conversations/" + channel.getGroupID() + "?endTimestamp=0&pageSize=30&startTimestamp=" + channel.getMessages().peek().timestamp, getAuthToken()); //Get since last message to save some work to curse servers
             }
             JSONArray array = (JSONArray) new JSONParser().parse(json);
             for (Object obj : array) {
                 JSONObject messageObject = (JSONObject) obj;
-                Message message = new Message(messageObject.get("SenderName"), messageObject.get("Body"), messageObject.get("Timestamp"), messageObject.get("ServerID"), channel.groupID);
-                if (!channel.messages.contains(message)) {
-                    channel.messages.add(message);
+                Message message = new Message(messageObject.get("SenderName"), messageObject.get("Body"), messageObject.get("Timestamp"), messageObject.get("ServerID"), channel.getGroupID());
+                if (!channel.getMessages().contains(message)) {
+                    channel.getMessages().add(message);
                     updateListeners(message);
                     addMemberIfNotFound((String) messageObject.get("SenderName"), (long) messageObject.get("SenderID"));
                 }
@@ -411,7 +405,7 @@ public class CurseApi {
         //String div = (channel.groupTitle.equalsIgnoreCase(Util.botlogChannel) || channel.groupTitle.equalsIgnoreCase(Util.botstatChannel)) ? "\n-*I================================================I*-\n" : "";
         String div = "";
         String parameters = "AttachmentID=00000000-0000-0000-0000-000000000000&Body=" + (div + message) + "&AttachmentRegionID=0&MachineKey=" + machineKey + "&ClientID=" + clientID;
-        Util.sendPost("https://conversations-v1.curseapp.net/conversations/"+channel.groupID, parameters, getAuthToken());
+        Util.sendPost("https://conversations-v1.curseapp.net/conversations/"+channel.getGroupID(), parameters, getAuthToken());
         return true;
     }
 
@@ -438,7 +432,7 @@ public class CurseApi {
         Channel channel = resolveChannelUUID(message.channelUUID);
         if(channel==null) return false;
         isDeleteInProgress = true;
-        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.groupID+"/"+message.serverID+"-"+message.timestamp;
+        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.getGroupID()+"/"+message.serverID+"-"+message.timestamp;
         Util.sendDelete(url, getAuthToken());
         isDeleteInProgress = false;
         return true;
@@ -453,7 +447,7 @@ public class CurseApi {
         if(message==null) return false;
         Channel channel = resolveChannelUUID(message.channelUUID);
         if(channel==null) return false;
-        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.groupID+"/"+message.serverID+"-"+message.timestamp;
+        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.getGroupID()+"/"+message.serverID+"-"+message.timestamp;
         String parameters = "Body="+body;
         Util.sendPost(url, parameters, getAuthToken());
         return true;
@@ -467,7 +461,7 @@ public class CurseApi {
         if(message==null) return false;
         Channel channel = resolveChannelUUID(message.channelUUID);
         if(channel==null) return false;
-        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.groupID+"/"+message.serverID+"-"+message.timestamp+"/like";
+        String url = "https://conversations-v1.curseapp.net/conversations/"+channel.getGroupID()+"/"+message.serverID+"-"+message.timestamp+"/like";
         String parameters = "";
         Util.sendPost(url, parameters, getAuthToken());
         return true;
@@ -568,7 +562,7 @@ public class CurseApi {
 
     public Channel resolveChannelUUID(String uuid) {
         for(Map.Entry<String, Channel> entry: channels.entrySet()) {
-            if(Util.equals(entry.getValue().groupID, uuid))
+            if(Util.equals(entry.getValue().getGroupID(), uuid))
                 return entry.getValue();
         }
         return null;

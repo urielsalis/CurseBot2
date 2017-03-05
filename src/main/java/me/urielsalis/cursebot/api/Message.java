@@ -2,11 +2,6 @@ package me.urielsalis.cursebot.api;
 
 import java.util.Calendar;
 
-/**
- * CurseApi
- * @Author: Urielsalis
- * License: GPL 3.0
- */
 public class Message {
     public String senderName;
     public String body;

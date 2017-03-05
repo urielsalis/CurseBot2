@@ -9,9 +9,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by ZDesk on 3/3/2017.
- */
 public class DataBase
 {
     public Connection con = null;

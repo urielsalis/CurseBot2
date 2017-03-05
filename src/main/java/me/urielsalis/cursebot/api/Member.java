@@ -2,11 +2,6 @@ package me.urielsalis.cursebot.api;
 
 import java.io.Serializable;
 
-/**
- * CurseApi
- * @Author: Urielsalis
- * License: GPL 3.0
- */
 public class Member implements Serializable {
 
     public String senderName;
