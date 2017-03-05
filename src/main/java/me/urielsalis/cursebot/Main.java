@@ -46,9 +46,7 @@ public class Main {
         try {
             TimeUnit.SECONDS.sleep(5);
         } catch (InterruptedException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "Error in interrupt", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "Error in interrupt", e);
         }
 
         api.postMessage(api.resolveChannel(Util.botlogChannel), "*Bot startup:* Bot online!");
@@ -86,9 +84,7 @@ public class Main {
             Object obj = obj_in.readObject();
             api.setMembers((ArrayList<Member>) obj);
         } catch (IOException | ClassNotFoundException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "Error trying to load members", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "Error trying to load members", e);
         }
     }
 
@@ -99,9 +95,7 @@ public class Main {
             ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
             obj_out.writeObject(api.getMembersList());
         } catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "Error saving members.data", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "Error saving members.data", e);
         }
     }
 
@@ -112,15 +106,11 @@ public class Main {
                 Files.copy(in, new File("filters\\domains.txt").toPath(), StandardCopyOption.REPLACE_EXISTING);
                 me.urielsalis.cursebot.extensions.Profanity.Main.loadTLDs();
             } catch (IOException e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                Util.dataBase.addLogMessage("INFO", "Error fetching domains", sw.toString(), "");
+                Util.dataBase.addLogMessage("INFO", "Error fetching domains", e);
             }
         }
         catch (MalformedURLException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("SEVERE", "Shouldnt happen, domain was wrong", sw.toString(), "");
+            Util.dataBase.addLogMessage("SEVERE", "Shouldnt happen, domain was wrong", e);
         }
     }
 
@@ -152,9 +142,7 @@ public class Main {
                 inputStream.close();
             }
         } catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("SEVERE", "Error loading config", sw.toString(), "");
+            Util.dataBase.addLogMessage("SEVERE", "Error loading config", e);
         }
     }
 }

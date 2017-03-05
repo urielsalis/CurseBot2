@@ -220,9 +220,7 @@ public class Main{
                             api.postMessage(botCommandChannel, "Word already exists in the filter!");
                         }
                     } catch (IOException e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        Util.dataBase.addLogMessage("INFO", "IO exception in addProfanity", sw.toString(), "");
+                        Util.dataBase.addLogMessage("INFO", "IO exception in addProfanity", e);
 
                     }
                 }
@@ -278,9 +276,7 @@ public class Main{
                             api.postMessage(botCommandChannel, "Unable to remove non existent word from the filter!");
                         }
                     } catch (IOException e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        Util.dataBase.addLogMessage("INFO", "IO exception in rmProfanity", sw.toString(), "");
+                        Util.dataBase.addLogMessage("INFO", "IO exception in rmProfanity", e);
                     }
                 }
                 else {
@@ -325,9 +321,7 @@ public class Main{
                             api.postMessage(botCommandChannel, "Unable to remove non existent link from blacklist!");
                         }
                     } catch (IOException e) {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw));
-                        Util.dataBase.addLogMessage("INFO", "IO exception in blacklistLink", sw.toString(), "");
+                        Util.dataBase.addLogMessage("INFO", "IO exception in blacklistLink", e);
 
                     }
                 }
@@ -401,17 +395,13 @@ public class Main{
                 out.flush();
                 out.close();
             } catch (IOException e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                Util.dataBase.addLogMessage("INFO", "IO exception in getFilterElements", sw.toString(), "");
+                Util.dataBase.addLogMessage("INFO", "IO exception in getFilterElements", e);
             }
             in.close();
 
             return prof;
         } catch (FileNotFoundException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "Profanity not found", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "Profanity not found", e);
 
         }
         return null;

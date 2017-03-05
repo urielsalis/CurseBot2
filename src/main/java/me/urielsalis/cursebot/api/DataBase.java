@@ -2,6 +2,8 @@ package me.urielsalis.cursebot.api;
 
 import me.urielsalis.cursebot.Main;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -58,22 +60,24 @@ public class DataBase
         }
     }
     //Adds new log message(in crashes) stackstrace can be get from exception(like .printStackTrace but to variable, cant remember the method)
-    public void addLogMessage(String level, String message, String stacktrace, String data) {
+    public void addLogMessage(String level, String message, Exception e) {
         try {
             if(con==null) {
                 System.err.println(message);
-                System.err.println(stacktrace);
+                e.printStackTrace();
                 return;
             }
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
             String simpleProc = "{ call addLogMessage(?, ?, ?, ?) }";
             CallableStatement cs = con.prepareCall(simpleProc);
             cs.setString("level", level);
             cs.setString("message", message);
-            cs.setString("stacktrace", stacktrace);
-            cs.setString("data", data);
+            cs.setString("stacktrace", sw.toString());
+            cs.setString("data", "");
             cs.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
         }
     }
     //Adds new warning, might be manual, staff remove(auto adds as warning) or from filters, id and username is the same, reason is limited(keep it short, maybe show censored word), dont put too much text, action is "Removed user" or "Verbal warning: X total warnings"(has char limit, do go crazy, keep it really short)

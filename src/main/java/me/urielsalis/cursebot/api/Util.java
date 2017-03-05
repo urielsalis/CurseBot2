@@ -62,9 +62,7 @@ public class Util {
 
             return response.toString();
         } catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "IO exception in sendGet", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "IO exception in sendGet", e);
         }
         return null;
     }
@@ -91,9 +89,7 @@ public class Util {
 
             return response.toString();
         } catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "IO exception in sendDelete", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "IO exception in sendDelete", e);
         }
         return null;
     }
@@ -126,9 +122,7 @@ public class Util {
 
             return response.toString();
         } catch (IOException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Util.dataBase.addLogMessage("INFO", "IO exception in sendPost", sw.toString(), "");
+            Util.dataBase.addLogMessage("INFO", "IO exception in sendPost", e);
         }
         return null;
     }

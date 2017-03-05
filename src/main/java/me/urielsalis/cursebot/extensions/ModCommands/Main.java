@@ -425,9 +425,7 @@ public class Main {
                 try {
                     shrug = new String("¯\\_(ツ)_/¯".getBytes(), "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    Util.dataBase.addLogMessage("SEVERE", "UTF-8 is not supported", sw.toString(), "");
+                    Util.dataBase.addLogMessage("SEVERE", "UTF-8 is not supported", e);
 
                 }
                 api.postMessage(cmdChannel, shrug);
