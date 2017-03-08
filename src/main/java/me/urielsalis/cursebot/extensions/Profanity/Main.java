@@ -117,32 +117,43 @@ public class Main{
 
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Kicked");
+                        int warnings = Util.removeUserWhen.get(userID);
+                        Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Kicked");
+                        if(warnings > 1) {
+                            api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
+                        }
                     }
                     else {
+                        int warnings = Util.removeUserWhen.get(userID);
                         if(Util.unhidden) {
-                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Warned");
+                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Warned");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
                         }
                         else {
-                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing");
+                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Nothing");
+                        }
+                        if(warnings > 1) {
+                            api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
                         }
                     }
                 } else if (containsCurseWord(message.body) && !(Util.isUserAuthorized(api, cmdSender))) {
                     if(Util.unhidden) {
                         api.deleteMessage(message);
                     }
-
+                    int warnings = Util.removeUserWhen.get(userID);
+                    if(warnings > 1) {
+                        api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
+                    }
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Kicked");
+                        Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Kicked");
                     } else {
                         if(Util.unhidden) {
-                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Warned");
+                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Warned");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
                         }
                         else {
-                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected, Warnings: "+Util.removeUserWhen.get(userID), "Nothing");
+                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Nothing");
                         }
                     }
                 }
