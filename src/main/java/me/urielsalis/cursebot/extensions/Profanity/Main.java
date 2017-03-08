@@ -117,14 +117,16 @@ public class Main{
 
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        int warnings = Util.removeUserWhen.get(userID);
+                        Integer warnings = Util.removeUserWhen.get(userID);
+                        if(warnings==null) warnings = 1;
                         Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Kicked");
                         if(warnings > 1) {
                             api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
                         }
                     }
                     else {
-                        int warnings = Util.removeUserWhen.get(userID);
+                        Integer warnings = Util.removeUserWhen.get(userID);
+                        if(warnings==null) warnings = 1;
                         if(Util.unhidden) {
                             Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Warned");
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
@@ -140,7 +142,8 @@ public class Main{
                     if(Util.unhidden) {
                         api.deleteMessage(message);
                     }
-                    int warnings = Util.removeUserWhen.get(userID);
+                    Integer warnings = Util.removeUserWhen.get(userID);
+                    if(warnings==null) warnings = 1;
                     if(warnings > 1) {
                         api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
                     }
