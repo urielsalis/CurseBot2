@@ -558,7 +558,7 @@ public class CurseApi {
 
     public void banIpMember(Member member) {
         String url = "https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans";
-        String parameters = "UserID="+userID+"&BanIP=true&MessageDeleteMode=0";
+        String parameters = "UserID="+userID+"&BanIP=true&MessageDeleteMode=0&Reason=You been ip banned";
         Util.sendPost(url, parameters, getAuthToken());
     }
 }
