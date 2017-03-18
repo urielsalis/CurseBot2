@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class DataBase
 {
     public Connection con = null;
+    public Logger logger = Logger.getLogger("ErrorLogger");
 
     //:: Creates connection to the database
     public void initDB()
@@ -67,6 +68,7 @@ public class DataBase
                 e.printStackTrace();
                 return;
             }
+            logger.log(Level.WARNING, "Expection thrown", e);
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             String simpleProc = "{ call addLogMessage(?, ?, ?, ?) }";

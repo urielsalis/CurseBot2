@@ -555,4 +555,10 @@ public class CurseApi {
     public ArrayList<Member> getMembersList() {
         return members;
     }
+
+    public void banIpMember(Member member) {
+        String url = "https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans";
+        String parameters = "UserID="+userID+"&BanIP=true&MessageDeleteMode=0";
+        Util.sendPost(url, parameters, getAuthToken());
+    }
 }

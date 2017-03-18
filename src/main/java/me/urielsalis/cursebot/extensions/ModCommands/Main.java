@@ -520,6 +520,25 @@ public class Main {
                 }
             }
             break;
+            case "ipBan":
+            {
+                String cmdArgUsername = "";
+                if ((args != null) && (args.length > 0)) {
+                    cmdArgUsername = args[0];
+                }
+
+                Member member = api.resolveMember(cmdArgUsername);
+                if(member != null) {
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "ipBan", channelName, stringArgs);
+                    api.postMessage(botCommandChannel, "ip banned " + api.mention(cmdArgUsername));
+                    api.banIpMember(member);
+                } else {
+                    api.postMessage(botCommandChannel, "couldnt ip ban" + cmdArgUsername);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "ipBan", channelName, "Failed to get any warnings from " + cmdArgUsername);
+                }
+
+            }
+            break;
             case "showStats":
             {
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "showStats", channelName, stringArgs);
