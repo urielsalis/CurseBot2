@@ -134,7 +134,7 @@ public class Main {
                 if(cmdArgMember != null && !Util.isUserAuthorized(api, cmdArgMember)) {
                     api.kickUser(api.resolveMember(cmdArgUsername));
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, stringArgs);
-                    Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "Standard kick", "User kicked from server!");
+                    Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "kick", "User kicked from server!");
                     api.postMessage(botCommandChannel, "The user " + cmdArgUsername + " was successfully removed from the server!");
                 }
                 else {
@@ -533,7 +533,7 @@ public class Main {
                     api.postMessage(botCommandChannel, "ip banned " + api.mention(cmdArgUsername));
                     api.banIpMember(member);
                 } else {
-                    api.postMessage(botCommandChannel, "couldnt ip ban" + cmdArgUsername);
+                    api.postMessage(botCommandChannel, "couldnt ip ban " + cmdArgUsername);
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "ipBan", channelName, "Failed to get any warnings from " + cmdArgUsername);
                 }
 
