@@ -59,7 +59,7 @@ public class ExtensionHandler {
     }
 
     private static void loadJars() {
-        File directory = new File("src\\main\\java\\me\\urielsalis\\cursebot\\extensions");
+        File directory = new File("extensions");
         File[] files = directory.listFiles((dir, name) -> new File(dir, name).isDirectory());
 
         for (int i = 0; i < files.length; i++)
