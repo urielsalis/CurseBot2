@@ -64,7 +64,7 @@ public class ExtensionHandler {
 
         for (int i = 0; i < files.length; i++)
         {
-            files[i] = new File(files[i].toPath() + "\\" + files[i].listFiles()[0].getName());
+            files[i] = new File(files[i].toPath() + File.separator + files[i].listFiles()[0].getName());
         }
 
         for (File file : files) {

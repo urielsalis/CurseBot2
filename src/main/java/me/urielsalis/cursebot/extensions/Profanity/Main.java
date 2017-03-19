@@ -209,7 +209,7 @@ public class Main{
                                 addProfanity = false;
 
                         if (addProfanity) {
-                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
+                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters"+File.separator+"profanities.txt"), "UTF-8"));
 
                             profanities = profanities.trim().replaceFirst("\\s\\]", "");
                             profanities += ",," + args[0] + " ]";
@@ -265,7 +265,7 @@ public class Main{
                         }
 
                         if (removeProfanity) {
-                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\profanities.txt"), "UTF-8"));
+                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters"+File.separator+"profanities.txt"), "UTF-8"));
 
                             profanities = profanities.trim().replaceFirst(",," + remove, "");
 
@@ -310,7 +310,7 @@ public class Main{
                 if(args != null && args.length > 0) {
                     try {
                         if (!isLink(args[0])) {
-                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\linkblacklist.txt"), "UTF-8"));
+                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters"+File.separator+"linkblacklist.txt"), "UTF-8"));
 
                             links = links.trim().replaceFirst("\\s\\]", "");
                             links += ",," + args[0] + " ]";
@@ -359,7 +359,7 @@ public class Main{
     private static String getFilterElements(String file)
     {
         try {
-            Scanner in = resetScanner("filters\\" + file);
+            Scanner in = resetScanner("filters"+ File.separator + file);
             String prof = "";
             String[] elements;
 
@@ -396,7 +396,7 @@ public class Main{
                 prof += " ]";
 
             try {
-                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters\\" + file), "UTF-8"));
+                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters" + File.separator + file), "UTF-8"));
 
                 elements = prof.split(",+");
                 for (String s : elements) {
@@ -560,7 +560,7 @@ public class Main{
      */
     public static void loadTLDs() {
         try {
-            Scanner s = new Scanner(new File("filters\\domains.txt"));
+            Scanner s = new Scanner(new File("filters"+File.separator+"domains.txt"));
             s.nextLine();
             while (s.hasNextLine()) {
                 String add = "." + s.nextLine().toLowerCase();

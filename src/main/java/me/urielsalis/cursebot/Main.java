@@ -103,7 +103,7 @@ public class Main {
         try {
             URL website = new URL("https://data.iana.org/TLD/tlds-alpha-by-domain.txt");
             try (InputStream in = website.openStream()) {
-                Files.copy(in, new File("filters\\domains.txt").toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, new File("filters"+File.separator+"domains.txt").toPath(), StandardCopyOption.REPLACE_EXISTING);
                 me.urielsalis.cursebot.extensions.Profanity.Main.loadTLDs();
             } catch (IOException e) {
                 Util.dataBase.addLogMessage("INFO", "Error fetching domains", e);
