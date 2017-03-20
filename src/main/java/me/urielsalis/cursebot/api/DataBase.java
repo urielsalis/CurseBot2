@@ -33,6 +33,7 @@ public class DataBase
 
     //Adds new ban, username must be unique curse ID(memberobj.username), duration must be a unix posix of the duration of the ban(seconds)
     public void addBanRecord(long issuerID, String issuerUsername, long bannedID, String bannedUsername, String reason, long duration) throws SQLException {
+        if(con.isClosed()) initDB();
         String simpleProc = "{ call addBanRecord(?, ?, ?, ?, ?, ?) }";
         CallableStatement cs = con.prepareCall(simpleProc);
         cs.setLong("issuerId", issuerID);
@@ -47,6 +48,7 @@ public class DataBase
     //Adds new command issuer, username must be unique curse ID(memberobj.username), args doesnt include the command, is a empty string if non existant
     public void addCommandHistory(long userId, String username, String command, String channel, String args) {
         try {
+            if(con.isClosed()) initDB();
             String simpleProc = "{ call addCommandHistory(?, ?, ?, ?, ?) }";
             CallableStatement cs = con.prepareCall(simpleProc);
             cs.setLong("userId", userId);
@@ -69,6 +71,7 @@ public class DataBase
                 e.printStackTrace();
                 return;
             }
+            if(con.isClosed()) initDB();
             logger.log(Level.WARNING, "Expection thrown", e);
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -85,6 +88,7 @@ public class DataBase
     }
     //Adds new warning, might be manual, staff remove(auto adds as warning) or from filters, id and username is the same, reason is limited(keep it short, maybe show censored word), dont put too much text, action is "Removed user" or "Verbal warning: X total warnings"(has char limit, do go crazy, keep it really short)
     public void addWarning(long issuerId, String issuerUsername, long warnedId, String warnedUsername, String reason, String action) throws SQLException {
+        if(con.isClosed()) initDB();
         String simpleProc = "{ call addWarning(?, ?, ?, ?, ?, ?) }";
         CallableStatement cs = con.prepareCall(simpleProc);
         cs.setLong("issuerId", issuerId);
