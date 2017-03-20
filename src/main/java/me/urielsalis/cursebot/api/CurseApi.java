@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
+import static me.urielsalis.cursebot.Main.api;
 
 public class CurseApi {
     private String authToken = "";
@@ -179,7 +182,12 @@ public class CurseApi {
                                             removedUsersList.add(removedid);
                                             Member senderMember = resolveMember(sender);
                                             if (!senderMember .senderName.equals(Util.botName)) {
-                                                Util.dataBase.addWarning(senderMember.senderID, senderMember.username, removedid, removedname, "Mod removed", "Kicked");
+                                                try {
+                                                    Util.dataBase.addWarning(senderMember.senderID, senderMember.username, removedid, removedname, "Mod removed", "Kicked");
+                                                } catch (SQLException e) {
+                                                    e.printStackTrace();
+                                                    api.postMessage(api.resolveChannel(Util.botlogChannel), "Database error while adding warning");
+                                                }
                                                 //postMessage(resolveChannel(Util.botlogChannel), "~*[User Kicked!]*~\n*Command Sender:* [ " + sender + " ]\n*Kicked user:* " + removedname + ".");
                                             }
                                         }

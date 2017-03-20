@@ -10,6 +10,7 @@ import me.urielsalis.cursebot.extensions.Handle;
 
 import java.io.*;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -119,7 +120,12 @@ public class Main{
                         api.kickUser(cmdSender);
                         Integer warnings = Util.removeUserWhen.get(userID);
                         if(warnings==null) warnings = 1;
-                        Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Kicked");
+                        try {
+                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Kicked");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            api.postMessage(botLogChannel, "Database error while adding warning");
+                        }
                         if(warnings > 1) {
                             api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
                         }
@@ -128,11 +134,21 @@ public class Main{
                         Integer warnings = Util.removeUserWhen.get(userID);
                         if(warnings==null) warnings = 1;
                         if(Util.unhidden) {
-                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Warned");
+                            try {
+                                Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Warned");
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                api.postMessage(botLogChannel, "Database error while adding warning");
+                            }
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
                         }
                         else {
-                            Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Nothing");
+                            try {
+                                Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Nothing");
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                api.postMessage(botLogChannel, "Database error while adding warning");
+                            }
                         }
                         if(warnings > 1) {
                             api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
@@ -149,14 +165,29 @@ public class Main{
                     }
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Kicked");
+                        try {
+                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Kicked");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            api.postMessage(botLogChannel, "Database error while adding warning");
+                        }
                     } else {
                         if(Util.unhidden) {
-                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Warned");
+                            try {
+                                Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Warned");
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                api.postMessage(botLogChannel, "Database error while adding warning");
+                            }
                             api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
                         }
                         else {
-                            Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Nothing");
+                            try {
+                                Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Nothing");
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                api.postMessage(botLogChannel, "Database error while adding warning");
+                            }
                         }
                     }
                 }

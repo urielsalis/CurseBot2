@@ -8,6 +8,7 @@ import me.urielsalis.cursebot.extensions.ExtensionHandler;
 import me.urielsalis.cursebot.extensions.Handle;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -134,7 +135,11 @@ public class Main {
                 if(cmdArgMember != null && !Util.isUserAuthorized(api, cmdArgMember)) {
                     api.kickUser(api.resolveMember(cmdArgUsername));
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, stringArgs);
-                    Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "kick", "User kicked from server!");
+                    try {
+                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "kick", "User kicked from server!");
+                    } catch (SQLException e) {
+                        api.postMessage(botLogChannel, "Database error while adding warning");
+                    }
                     api.postMessage(botCommandChannel, "The user " + cmdArgUsername + " was successfully removed from the server!");
                 }
                 else {
@@ -197,7 +202,12 @@ public class Main {
                     api.banMember(member.senderID,cmdArgReason + "\nYou can rejoin in: " + hoursBanned + "hr " + minutesBanned + "mins!\nBanned by: " + senderName);
                     unbanUpdater.schedule(() -> api.unBanMember(member.senderID, member.senderName), (cmdArgMinutes + cmdArgHours), TimeUnit.MINUTES);
 
-                    Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, hoursBanned*60+minutesBanned);
+                    try {
+                        Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, hoursBanned*60+minutesBanned);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        api.postMessage(botLogChannel, "Database error while adding ban");
+                    }
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, stringArgs);
                     api.postMessage(botCommandChannel, "Successfully banned " + cmdArgUsername + " for '" + (cmdArgMinutes + cmdArgHours) + "mins' : '" + hoursBanned + "hr " + minutesBanned + "mins'");
                 }
@@ -439,7 +449,12 @@ public class Main {
                 try {
                     cmdArgUserID = (args != null && args.length > 0) ? Integer.parseInt(args[0]) : -1;
                     if(cmdArgUserID != -1) {
-                        Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", cmdArgReason, 0);
+                        try {
+                            Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", cmdArgReason, 0);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            api.postMessage(botLogChannel, "Database error while adding ban, user was banned");
+                        }
                         Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
                         api.postMessage(botCommandChannel, "The user with the user ID of " + cmdArgUserID + " has been prevented from joining back onto the server!");
                         api.banMember(cmdArgUserID, "No reason provided!");
@@ -491,11 +506,21 @@ public class Main {
                 if(cmdArgMember != null) {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                     if(Util.canRemoveUser(cmdArgMember.senderID)) {
-                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Kicked");
-                        api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername + ", user was removed");
+                        try {
+                            Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Kicked");
+                            api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername + ", user was removed");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            api.postMessage(botCommandChannel, "Database error, nothing added");
+                        }
                     } else {
-                        Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Warned");
-                        api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername);
+                        try {
+                            Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Warned");
+                            api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            api.postMessage(botCommandChannel, "Database error, nothing added");
+                        }
                     }
                 } else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + cmdArgUsername + "'*");
