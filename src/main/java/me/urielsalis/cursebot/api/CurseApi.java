@@ -62,6 +62,7 @@ public class CurseApi {
         login(username, password);
         getSessionID();
         openWebSocket();
+        startMessageLoop();
         final Thread mainThread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -243,11 +244,14 @@ public class CurseApi {
         new Thread(() -> {
             try {
                 while(true) {
+                    if(!websocket.isOpen()) websocket.connect();
                     websocket.sendText("{\"TypeID\":-476754606,\"Body\":{\"Signal\":true}}");
                     TimeUnit.SECONDS.sleep(1); //Sleep 1 second
                 }
             } catch (InterruptedException e) {
                 Util.dataBase.addLogMessage("SERVER", "Message loop interrupted", e);
+            } catch (WebSocketException e) {
+                e.printStackTrace();
             }
         }).start();
     }
