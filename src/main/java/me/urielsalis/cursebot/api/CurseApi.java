@@ -244,13 +244,13 @@ public class CurseApi {
         new Thread(() -> {
             try {
                 while(true) {
-                    if(!websocket.isOpen()) websocket.connect();
+                    if(!websocket.isOpen()) websocket.recreate();
                     websocket.sendText("{\"TypeID\":-476754606,\"Body\":{\"Signal\":true}}");
                     TimeUnit.SECONDS.sleep(1); //Sleep 1 second
                 }
             } catch (InterruptedException e) {
                 Util.dataBase.addLogMessage("SERVER", "Message loop interrupted", e);
-            } catch (WebSocketException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
