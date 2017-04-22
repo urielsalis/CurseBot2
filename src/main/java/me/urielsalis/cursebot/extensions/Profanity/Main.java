@@ -154,7 +154,8 @@ public class Main{
                             api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
                         }
                     }
-                } else if (containsCurseWord(message.body) && !(Util.isUserAuthorized(api, cmdSender))) {
+                }
+                if (containsCurseWord(message.body) && !(Util.isUserAuthorized(api, cmdSender))) {
                     if(Util.unhidden) {
                         api.deleteMessage(message);
                     }
