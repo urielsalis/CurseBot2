@@ -32,6 +32,9 @@ public class CurseApi {
     private String groupID = "";
     private String clientID = "";
     private String machineKey = "";
+    private String username;
+    private String password;
+
 
     public HashMap<Long, Long> roles = new HashMap<>();
     public long bestRank;
@@ -59,6 +62,8 @@ public class CurseApi {
         this.groupID = groupID;
         this.clientID = clientID;
         this.machineKey = machineKey;
+        this.username = username;
+        this.password = password;
         login(username, password);
         getSessionID();
         openWebSocket();
@@ -572,5 +577,13 @@ public class CurseApi {
         String url = "https://groups-na-v1.curseapp.net/servers/"+groupID+"/bans";
         String parameters = "UserID="+userID+"&BanIP=true&MessageDeleteMode=0&Reason=You been ip banned";
         Util.sendPost(url, parameters, getAuthToken());
+    }
+
+    public void reinit() {
+        websocket.disconnect();
+        login(username, password);
+        getSessionID();
+        openWebSocket();
+        getInfoFromGroup();
     }
 }

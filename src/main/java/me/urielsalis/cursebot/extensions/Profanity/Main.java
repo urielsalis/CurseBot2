@@ -579,7 +579,6 @@ public class Main{
             } catch (IOException e) {
                 System.out.println("unable to open connection");
             }
-            System.out.println("String contains URL");
         }
         return false;
     }

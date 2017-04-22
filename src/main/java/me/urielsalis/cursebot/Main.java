@@ -75,6 +75,10 @@ public class Main {
         api.messages = 0;
         api.removedUsers = 0;
         api.leftUsers = 0;
+        //Init reboot process
+        api.postMessage(api.resolveChannel(Util.botlogChannel), "Auto rebooting started");
+        api.reinit();
+        api.postMessage(api.resolveChannel(Util.botlogChannel), "Auto rebooting finished. Updated channel list");
     }
 
     private void loadMembers() {
