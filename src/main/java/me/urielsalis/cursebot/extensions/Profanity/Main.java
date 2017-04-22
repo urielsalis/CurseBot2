@@ -122,7 +122,7 @@ public class Main{
                         if(warnings==null) warnings = 1;
                         try {
                             Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Kicked");
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             api.postMessage(botLogChannel, "Database error while adding warning");
                         }
@@ -136,7 +136,7 @@ public class Main{
                         if(Util.unhidden) {
                             try {
                                 Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Warned");
-                            } catch (SQLException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
@@ -145,7 +145,7 @@ public class Main{
                         else {
                             try {
                                 Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Nothing");
-                            } catch (SQLException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
@@ -168,7 +168,7 @@ public class Main{
                         api.kickUser(cmdSender);
                         try {
                             Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Kicked");
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             api.postMessage(botLogChannel, "Database error while adding warning");
                         }
@@ -176,7 +176,7 @@ public class Main{
                         if(Util.unhidden) {
                             try {
                                 Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Warned");
-                            } catch (SQLException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }

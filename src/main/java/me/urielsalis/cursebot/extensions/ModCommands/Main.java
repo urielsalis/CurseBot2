@@ -137,7 +137,7 @@ public class Main {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, stringArgs);
                     try {
                         Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, "kick", "User kicked from server!");
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         api.postMessage(botLogChannel, "Database error while adding warning");
                     }
                     api.postMessage(botCommandChannel, "The user " + cmdArgUsername + " was successfully removed from the server!");
@@ -204,7 +204,7 @@ public class Main {
 
                     try {
                         Util.dataBase.addBanRecord(cmdSenderID, uniqueName, member.senderID, member.senderName, cmdArgReason, hoursBanned*60+minutesBanned);
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         api.postMessage(botLogChannel, "Database error while adding ban");
                     }
@@ -451,7 +451,7 @@ public class Main {
                     if(cmdArgUserID != -1) {
                         try {
                             Util.dataBase.addBanRecord(cmdSenderID, uniqueName, cmdArgUserID, cmdArgUserID + "", cmdArgReason, 0);
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             api.postMessage(botLogChannel, "Database error while adding ban, user was banned");
                         }
