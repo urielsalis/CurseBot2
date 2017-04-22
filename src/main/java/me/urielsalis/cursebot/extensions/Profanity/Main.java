@@ -185,7 +185,7 @@ public class Main{
                         else {
                             try {
                                 Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Nothing");
-                            } catch (SQLException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
