@@ -188,6 +188,7 @@ public class Main{
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
+                            api.postMessage(botLogChannel, api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
                         }
                     }
                 }
