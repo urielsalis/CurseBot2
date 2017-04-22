@@ -509,7 +509,7 @@ public class Main {
                         try {
                             Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Kicked");
                             api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername + ", user was removed");
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             api.postMessage(botCommandChannel, "Database error, nothing added");
                         }
@@ -517,7 +517,7 @@ public class Main {
                         try {
                             Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Warned");
                             api.postMessage(botCommandChannel, "Warning added to " + cmdArgUsername);
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             api.postMessage(botCommandChannel, "Database error, nothing added");
                         }

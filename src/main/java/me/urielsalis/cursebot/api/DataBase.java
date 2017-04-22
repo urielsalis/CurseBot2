@@ -24,7 +24,7 @@ public class DataBase
         String url = "jdbc:mysql://"+Util.databaseURL+":3306/"+Util.databaseTable;
         try {
             con = DriverManager.getConnection(url, Util.databaseUsername, Util.databasePassword);
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             Logger lgr = Logger.getLogger(Main.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }
@@ -57,7 +57,7 @@ public class DataBase
             cs.setString("channel", channel);
             cs.setString("args", args);
             cs.execute();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             api.postMessage(api.resolveChannel(Util.botlogChannel), "Database error in command history, this might be bad");
             e.printStackTrace();
         }
@@ -82,7 +82,7 @@ public class DataBase
             cs.setString("stacktrace", sw.toString());
             cs.setString("data", "");
             cs.execute();
-        } catch (SQLException e1) {
+        } catch (Exception e1) {
             e1.printStackTrace();
         }
     }
@@ -105,7 +105,7 @@ public class DataBase
             if (con != null) {
                 con.close();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

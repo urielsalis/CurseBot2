@@ -190,7 +190,7 @@ public class CurseApi {
                                             if (!senderMember .senderName.equals(Util.botName)) {
                                                 try {
                                                     Util.dataBase.addWarning(senderMember.senderID, senderMember.username, removedid, removedname, "Mod removed", "Kicked");
-                                                } catch (SQLException e) {
+                                                } catch (Exception e) {
                                                     e.printStackTrace();
                                                     api.postMessage(api.resolveChannel(Util.botlogChannel), "Database error while adding warning");
                                                 }
