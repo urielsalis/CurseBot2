@@ -63,7 +63,7 @@ public class Main {
 
         //:: Command Information
         String[] args = command.getArgs();
-        String stringArgs = (args != null) ? Util.spaceSeparatedString(args) : "null";
+        String stringArgs = (args != null) ? Util.spaceSeparatedString(args) : null;
 
         if(!Util.isUserAuthorized(api, api.resolveMember(senderName))) return;
         switch (command.getCommand()) {
