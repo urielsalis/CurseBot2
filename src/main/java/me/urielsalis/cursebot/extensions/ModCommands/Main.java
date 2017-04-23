@@ -118,12 +118,12 @@ public class Main {
                     }
                     else {
                         api.postMessage(botCommandChannel, "Specified channel does not exist or could not be deleted from!");
-                        Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, "Error: Un-existent channel");
+                        Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, stringArgs);
                     }
                 }
                 else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid command syntax!]*~\n*Command:* .delete");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, "Invalid command syntax!");
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "delete", channelName, stringArgs);
                 }
             }
             break;
@@ -144,7 +144,7 @@ public class Main {
                 }
                 else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not kick *'" + cmdArgUsername + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, "Unable to kick " + cmdArgUsername);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "kick", channelName, stringArgs);
                 }
             }
             break;
@@ -213,7 +213,7 @@ public class Main {
                 }
                 else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not temp ban *'" + cmdArgUsername + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, "Unable to temporarily ba " + cmdArgUsername);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "tmpban", channelName, stringArgs);
                 }
             }
             break;
@@ -238,7 +238,7 @@ public class Main {
                 }
                 else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid channel!]*~\n*Details:* Could not send message to channel *'" + channel + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "quit", channelName, "Failed to send message to " + channel + "!");
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "quit", channelName, stringArgs);
                 }
             }
             break;
@@ -336,23 +336,20 @@ public class Main {
                     }
                 }
                 else {
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve", channelName, "Resolve failed to resolve any information!");
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "resolve", channelName, stringArgs);
                     api.postMessage(botCommandChannel, "Unresolved:* Unable to resolve anything from given the parameters!");
                 }
             }
             break;
 
-            case "help":
-            {
+            case "help": {
                 int index = 1;
 
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, stringArgs);
-                if(!(args == null) && (args.length == 1))
-                {
-                    try  {
+                if (!(args == null) && (args.length == 1)) {
+                    try {
                         index = Integer.parseInt(args[0]);
-                    }
-                    catch(NumberFormatException e)  {
+                    } catch (NumberFormatException e) {
                         index = args.length + 5;
                     }
                 }
@@ -401,31 +398,29 @@ public class Main {
                         "\n - Removes a word or phrase from the profanity filter.",
 
                         "\n*.blacklistLink <link>*",
-                        "\n - Adds a link to the link filter." };
+                        "\n - Adds a link to the link filter."};
 
-                int maxPages = (int)Math.ceil((double)commandList.length/12.0);
+                int maxPages = (int) Math.ceil((double) commandList.length / 12.0);
 
                 String header = "~*[HELP: Commands page (" + index + " / " + maxPages + ")]*~:\n-*I===============================I*-";
 
-                if(!(index > maxPages))
-                {
+                if (!(index > maxPages)) {
                     helpMsg.append(header);
-                    for(int i = (((index * 11) - 11)); i <= (index * 11); i++)
-                    {
-                        if(index > 1 && i == (((index * 11) - 11)))
+                    for (int i = (((index * 11) - 11)); i <= (index * 11); i++) {
+                        if (index > 1 && i == (((index * 11) - 11)))
                             i++;
 
-                        if(i == commandList.length)
+                        if (i == commandList.length)
                             break;
                         else
                             helpMsg.append(commandList[i]);
                     }
 
                     api.postMessage(botCommandChannel, helpMsg.toString());
-                }
-                else
+                } else {
                     api.postMessage(botCommandChannel, "The requested page does not exist!");
-                Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, "Failed to get page " + index + "!");
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, stringArgs);
+                }
             }
             break;
 
@@ -466,7 +461,7 @@ public class Main {
                 catch (NumberFormatException e) {
                     String uuid = cmdArgUserID + "";
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, "Failed to ban " + uuid);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
                 }
             }
             break;
@@ -487,7 +482,7 @@ public class Main {
                 catch (NumberFormatException e) {
                     String uuid = cmdArgUserID + "";
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "unbanLeft", channelName, "Failed to unban " + uuid);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "unbanLeft", channelName, stringArgs);
                 }
             }
             case "addWarning":
@@ -524,7 +519,7 @@ public class Main {
                     }
                 } else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + cmdArgUsername + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, "Unable to issue a warning to " + cmdArgUsername + "!");
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                 }
             }
             break;
@@ -541,7 +536,7 @@ public class Main {
                     api.postMessage(botCommandChannel, "~*[Warnings]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
                 } else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not show warnings of *'" + cmdArgUsername + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, "Failed to get any warnings from " + cmdArgUsername);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, stringArgs);
                 }
             }
             break;
@@ -559,7 +554,7 @@ public class Main {
                     api.banIpMember(member);
                 } else {
                     api.postMessage(botCommandChannel, "couldnt ip ban " + cmdArgUsername);
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "ipBan", channelName, "Failed to get any warnings from " + cmdArgUsername);
+                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "ipBan", channelName, stringArgs);
                 }
 
             }
