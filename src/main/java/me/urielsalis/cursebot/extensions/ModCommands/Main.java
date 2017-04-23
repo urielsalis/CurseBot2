@@ -419,7 +419,6 @@ public class Main {
                     api.postMessage(botCommandChannel, helpMsg.toString());
                 } else {
                     api.postMessage(botCommandChannel, "The requested page does not exist!");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "help", channelName, stringArgs);
                 }
             }
             break;
@@ -439,6 +438,7 @@ public class Main {
 
             case "banLeft":
             {
+                Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
                 int cmdArgUserID = -1;
                 String cmdArgReason = (args != null && args.length > 1 ? Util.spaceSeparatedString(Arrays.copyOfRange(args, 1, args.length)).replaceAll("/n", "\n") : "No reason given!" );
                 try {
@@ -450,7 +450,6 @@ public class Main {
                             e.printStackTrace();
                             api.postMessage(botLogChannel, "Database error while adding ban, user was banned");
                         }
-                        Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
                         api.postMessage(botCommandChannel, "The user with the user ID of " + cmdArgUserID + " has been prevented from joining back onto the server!");
                         api.banMember(cmdArgUserID, "No reason provided!");
                     }
@@ -461,7 +460,6 @@ public class Main {
                 catch (NumberFormatException e) {
                     String uuid = cmdArgUserID + "";
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not ban *'" + uuid + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "banLeft", channelName, stringArgs);
                 }
             }
             break;
@@ -498,8 +496,8 @@ public class Main {
                 }
 
                 Member cmdArgMember = api.resolveMember(cmdArgUsername);
+                Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                 if(cmdArgMember != null) {
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                     if(Util.canRemoveUser(cmdArgMember.senderID)) {
                         try {
                             Util.dataBase.addWarning(cmdSenderID, uniqueName, cmdArgMember.senderID, cmdArgMember.senderName, cmdArgReason, "Kicked");
@@ -519,7 +517,6 @@ public class Main {
                     }
                 } else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not add warning to *'" + cmdArgUsername + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "addWarning", channelName, stringArgs);
                 }
             }
             break;
@@ -531,12 +528,16 @@ public class Main {
                 }
 
                 Member member = api.resolveMember(cmdArgUsername);
+                Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, stringArgs);
                 if(member != null) {
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, stringArgs);
-                    api.postMessage(botCommandChannel, "~*[Warnings]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                    if (Util.removeUserWhen.get(member.senderID) == null) {
+                        api.postMessage(botCommandChannel, "~*[Warnings]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Total Warnings:* 0");
+                    }
+                    else {
+                        api.postMessage(botCommandChannel, "~*[Warnings]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Total Warnings:* " + Util.removeUserWhen.get(member.senderID));
+                    }
                 } else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not show warnings of *'" + cmdArgUsername + "'*");
-                    Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "listWarnings", channelName, stringArgs);
                 }
             }
             break;
@@ -577,6 +578,27 @@ public class Main {
                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "loadStats", channelName, stringArgs);
                 loadStats();
                 api.postMessage(botCommandChannel, "Stats loaded");
+            }
+            break;
+            case "joined":
+            {
+                String cmdArgUsername = "";
+                if ((args != null) && (args.length > 0)) {
+                    cmdArgUsername = args[0];
+                }
+
+                Member member = api.resolveMember(cmdArgUsername);
+                Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "joined", channelName, stringArgs);
+                if(member != null) {
+                    if(member.joined==0) {
+                        api.postMessage(botCommandChannel, "~*[Joined]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Joined on:* Before bot was turned on!");
+                    } else {
+                        api.postMessage(botCommandChannel, "~*[Joined]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Joined on:* " + Util.timestampToDate(member.joined));
+                    }
+                } else {
+                    api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not show join time of *'" + cmdArgUsername + "'*");
+                }
+
             }
             break;
         }

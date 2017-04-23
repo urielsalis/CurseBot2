@@ -9,6 +9,7 @@ public class Member implements Serializable {
     public String username;
     public long senderID;
     public long bestRole;
+    public long joined = 0;
 
     public Member(Object nickname, Object username, Object userID, Object bestRole, Object displayName) {
         this.senderName = (String) displayName;
@@ -22,6 +23,7 @@ public class Member implements Serializable {
         this.displayName = (String) displayName;
         this.senderID = (long) userID;
         this.bestRole = (long) bestRole;
+        this.joined = System.currentTimeMillis()/100;
     }
 
     @Override
