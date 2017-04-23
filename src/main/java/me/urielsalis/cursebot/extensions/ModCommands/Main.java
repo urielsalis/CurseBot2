@@ -593,7 +593,10 @@ public class Main {
                     if(member.joined==0) {
                         api.postMessage(botCommandChannel, "~*[Joined]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Joined on:* Before bot was turned on!");
                     } else {
-                        api.postMessage(botCommandChannel, "~*[Joined]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Joined on:* " + Util.timestampToDate(member.joined));
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(member.joined);
+                        String date = calendar.getTime().toString();
+                        api.postMessage(botCommandChannel, "~*[Joined]*~\n*Username:* [ " + api.mention(cmdArgUsername) + " ]" + "\n*Joined on:* " + date);
                     }
                 } else {
                     api.postMessage(botCommandChannel, "~*[ERROR: Invalid user!]*~\n*Details:* Could not show join time of *'" + cmdArgUsername + "'*");

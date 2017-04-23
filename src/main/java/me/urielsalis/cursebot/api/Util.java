@@ -36,6 +36,7 @@ public class Util {
     public static String databaseTable;
     public static String databaseUsername;
     public static String databasePassword;
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
 
     //:: DataBase access variable
     public static DataBase dataBase = new DataBase();
@@ -142,8 +143,6 @@ public class Util {
 
     public static String timestampToDate(long timestamp) {
         Date date = new Date(timestamp); // *1000 is to convert seconds to milliseconds
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT-3")); // give a timezone reference for formating (see comment at the bottom
         return sdf.format(date);
     }
     

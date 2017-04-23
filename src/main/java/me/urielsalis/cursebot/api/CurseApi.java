@@ -293,6 +293,7 @@ public class CurseApi {
             for(Object obj: array) {
                 JSONObject memberObj = (JSONObject) obj;
                 Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"), memberObj.get("DisplayName"));
+                member.setJoined(0);
                 members.add(member);
             }
             json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "/members?actives=false&page=1&pageSize=50", getAuthToken());
@@ -300,6 +301,7 @@ public class CurseApi {
             for(Object obj: array) {
                 JSONObject memberObj = (JSONObject) obj;
                 Member member = new Member(memberObj.get("Nickname"), memberObj.get("Username"), memberObj.get("UserID"), memberObj.get("BestRole"), memberObj.get("DisplayName"));
+                member.setJoined(0);
                 members.add(member);
             }
         } catch (ParseException e) {

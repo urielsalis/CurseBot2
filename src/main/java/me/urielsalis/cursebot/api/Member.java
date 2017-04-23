@@ -23,7 +23,55 @@ public class Member implements Serializable {
         this.displayName = (String) displayName;
         this.senderID = (long) userID;
         this.bestRole = (long) bestRole;
-        this.joined = System.currentTimeMillis()/100;
+        this.joined = System.currentTimeMillis();
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public long getSenderID() {
+        return senderID;
+    }
+
+    public void setSenderID(long senderID) {
+        this.senderID = senderID;
+    }
+
+    public long getBestRole() {
+        return bestRole;
+    }
+
+    public void setBestRole(long bestRole) {
+        this.bestRole = bestRole;
+    }
+
+    public long getJoined() {
+        return joined;
+    }
+
+    public void setJoined(long joined) {
+        this.joined = joined;
     }
 
     @Override
