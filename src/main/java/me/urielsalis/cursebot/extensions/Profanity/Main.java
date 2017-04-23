@@ -116,23 +116,24 @@ public class Main{
                         api.deleteMessage(message);
                     }
 
+                    Integer warnings = Util.removeUserWhen.get(userID);
+                    if(warnings==null) warnings = 1;
+
+                    if(warnings > 1) {
+                        api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
+                    }
+
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
-                        Integer warnings = Util.removeUserWhen.get(userID);
-                        if(warnings==null) warnings = 1;
                         try {
                             Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Kicked");
                         } catch (Exception e) {
                             e.printStackTrace();
                             api.postMessage(botLogChannel, "Database error while adding warning");
                         }
-                        if(warnings > 1) {
-                            api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
-                        }
+                        api.postMessage(botLogChannel, "~*[Link Filter]*~\n*Sender:* [ " + api.mention(senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + channelName + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userID) + "\n*Removals:* " + (Util.removeUserWhen.get(userID) / 4) + "\n*Action:* message auto-deleted! User removed from the server!");
                     }
                     else {
-                        Integer warnings = Util.removeUserWhen.get(userID);
-                        if(warnings==null) warnings = 1;
                         if(Util.unhidden) {
                             try {
                                 Util.dataBase.addWarning(0, "LinkFilter", userID, uniqueName, "Blacklisted link detected", "Warned");
@@ -140,7 +141,8 @@ public class Main{
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
-                            api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here!");
+                            api.postMessage(botLogChannel, "~*[Link Filter]*~\n*Sender:* [ " + api.mention(senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + channelName + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userID) + "\n*Removals:* " + (Util.removeUserWhen.get(userID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                            api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't post that link. Those types of links aren't welcome here! Please review our rules over in the #rules channel.");
                         }
                         else {
                             try {
@@ -149,21 +151,23 @@ public class Main{
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
-                        }
-                        if(warnings > 1) {
-                            api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
+                            api.postMessage(botLogChannel, "~*[Link Filter]*~\n*Sender:* [ " + api.mention(senderName) + " ]\n*Said:* " + message.body + "\n*Channel:* " + channelName + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userID) + "\n*Removals:* " + (Util.removeUserWhen.get(userID) / 4) + "\n*Action:* Hidden mode enabled! No action taken!");
                         }
                     }
                 }
+
                 if (containsCurseWord(message.body) && !(Util.isUserAuthorized(api, cmdSender))) {
                     if(Util.unhidden) {
                         api.deleteMessage(message);
                     }
+
                     Integer warnings = Util.removeUserWhen.get(userID);
                     if(warnings==null) warnings = 1;
+
                     if(warnings > 1) {
                         api.postMessage(botLogChannel, senderName + " has " + warnings + " warnings!");
                     }
+
                     if (Util.canRemoveUser(userID)) {
                         api.kickUser(cmdSender);
                         try {
@@ -172,7 +176,9 @@ public class Main{
                             e.printStackTrace();
                             api.postMessage(botLogChannel, "Database error while adding warning");
                         }
-                    } else {
+                        api.postMessage(botLogChannel, "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(senderName) + " ]\n*Said:* " + message.body + "\n*Censored:* "+ Util.tmpStringCensored + "\n*Channel:* " + channelName + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userID) + "\n*Removals:* " + (Util.removeUserWhen.get(userID) / 4) + "\n*Action:* message auto-deleted! User was removed from the server!");
+                    }
+                    else {
                         if(Util.unhidden) {
                             try {
                                 Util.dataBase.addWarning(0, "ProfanityFilter", userID, uniqueName, "Profanity detected", "Warned");
@@ -180,7 +186,8 @@ public class Main{
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
-                            api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
+                            api.postMessage(botLogChannel, "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(senderName) + " ]\n*Said:* " + message.body + "\n*Censored:* "+ Util.tmpStringCensored + "\n*Channel:* " + channelName + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userID) + "\n*Removals:* " + (Util.removeUserWhen.get(userID) / 4) + "\n*Action:* message auto-deleted! Verbal warning received!");
+                            api.postMessage(api.resolveChannelUUID(message.channelUUID), api.mention(message.senderName) + ", please don't use profanities. This is a family friendly chat server! Please review our rules over in the #rules channel.");
                         }
                         else {
                             try {
@@ -189,7 +196,7 @@ public class Main{
                                 e.printStackTrace();
                                 api.postMessage(botLogChannel, "Database error while adding warning");
                             }
-                            api.postMessage(botLogChannel, api.mention(message.senderName) + ", please don't use profanities. This is a kid friendly chat server!");
+                            api.postMessage(botLogChannel, "~*[Profanity Filter]*~\n*Sender:* [ " + api.mention(senderName) + " ]\n*Said:* " + message.body + "\n*Censored:* "+ Util.tmpStringCensored + "\n*Channel:* " + channelName + "\n*Issued Warnings:* " + Util.removeUserWhen.get(userID) + "\n*Removals:* " + (Util.removeUserWhen.get(userID) / 4) + "\n*Action:* Hidden mode enabled! No Action was taken!");
                         }
                     }
                 }
