@@ -232,159 +232,153 @@ public class Main{
 
 
         if(!Util.isUserAuthorized(api, api.resolveMember(message.senderName))) return;
-        switch (command.getCommand()) {
-            case "addProfanity":
-            {
-                api.postMessage(botLogChannel, "~*[Executing add profanity]*~");
+        if(api.resolveMember(senderName).bestRole==1 || api.resolveMember(senderName).bestRole==4) {
+            switch (command.getCommand()) {
+                case "addProfanity": {
+                    api.postMessage(botLogChannel, "~*[Executing add profanity]*~");
 
-                String profanities = "";
+                    String profanities = "";
 
-                profanities = getFilterElements("profanities.txt");
+                    profanities = getFilterElements("profanities.txt");
 
-                boolean addProfanity = true;
-                if(args != null && args.length > 0) {
-                    try {
-                        for (String s : swearWords)
-                            if (s.equalsIgnoreCase(args[0]))
-                                addProfanity = false;
+                    boolean addProfanity = true;
+                    if (args != null && args.length > 0) {
+                        try {
+                            for (String s : swearWords)
+                                if (s.equalsIgnoreCase(args[0]))
+                                    addProfanity = false;
 
-                        if (addProfanity) {
-                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters"+File.separator+"profanities.txt"), "UTF-8"));
+                            if (addProfanity) {
+                                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters" + File.separator + "profanities.txt"), "UTF-8"));
 
-                            profanities = profanities.trim().replaceFirst("\\s\\]", "");
-                            profanities += ",," + args[0] + " ]";
+                                profanities = profanities.trim().replaceFirst("\\s\\]", "");
+                                profanities += ",," + args[0] + " ]";
 
-                            String[] list = profanities.split(",+");
-                            for (String s : list) {
-                                if (!(s.contains("]")))
-                                    out.write(s + ",\n");
-                                else
-                                    out.write(s);
+                                String[] list = profanities.split(",+");
+                                for (String s : list) {
+                                    if (!(s.contains("]")))
+                                        out.write(s + ",\n");
+                                    else
+                                        out.write(s);
+                                }
+
+                                out.flush();
+                                out.close();
+
+                                loadProfanities(getFilterElements("profanities.txt"));
+                                Util.dataBase.addCommandHistory(userID, uniqueName, "addProfanity", channelID, args[0]);
+                                api.postMessage(botCommandChannel, "Successfully added word to the filter!");
+                            } else {
+                                api.postMessage(botCommandChannel, "*[Failed]*\n- *'" + args[0] + "'* is already in the filter!\n- Attempted to be added by " + senderName);
+                                api.postMessage(botCommandChannel, "Word already exists in the filter!");
                             }
+                        } catch (IOException e) {
+                            Util.dataBase.addLogMessage("INFO", "IO exception in addProfanity", e);
 
-                            out.flush();
-                            out.close();
-
-                            loadProfanities(getFilterElements("profanities.txt"));
-                            Util.dataBase.addCommandHistory(userID, uniqueName, "addProfanity", channelID, args[0]);
-                            api.postMessage(botCommandChannel, "Successfully added word to the filter!");
                         }
-                        else {
-                            api.postMessage(botCommandChannel,  "*[Failed]*\n- *'" + args[0] + "'* is already in the filter!\n- Attempted to be added by " + senderName);
-                            api.postMessage(botCommandChannel, "Word already exists in the filter!");
-                        }
-                    } catch (IOException e) {
-                        Util.dataBase.addLogMessage("INFO", "IO exception in addProfanity", e);
-
+                    } else {
+                        api.postMessage(botCommandChannel, "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + senderName);
+                        api.postMessage(botCommandChannel, "No word specified to add to the filter!");
                     }
                 }
-                else {
-                    api.postMessage(botCommandChannel, "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + senderName);
-                    api.postMessage(botCommandChannel, "No word specified to add to the filter!");
-                }
-            }
-            break;
+                break;
 
-            case "rmProfanity":
-            {
-                api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing remove profanity]*~");
+                case "rmProfanity": {
+                    api.postMessage(api.resolveChannel(Util.botlogChannel), "~*[Executing remove profanity]*~");
 
-                String profanities = "";
+                    String profanities = "";
 
-                profanities = getFilterElements("profanities.txt");
+                    profanities = getFilterElements("profanities.txt");
 
-                boolean removeProfanity = false;
-                String remove = "";
-                if(args != null && args.length > 0) {
-                    try {
-                        for (String s : swearWords) {
-                            if (s.equalsIgnoreCase(args[0])) {
-                                removeProfanity = true;
-                                remove = s;
-                            }
-                        }
-
-                        if (removeProfanity) {
-                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters"+File.separator+"profanities.txt"), "UTF-8"));
-
-                            profanities = profanities.trim().replaceFirst(",," + remove, "");
-
-                            String[] list = profanities.split(",+");
-                            for (String s : list) {
-                                if (s.equals(remove)) continue;
-                                if (!(s.contains("]")))
-                                    out.write(s + ",\n");
-                                else
-                                    out.write(s);
+                    boolean removeProfanity = false;
+                    String remove = "";
+                    if (args != null && args.length > 0) {
+                        try {
+                            for (String s : swearWords) {
+                                if (s.equalsIgnoreCase(args[0])) {
+                                    removeProfanity = true;
+                                    remove = s;
+                                }
                             }
 
-                            out.flush();
-                            out.close();
+                            if (removeProfanity) {
+                                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters" + File.separator + "profanities.txt"), "UTF-8"));
 
-                            loadProfanities(getFilterElements("profanities.txt"));
-                            Util.dataBase.addCommandHistory(userID, uniqueName, "rmProfanity", channelID, args[0]);
-                            api.postMessage(botCommandChannel, "Successfully removed word from the filter!");
+                                profanities = profanities.trim().replaceFirst(",," + remove, "");
+
+                                String[] list = profanities.split(",+");
+                                for (String s : list) {
+                                    if (s.equals(remove)) continue;
+                                    if (!(s.contains("]")))
+                                        out.write(s + ",\n");
+                                    else
+                                        out.write(s);
+                                }
+
+                                out.flush();
+                                out.close();
+
+                                loadProfanities(getFilterElements("profanities.txt"));
+                                Util.dataBase.addCommandHistory(userID, uniqueName, "rmProfanity", channelID, args[0]);
+                                api.postMessage(botCommandChannel, "Successfully removed word from the filter!");
+                            } else {
+                                api.postMessage(botCommandChannel, "*[Failed]*\n- *'" + args[0] + "'* is not in the filter!\n- Attempted to be removed by " + senderName);
+                                api.postMessage(botCommandChannel, "Unable to remove non existent word from the filter!");
+                            }
+                        } catch (IOException e) {
+                            Util.dataBase.addLogMessage("INFO", "IO exception in rmProfanity", e);
                         }
-                        else {
-                            api.postMessage(botCommandChannel, "*[Failed]*\n- *'" + args[0] + "'* is not in the filter!\n- Attempted to be removed by " + senderName);
-                            api.postMessage(botCommandChannel, "Unable to remove non existent word from the filter!");
-                        }
-                    } catch (IOException e) {
-                        Util.dataBase.addLogMessage("INFO", "IO exception in rmProfanity", e);
+                    } else {
+                        api.postMessage(botCommandChannel, "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + senderName);
+                        api.postMessage(botCommandChannel, "No word specified to remove from the filter!");
                     }
                 }
-                else {
-                    api.postMessage(botCommandChannel, "*[Failed]*\n- No profanity was specified!\n- Attempted to be added by " + senderName);
-                    api.postMessage(botCommandChannel, "No word specified to remove from the filter!");
-                }
-            }
-            break;
+                break;
 
-            case "blacklistLink": {
-                api.postMessage(botLogChannel, "~*[Executing blacklisting link]*~");
+                case "blacklistLink": {
+                    api.postMessage(botLogChannel, "~*[Executing blacklisting link]*~");
 
-                String links = "";
+                    String links = "";
 
-                links = getFilterElements("linkblacklist.txt");
+                    links = getFilterElements("linkblacklist.txt");
 
-                if(args != null && args.length > 0) {
-                    try {
-                        if (!isLink(args[0])) {
-                            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters"+File.separator+"linkblacklist.txt"), "UTF-8"));
+                    if (args != null && args.length > 0) {
+                        try {
+                            if (!isLink(args[0])) {
+                                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("filters" + File.separator + "linkblacklist.txt"), "UTF-8"));
 
-                            links = links.trim().replaceFirst("\\s\\]", "");
-                            links += ",," + args[0] + " ]";
+                                links = links.trim().replaceFirst("\\s\\]", "");
+                                links += ",," + args[0] + " ]";
 
-                            String[] list = links.split(",+");
-                            for (String s : list) {
-                                if (!(s.contains("]")))
-                                    out.write(s + ",\n");
-                                else
-                                    out.write(s);
+                                String[] list = links.split(",+");
+                                for (String s : list) {
+                                    if (!(s.contains("]")))
+                                        out.write(s + ",\n");
+                                    else
+                                        out.write(s);
+                                }
+
+                                out.flush();
+                                out.close();
+
+                                loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
+                                Util.dataBase.addCommandHistory(userID, uniqueName, "blacklistLink", channelID, args[0]);
+                                api.postMessage(botCommandChannel, "Link was successfully blacklisted!");
+                            } else {
+                                api.postMessage(botCommandChannel, "*[Failed]*\n- '```" + args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + senderName);
+                                api.postMessage(botCommandChannel, "Unable to remove non existent link from blacklist!");
                             }
+                        } catch (IOException e) {
+                            Util.dataBase.addLogMessage("INFO", "IO exception in blacklistLink", e);
 
-                            out.flush();
-                            out.close();
-
-                            loadLinkBlacklist(getFilterElements("linkblacklist.txt"));
-                            Util.dataBase.addCommandHistory(userID, uniqueName, "blacklistLink", channelID, args[0]);
-                            api.postMessage(botCommandChannel, "Link was successfully blacklisted!");
                         }
-                        else {
-                            api.postMessage(botCommandChannel, "*[Failed]*\n- '```" + args[0] + "```' is already in the filter or was an invalid link!\n- Attempted to be added by " + senderName);
-                            api.postMessage(botCommandChannel, "Unable to remove non existent link from blacklist!");
-                        }
-                    } catch (IOException e) {
-                        Util.dataBase.addLogMessage("INFO", "IO exception in blacklistLink", e);
-
+                    } else {
+                        api.postMessage(botCommandChannel, "*[Failed]*\n- No link was specified!\n- Attempted to be added by " + senderName);
+                        api.postMessage(botCommandChannel, "No link specified to add to the blacklist!");
                     }
                 }
-                else {
-                    api.postMessage(botCommandChannel, "*[Failed]*\n- No link was specified!\n- Attempted to be added by " + senderName);
-                    api.postMessage(botCommandChannel, "No link specified to add to the blacklist!");
-                }
+                break;
             }
-            break;
         }
     }
 
