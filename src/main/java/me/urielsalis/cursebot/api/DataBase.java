@@ -15,25 +15,39 @@ import static me.urielsalis.cursebot.Main.api;
 
 public class DataBase
 {
-    public Connection con = null;
+    String url;
     public Logger logger = Logger.getLogger("ErrorLogger");
 
     //:: Creates connection to the database
     public void initDB()
     {
-        String url = "jdbc:mysql://"+Util.databaseURL+":3306/"+Util.databaseTable;
+        url = "jdbc:mysql://"+Util.databaseURL+":3306/"+Util.databaseTable;
+
+    }
+
+    public Connection getConnection() {
+        Connection con = null;
         try {
             con = DriverManager.getConnection(url, Util.databaseUsername, Util.databasePassword);
+            Connection finalCon = con;
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    closeDB(finalCon);
+                }
+            }));
         } catch (Exception ex) {
             Logger lgr = Logger.getLogger(Main.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(this::closeDB));
+        return con;
     }
+
+
 
     //Adds new ban, username must be unique curse ID(memberobj.username), duration must be a unix posix of the duration of the ban(seconds)
     public void addBanRecord(long issuerID, String issuerUsername, long bannedID, String bannedUsername, String reason, long duration) throws SQLException {
-        isClosed();
+        Connection con = getConnection();
         String simpleProc = "{ call addBanRecord(?, ?, ?, ?, ?, ?) }";
         CallableStatement cs = con.prepareCall(simpleProc);
         cs.setLong("issuerId", issuerID);
@@ -48,7 +62,7 @@ public class DataBase
     //Adds new command issuer, username must be unique curse ID(memberobj.username), args doesnt include the command, is a empty string if non existant
     public void addCommandHistory(long userId, String username, String command, String channel, String args) {
         try {
-            isClosed();
+            Connection con = getConnection();
             String simpleProc = "{ call addCommandHistory(?, ?, ?, ?, ?) }";
             CallableStatement cs = con.prepareCall(simpleProc);
             cs.setLong("userId", userId);
@@ -66,12 +80,12 @@ public class DataBase
     //Adds new log message(in crashes) stackstrace can be get from exception(like .printStackTrace but to variable, cant remember the method)
     public void addLogMessage(String level, String message, Exception e) {
         try {
+            Connection con = getConnection();
             if(con==null) {
                 System.err.println(message);
                 e.printStackTrace();
                 return;
             }
-            isClosed();
             logger.log(Level.WARNING, "Expection thrown", e);
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -88,7 +102,7 @@ public class DataBase
     }
     //Adds new warning, might be manual, staff remove(auto adds as warning) or from filters, id and username is the same, reason is limited(keep it short, maybe show censored word), dont put too much text, action is "Removed user" or "Verbal warning: X total warnings"(has char limit, do go crazy, keep it really short)
     public void addWarning(long issuerId, String issuerUsername, long warnedId, String warnedUsername, String reason, String action) throws SQLException {
-        isClosed();
+        Connection con = getConnection();
         String simpleProc = "{ call addWarning(?, ?, ?, ?, ?, ?) }";
         CallableStatement cs = con.prepareCall(simpleProc);
         cs.setLong("issuerId", issuerId);
@@ -100,21 +114,12 @@ public class DataBase
         cs.execute();
     }
 
-    public void closeDB() {
+    public void closeDB(Connection con) {
         try {
             if (con != null) {
                 con.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void isClosed() {
-        try {
-            con.close();
-            initDB();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

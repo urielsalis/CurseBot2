@@ -223,7 +223,6 @@ public class Main {
                     api.postMessage(botLogChannel, "~*[Shut down command executed!]*~\n*Command Sender:* [ " + senderName + " ]");
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "quit", channelName, stringArgs);
                     saveStats();
-                    Util.dataBase.closeDB();
                     System.exit(0);
                 }
             }
