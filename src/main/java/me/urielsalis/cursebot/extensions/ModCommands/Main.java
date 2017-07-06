@@ -484,6 +484,7 @@ public class Main {
                     Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "unbanLeft", channelName, stringArgs);
                 }
             }
+            break;
             case "addWarning":
             {
                 String cmdArgUsername = "";
