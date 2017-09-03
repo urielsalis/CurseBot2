@@ -272,11 +272,13 @@ public class Main {
                         else {
                             if (Util.unhidden) { //hide
                                 Util.unhidden = false;
+                                Util.saveState();
                                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "mode hide", channelName, stringArgs);
                                 api.postMessage(botCommandChannel, "Bot has been suppressed from invoking actions, but will continue logging as normal.");
                             }
                             else { //unhide
                                 Util.unhidden = true;
+                                Util.saveState();
                                 Util.dataBase.addCommandHistory(cmdSenderID, uniqueName, "mode unhide", channelName, stringArgs);
                                 api.postMessage(botCommandChannel, "Bot has been unsuppressed from invoking actions, and will continue logging as normal.");
                             }

@@ -4,22 +4,15 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
-import me.urielsalis.cursebot.api.Util;
 import me.urielsalis.cursebot.events.CommandEvent;
 import me.urielsalis.cursebot.events.MessageEvent;
-import me.urielsalis.cursebot.extensions.Extension;
-import me.urielsalis.cursebot.extensions.ExtensionApi;
 import me.urielsalis.cursebot.extensions.ExtensionHandler;
-import me.urielsalis.cursebot.extensions.Profanity.Main;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -117,15 +110,29 @@ public class CurseApi {
                                     String channelUUID = (String) body.get("ConversationID");
                                     addMemberIfNotFound((String) body.get("SenderName"), (long) body.get("SenderID"));
                                     updateMember((long) body.get("SenderID"), (long) body.get("SenderVanityRole"), (String) body.get("SenderName"));
-                                    Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
-                                    messages++;
-                                    if(isPM) {
-                                        updateListeners(message);
-                                    } else {
+                                    if((boolean) body.get("IsDeleted")) {
                                         Channel channel = resolveChannelUUID(channelUUID);
-                                        if (!channel.getMessages().contains(message)) {
-                                            channel.getMessages().add(message);
+                                        Optional<Message> message = channel.getMessages().stream().filter(message1 -> (message1.serverID.equals(body.get("ServerID")) && (message1.timestamp==(long)body.get("Timestamp")))).findFirst();
+                                        message.ifPresent(message1 -> {
+                                            try {
+                                                Util.dataBase.addDeletedMessage(message1, channel, (long) body.get("DeletedUserID"), (String) body.get("DeletedUsername"), (long) body.get("DeletedTimestamp"));
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                                api.postMessage(api.resolveChannel(Util.botlogChannel), "Database error while deleting message");
+                                            }
+                                            api.postMessage(api.resolveChannel(Util.botlogChannel), "Deleted message: " + Util.timestampToDate(message.get().timestamp) + " <" + body.get("senderUsername") + "> " + message1.body);
+                                        });
+                                    } else {
+                                        Message message = new Message(body.get("SenderName"), body.get("Body"), body.get("Timestamp"), body.get("ServerID"), channelUUID, isPM);
+                                        messages++;
+                                        if (isPM) {
                                             updateListeners(message);
+                                        } else {
+                                            Channel channel = resolveChannelUUID(channelUUID);
+                                            if (!channel.getMessages().contains(message)) {
+                                                channel.getMessages().add(message);
+                                                updateListeners(message);
+                                            }
                                         }
                                     }
                                 } else if(TypeID==RESPONSELOGIN1_ID) {

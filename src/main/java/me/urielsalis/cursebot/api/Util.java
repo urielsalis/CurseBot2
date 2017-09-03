@@ -166,4 +166,15 @@ public class Util {
         return Util.unhidden && Util.removeUserWhen.get(userID) % 4 == 0;
     }
 
+    public static void saveState() {
+        File file = new File("unhidden");
+        try {
+            file.delete();
+            if(unhidden) {
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

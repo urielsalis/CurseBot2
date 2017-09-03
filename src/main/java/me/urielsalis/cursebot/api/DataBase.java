@@ -29,13 +29,11 @@ public class DataBase
         Connection con = null;
         try {
             con = DriverManager.getConnection(url, Util.databaseUsername, Util.databasePassword);
+            while(con == null) {
+                con = DriverManager.getConnection(url, Util.databaseUsername, Util.databasePassword);
+            }
             Connection finalCon = con;
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    closeDB(finalCon);
-                }
-            }));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> closeDB(finalCon)));
         } catch (Exception ex) {
             Logger lgr = Logger.getLogger(Main.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
@@ -57,7 +55,7 @@ public class DataBase
         cs.setString("reason", reason);
         cs.setLong("banDuration", duration);
         cs.execute();
-
+        closeDB(con);
     }
     //Adds new command issuer, username must be unique curse ID(memberobj.username), args doesnt include the command, is a empty string if non existant
     public void addCommandHistory(long userId, String username, String command, String channel, String args) {
@@ -71,6 +69,7 @@ public class DataBase
             cs.setString("channel", channel);
             cs.setString("args", args);
             cs.execute();
+            closeDB(con);
         } catch (Exception e) {
             api.postMessage(api.resolveChannel(Util.botlogChannel), "Database error in command history, this might be bad");
             e.printStackTrace();
@@ -96,6 +95,7 @@ public class DataBase
             cs.setString("stacktrace", sw.toString());
             cs.setString("data", "");
             cs.execute();
+            closeDB(con);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -112,6 +112,7 @@ public class DataBase
         cs.setString("reason", reason);
         cs.setString("action", action);
         cs.execute();
+        closeDB(con);
     }
 
     public void closeDB(Connection con) {
@@ -122,5 +123,21 @@ public class DataBase
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void addDeletedMessage(Message message, Channel channel, long deletedUserID, String deletedUsername, long timestampDeleted) throws SQLException {
+        Connection con = getConnection();
+        String simpleProc = "{ call deletedMessage(?, ?, ?, ?, ?, ?) }";
+        CallableStatement cs = con.prepareCall(simpleProc);
+        cs.setString("body", message.body);
+        cs.setString("issuerUsername", deletedUsername);
+        cs.setLong("issuerID", deletedUserID);
+        cs.setLong("warnedId", api.resolveMember(message.senderName).senderID);
+        cs.setString("warnedUsername", message.senderName);
+        cs.setLong("timestampDeleted", timestampDeleted);
+        cs.setLong("timestampMessage", message.cursetimestamp);
+        cs.setString("channel", channel.getGroupTitle());
+        cs.execute();
+        closeDB(con);
     }
 }

@@ -120,6 +120,8 @@ public class Main {
 
     private void loadProperties() {
         try {
+            File file = new File("unhidden");
+            Util.unhidden = file.exists();
             Properties prop = new Properties();
             InputStream inputStream = new FileInputStream("config.properties");
 
