@@ -1,16 +1,12 @@
-package me.urielsalis.cursebot.api;
+package me.urielsalis.cursebotold.api;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.xml.crypto.Data;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.logging.Logger;
 
 public class Util {

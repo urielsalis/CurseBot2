@@ -1,4 +1,4 @@
-package me.urielsalis.cursebot.api;
+package me.urielsalis.cursebotold.api;
 
 import java.io.Serializable;
 

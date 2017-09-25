@@ -1,4 +1,4 @@
-package me.urielsalis.cursebot.api;
+package me.urielsalis.cursebotold.api;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 

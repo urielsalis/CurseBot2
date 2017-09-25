@@ -1,7 +1,7 @@
-package me.urielsalis.cursebot.events;
+package me.urielsalis.cursebotold.events;
 
-import me.urielsalis.cursebot.api.Message;
-import me.urielsalis.cursebot.extensions.ExtensionApi;
+import me.urielsalis.cursebotold.api.Message;
+import me.urielsalis.cursebotold.extensions.ExtensionApi;
 
 public class MessageEvent extends ExtensionApi.Event {
     private Message message;

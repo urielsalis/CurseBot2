@@ -1,12 +1,12 @@
-package me.urielsalis.cursebot.api;
+package me.urielsalis.cursebotold.api;
 
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
-import me.urielsalis.cursebot.events.CommandEvent;
-import me.urielsalis.cursebot.events.MessageEvent;
-import me.urielsalis.cursebot.extensions.ExtensionHandler;
+import me.urielsalis.cursebotold.events.CommandEvent;
+import me.urielsalis.cursebotold.events.MessageEvent;
+import me.urielsalis.cursebotold.extensions.ExtensionHandler;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import static me.urielsalis.cursebot.Main.api;
+import static me.urielsalis.cursebotold.Main.api;
 
 public class CurseApi {
     private String authToken = "";

@@ -1,8 +1,6 @@
-package me.urielsalis.cursebot.extensions;
+package me.urielsalis.cursebotold.extensions;
 
-import me.urielsalis.cursebot.api.Util;
-import me.urielsalis.cursebot.extensions.Profanity.Main;
-import org.apache.commons.collections4.bag.SynchronizedSortedBag;
+import me.urielsalis.cursebotold.api.Util;
 import org.reflections.Configuration;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;

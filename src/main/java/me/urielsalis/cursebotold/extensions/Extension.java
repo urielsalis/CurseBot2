@@ -1,4 +1,4 @@
-package me.urielsalis.cursebot.extensions;
+package me.urielsalis.cursebotold.extensions;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

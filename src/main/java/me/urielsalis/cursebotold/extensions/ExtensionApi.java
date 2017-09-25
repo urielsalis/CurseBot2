@@ -1,14 +1,13 @@
-package me.urielsalis.cursebot.extensions;
+package me.urielsalis.cursebotold.extensions;
 
-import me.urielsalis.cursebot.Main;
-import me.urielsalis.cursebot.api.CurseApi;
+import me.urielsalis.cursebotold.Main;
+import me.urielsalis.cursebotold.api.CurseApi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 

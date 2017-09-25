@@ -1,25 +1,18 @@
-package me.urielsalis.cursebot;
+package me.urielsalis.cursebotold;
 
-import me.urielsalis.cursebot.api.*;
-import me.urielsalis.cursebot.extensions.ExtensionHandler;
+import me.urielsalis.cursebotold.api.*;
+import me.urielsalis.cursebotold.extensions.ExtensionHandler;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class Main {
@@ -108,7 +101,7 @@ public class Main {
             URL website = new URL("https://data.iana.org/TLD/tlds-alpha-by-domain.txt");
             try (InputStream in = website.openStream()) {
                 Files.copy(in, new File("filters"+File.separator+"domains.txt").toPath(), StandardCopyOption.REPLACE_EXISTING);
-                me.urielsalis.cursebot.extensions.Profanity.Main.loadTLDs();
+                me.urielsalis.cursebotold.extensions.Profanity.Main.loadTLDs();
             } catch (IOException e) {
                 Util.dataBase.addLogMessage("INFO", "Error fetching domains", e);
             }

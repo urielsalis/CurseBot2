@@ -1,6 +1,6 @@
-package me.urielsalis.cursebot.api;
+package me.urielsalis.cursebotold.api;
 
-import me.urielsalis.cursebot.Main;
+import me.urielsalis.cursebotold.Main;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static me.urielsalis.cursebot.Main.api;
+import static me.urielsalis.cursebotold.Main.api;
 
 public class DataBase
 {

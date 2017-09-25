@@ -1,16 +1,15 @@
-package me.urielsalis.cursebot.extensions.Profanity;
+package me.urielsalis.cursebotold.extensions.Profanity;
 
-import me.urielsalis.cursebot.api.*;
-import me.urielsalis.cursebot.events.CommandEvent;
-import me.urielsalis.cursebot.events.MessageEvent;
-import me.urielsalis.cursebot.extensions.Extension;
-import me.urielsalis.cursebot.extensions.ExtensionApi;
-import me.urielsalis.cursebot.extensions.ExtensionHandler;
-import me.urielsalis.cursebot.extensions.Handle;
+import me.urielsalis.cursebotold.api.*;
+import me.urielsalis.cursebotold.events.CommandEvent;
+import me.urielsalis.cursebotold.events.MessageEvent;
+import me.urielsalis.cursebotold.extensions.Extension;
+import me.urielsalis.cursebotold.extensions.ExtensionApi;
+import me.urielsalis.cursebotold.extensions.ExtensionHandler;
+import me.urielsalis.cursebotold.extensions.Handle;
 
 import java.io.*;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
