@@ -186,6 +186,7 @@ public class CurseApi {
                                         if(removedname == null) {
                                             removedname = (String) object.get("Nickname");
                                         }
+                                        String reason = (senderName == username) ? "Left" : "Kicked";
                                         if(removedname.equals(sender)) {
                                             leftUsers++;
                                             //postMessage(resolveChannel(Util.botlogChannel), "~*[User left!]*~\n*User:* " + removedname + ".");
