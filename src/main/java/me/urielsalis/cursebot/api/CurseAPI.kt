@@ -3,6 +3,7 @@ package me.urielsalis.cursebot.api
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
+import com.github.kittinunf.fuel.httpDelete
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import me.urielsalis.cursebot.api.util.GroupInfo
@@ -33,7 +34,7 @@ public abstract class CurseAPI(val username: String, val password: String, val s
     private var groupInfo: GroupInfo
 
     init {
-        var result: Pair<String, String> = login(username, password)
+        val result: Pair<String, String> = login(username, password)
         authToken = result.first
         userID = result.second
 
@@ -42,23 +43,40 @@ public abstract class CurseAPI(val username: String, val password: String, val s
         connectBlocking()
     }
 
-    public fun postMessage(channel: Channel, message: Message) {
+    public fun postMessage(channel: Channel, message: Message): Boolean {
+        val parameters: List<Pair<String, String>> = listOf(Pair("AttachmentID", "00000000-0000-0000-0000-000000000000"),
+                Pair("Body", message.body), Pair("AttachmentRegionID", "0"),
+                Pair("MachineKey", machineKey), Pair("ClientID", clientID))
+        val (_, response, _) = "https://conversations-v1.curseapp.net/conversations/${channel.channelUUID}"
+                .httpPost(parameters)
+                .header(Pair("AuthenticationToken", authToken))
+                .responseString()
+        return response.statusCode in 200..399
+    }
+
+    public fun kickUser(user: User, reason: String): Boolean {
+        val (_, response, _) = "https://groups-v1.curseapp.net/groups/$server/members/${user.id}"
+                .httpDelete(emptyList())
+                .header(Pair("AuthenticationToken", authToken))
+                .responseString()
+        return response.statusCode in 200..399
+    }
+
+    public fun deleteMessage(channel: Channel, message: Message): Boolean {
+        val (_, response, _) = "https://conversations-v1.curseapp.net/conversations/${message.channel.channelUUID}/$server-${message.timestamp}"
+                .httpDelete(emptyList())
+                .header(Pair("AuthenticationToken", authToken))
+                .responseString()
+        return response.statusCode in 200..399
 
     }
 
-    public fun kickUser(user: User, reason: String) {
-
-    }
-
-    public fun banUser(user: User, reason: String, timeout: Long) {
-
-    }
-
-    public fun deleteMessage(channel: Channel, message: Message) {
-
-    }
-
-    public fun editMessage(channel: Channel, message: Message, newBody: String) {
+    public fun editMessage(channel: Channel, message: Message, newBody: String): Boolean {
+        val (_, response, _) = "https://conversations-v1.curseapp.net/conversations/${message.channel.channelUUID}/$server-${message.timestamp}"
+                .httpPost(listOf(Pair("Body", newBody)))
+                .header(Pair("AuthenticationToken", authToken))
+                .responseString()
+        return response.statusCode in 200..399
 
     }
 
@@ -161,25 +179,6 @@ public abstract class CurseAPI(val username: String, val password: String, val s
     }
 
     private fun getGroupInfo(): GroupInfo {
-        /*
-        String json = Util.sendGet("https://groups-v1.curseapp.net/groups/" + groupID + "?showDeletedChannels=false", getAuthToken());
-            JSONObject object = (JSONObject) new JSONParser().parse(json);
-            JSONArray arrayRoles = (JSONArray) object.get("Roles");
-            for(Object obj2: arrayRoles) {
-                JSONObject role = (JSONObject) obj2;
-                roles.put((long)role.get("RoleID"), (long)role.get("Rank"));
-            }
-            JSONObject membership = (JSONObject) object.get("Membership");
-            bestRank = roles.get(membership.get("BestRole"));
-            JSONArray array = (JSONArray) object.get("Channels");
-            for (Object obj : array) {
-                JSONObject channel = (JSONObject) obj;
-                String title = (String) channel.get("GroupTitle");
-                String id = (String) channel.get("GroupID");
-                channels.put(title, new Channel(title, id));
-            }
-            getMembers();
-         */
         val roles = HashMap<Long, Long>()
         val channels = HashMap<String, Channel>()
 

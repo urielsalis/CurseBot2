@@ -1,3 +1,3 @@
 package me.urielsalis.cursebot.api
 
-public class Message(body: String, serverId: String, timestamp: Long, channel: Channel, sender: User, isDeleted: Boolean = false)
+public class Message(val body: String, val serverId: String, val timestamp: Long, val channel: Channel, val sender: User, val isDeleted: Boolean = false)
